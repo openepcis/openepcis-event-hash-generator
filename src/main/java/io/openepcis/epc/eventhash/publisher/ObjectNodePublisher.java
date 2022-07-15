@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -54,28 +53,12 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
     this.jsonParser.setCodec(mapper);
   }
 
-  public ObjectNodePublisher(final Reader reader) throws IOException {
-    this.jsonParser = jsonFactory.createParser(reader);
-    this.jsonParser.setCodec(mapper);
-  }
-
   @Override
   public void subscribe(Subscriber<? super T> subscriber) {
     this.subscription.set(new ObjectNodeSubscription(subscriber));
     final Optional<Throwable> throwable = beginParsing();
     subscriber.onSubscribe(this.subscription.get());
     throwable.ifPresent(subscriber::onError);
-  }
-
-  /**
-   * get number of processed nodes notice: this is not event count, EPCISDocument node may also be
-   * included may be used to detect whether this is the first node for EPCISDocument detection: i.e.
-   * when node.type.equals("EPCISDocument") and nodeCount == 1
-   *
-   * @return number of nodes published
-   */
-  public long getNodeCount() {
-    return nodeCount.get();
   }
 
   /** start parsing input by processing all tokens up to eventList */
@@ -105,19 +88,9 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
         jsonParser.close();
       }
     } catch (Exception e) {
-      // log.error("Error while parsing epcis document", e);
       return Optional.of(e);
     }
     return Optional.empty();
-  }
-
-  /**
-   * set to true to suppress processing of eventList
-   *
-   * @param ignore true to ignore eventList data
-   */
-  public void setIgnoreEventList(boolean ignore) {
-    ignoreEventList.getAndSet(ignore);
   }
 
   /**

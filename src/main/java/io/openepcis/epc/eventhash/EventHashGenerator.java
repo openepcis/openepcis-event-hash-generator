@@ -59,7 +59,8 @@ public class EventHashGenerator {
                 // Call the method generateHashId in HashIdGenerator to
                 try {
                   return HashIdGenerator.generateHashId(
-                      preHashString.replaceAll("[\n\r]", ""), hashAlgorithm);
+                          preHashString.replaceAll("[\n\r]", ""), hashAlgorithm)
+                      + "\n";
                 } catch (NoSuchAlgorithmException e) {
                   e.printStackTrace();
                 }
@@ -103,7 +104,8 @@ public class EventHashGenerator {
             node -> {
               try {
                 return HashIdGenerator.generateHashId(
-                    node.toShortenedString().replaceAll("[\n\r]", ""), hashAlgorithm);
+                        node.toShortenedString().replaceAll("[\n\r]", ""), hashAlgorithm)
+                    + "\n";
               } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
               }

@@ -1,0 +1,19 @@
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2"
+                     schemaVersion="2.0" creationDate="2020-06-28T13:41:00.000Z">
+    <EPCISBody>
+        <EventList>
+            <!-- INFERENCE example with COMPLETENESS INFERRED -->
+            <AggregationEvent>
+                <eventTime>2020-06-07T17:10:16Z</eventTime>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata deviceMetadata="https://id.gs1.org/8004/4000001111"></sensorMetadata>
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorMetadata deviceMetadata="https://id.gs1.org/8004/4000001111"></sensorMetadata>
+                    </sensorElement>
+                </sensorElementList>
+            </AggregationEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

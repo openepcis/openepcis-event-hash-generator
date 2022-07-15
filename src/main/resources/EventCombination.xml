@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:Document xmlns:epcis="urn:epcglobal:epcis:xsd:2" schemaVersion="2.0" creationDate="2013-06-04T14:59:02.099+02:00">
+    <EPCISBody>
+        <EventList>
+            <TransformationEvent>
+                <eventTime>2013-10-31T14:58:56.591Z</eventTime>
+                <eventTimeZoneOffset>+02:00</eventTimeZoneOffset>
+                <inputEPCList>
+                    <epc>urn:epc:id:sgtin:4012345.011122.25</epc>
+                    <epc>urn:epc:id:sgtin:4000001.065432.99886655</epc>
+                </inputEPCList>
+                <outputEPCList>
+                    <epc>urn:epc:id:sgtin:4012345.077889.28</epc>
+                    <epc>urn:epc:id:sgtin:4012345.077889.25</epc>
+                    <epc>urn:epc:id:sgtin:4012345.077889.27</epc>
+                    <epc>urn:epc:id:sgtin:4012345.077889.26</epc>
+                </outputEPCList>
+                <transformationID>urn:epc:id:gdti:0614141.12345.400</transformationID>
+                <bizStep>urn:epcglobal:cbv:bizstep:commissioning</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00001.0</id>
+                </readPoint>
+            </TransformationEvent>
+            <ObjectEvent>
+                <eventTime>2005-04-03T20:33:31.116-06:00</eventTime>
+                <eventTimeZoneOffset>-06:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2018</epc>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2017</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:shipping</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_transit</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:0614141.07346.1234</id>
+                </readPoint>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:po">http://transaction.acme.com/po/12345678</bizTransaction>
+                </bizTransactionList>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:Document>

@@ -23,7 +23,7 @@
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>0.9.0</version>
         <relativePath>../openepcis-bom</relativePath>
     </parent>
     <artifactId>openepcis-event-hash-generator</artifactId>

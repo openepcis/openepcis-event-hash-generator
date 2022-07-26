@@ -57,8 +57,8 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
   public void subscribe(Subscriber<? super T> subscriber) {
     this.subscription.set(new ObjectNodeSubscription(subscriber));
     final Optional<Throwable> throwable = beginParsing();
+    throwable.ifPresent(this.subscription.get().throwable::set);
     subscriber.onSubscribe(this.subscription.get());
-    throwable.ifPresent(subscriber::onError);
   }
 
   /** start parsing input by processing all tokens up to eventList */
@@ -110,6 +110,8 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
 
     private final AtomicReference<Subscriber<? super T>> subscriber;
 
+    private final AtomicReference<Throwable> throwable = new AtomicReference<>();
+
     private ObjectNodeSubscription(Subscriber<? super T> subscriber) {
       if (subscriber == null) {
         throw new NullPointerException("subscriber must not be null");
@@ -119,6 +121,11 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
 
     @Override
     public void request(long l) {
+      if (this.throwable.get() != null) {
+        subscriber.get().onError(this.throwable.get());
+        terminate();
+      }
+
       if (l <= 0 && !terminate()) {
         subscriber.get().onError(new IllegalArgumentException("negative subscription request"));
         return;

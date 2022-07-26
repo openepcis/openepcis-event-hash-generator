@@ -16,11 +16,14 @@
 package io.openepcis.epc.eventhash;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
@@ -44,11 +47,7 @@ public class EventHashGeneratorPublisherTest {
     final EventHashGenerator eventHashGenerator = new EventHashGenerator();
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
     final List<String> eventHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     assertEquals(1, eventHashIds.size());
     System.out.println("\nXML document Generated Event Hash Ids : \n" + eventHashIds);
   }
@@ -56,14 +55,9 @@ public class EventHashGeneratorPublisherTest {
   // General test to fix bugs or necessary code modification for JSON document.
   @Test
   public void jsonHashGeneratorTest() throws Exception {
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
     final List<String> eventHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha3-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha3-256").subscribe().asStream().toList();
     assertEquals(1, eventHashIds.size());
     System.out.println("\nJSON/JSON-LD document Generated Event Hash Ids : \n" + eventHashIds);
   }
@@ -73,23 +67,14 @@ public class EventHashGeneratorPublisherTest {
   public void withSimpleSingleEventTest()
       throws SAXException, ParserConfigurationException, IOException, InterruptedException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
     final InputStream xmlStream = getClass().getResourceAsStream("/SingleEvent.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/SingleEvent.json");
 
     final List<String> xmlHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
 
@@ -116,23 +101,14 @@ public class EventHashGeneratorPublisherTest {
   public void withErrorDeclarationEventTest()
       throws SAXException, ParserConfigurationException, IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
     final InputStream xmlStream = getClass().getResourceAsStream("/WithErrorDeclaration.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/WithErrorDeclaration.json");
 
     final List<String> xmlHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
 
@@ -159,7 +135,6 @@ public class EventHashGeneratorPublisherTest {
   public void withFullCombinationFieldsTest()
       throws SAXException, ParserConfigurationException, IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
     final InputStream xmlStream =
         getClass().getResourceAsStream("/WithFullCombinationOfFields.xml");
@@ -167,17 +142,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
 
     final List<String> xmlHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
 
@@ -210,17 +177,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.json");
 
     final List<String> xmlHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -235,17 +194,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/withUserExtensions.json");
 
     final List<String> xmlHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha-256")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -255,26 +206,36 @@ public class EventHashGeneratorPublisherTest {
   public void withCombinationOfEvents()
       throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException,
           IOException {
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
     final InputStream xmlStream = getClass().getResourceAsStream("/EventCombination.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/EventCombination.json");
 
     final List<String> xmlHashIds =
-        eventHashGenerator
-            .xmlDocumentHashIdGenerator(xmlStream, "sha-512")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        eventHashGenerator
-            .jsonDocumentHashIdGenerator(jsonStream, "sha-512")
-            .subscribe()
-            .asStream()
-            .toList();
+        EventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList();
 
     assertEquals(2, xmlHashIds.size());
     assertEquals(2, jsonHashIds.size());
     assertEquals(xmlHashIds, jsonHashIds);
+  }
+
+  // Test to ensure invalid input data throws exception
+  @Test
+  public void withInvalidInputData()
+      throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException,
+          IOException {
+
+    final InputStream xmlStream =
+        new ByteArrayInputStream("bogus-data".getBytes(StandardCharsets.UTF_8));
+    final InputStream jsonStream =
+        new ByteArrayInputStream("bogus-data".getBytes(StandardCharsets.UTF_8));
+
+    assertThrows(
+        RuntimeException.class,
+        () -> EventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList());
+    assertThrows(
+        RuntimeException.class,
+        () -> EventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList());
   }
 }

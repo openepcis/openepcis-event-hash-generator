@@ -27,22 +27,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class EventHashGenerator {
 
-  private final SAXParserFactory factory = SAXParserFactory.newInstance();
+  private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
 
-  public EventHashGenerator()
-      throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
-    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+  static {
+    try {
+      SAX_PARSER_FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
   }
 
   // Method called by external application to generate Event Hash for every event
-  public Multi<String> jsonDocumentHashIdGenerator(
+  public static final Multi<String> fromJson(
       final InputStream jsonStream, final String hashAlgorithm) throws IOException {
     final ObjectNodePublisher<ObjectNode> publisher = new ObjectNodePublisher<>(jsonStream);
     final HashMap<String, String> contextHeader = new HashMap<>();
@@ -59,8 +61,7 @@ public class EventHashGenerator {
                 // Call the method generateHashId in HashIdGenerator to
                 try {
                   return HashIdGenerator.generateHashId(
-                          preHashString.replaceAll("[\n\r]", ""), hashAlgorithm)
-                      + "\n";
+                      preHashString.replaceAll("[\n\r]", ""), hashAlgorithm);
                 } catch (NoSuchAlgorithmException e) {
                   e.printStackTrace();
                 }
@@ -83,14 +84,14 @@ public class EventHashGenerator {
   }
 
   // Method to read XML events and create pre-hash string from it.
-  public Multi<String> xmlDocumentHashIdGenerator(
+  public static final Multi<String> fromXml(
       final InputStream xmlStream, final String hashAlgorithm) {
     final SaxHandler saxHandler = new SaxHandler();
     final Consumer<MultiEmitter<? super ContextNode>> consumer =
         contextNodeMultiEmitter -> {
           saxHandler.setEmitter(contextNodeMultiEmitter);
           try {
-            factory.newSAXParser().parse(xmlStream, saxHandler);
+            SAX_PARSER_FACTORY.newSAXParser().parse(xmlStream, saxHandler);
           } catch (Exception e) {
             contextNodeMultiEmitter.fail(e);
           }
@@ -104,10 +105,9 @@ public class EventHashGenerator {
             node -> {
               try {
                 return HashIdGenerator.generateHashId(
-                        node.toShortenedString().replaceAll("[\n\r]", ""), hashAlgorithm)
-                    + "\n";
+                    node.toShortenedString().replaceAll("[\n\r]", ""), hashAlgorithm);
               } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
               }
               return "";
             })

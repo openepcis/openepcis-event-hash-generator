@@ -44,12 +44,22 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void xmlHashGeneratorTest()
       throws SAXException, ParserConfigurationException, IOException {
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
     final List<String> eventHashIds =
         EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     assertEquals(1, eventHashIds.size());
     System.out.println("\nXML document Generated Event Hash Ids : \n" + eventHashIds);
+  }
+
+  // General test to show pre hashes for XML document.
+  @Test
+  public void xmlPreHashGeneratorTest()
+      throws SAXException, ParserConfigurationException, IOException {
+    final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
+    final List<String> eventHashIds =
+        EventHashGenerator.fromXml(xmlStream, "prehash").subscribe().asStream().toList();
+    assertEquals(1, eventHashIds.size());
+    System.out.println("\nXML document Generated Event PreHash String : \n" + eventHashIds);
   }
 
   // General test to fix bugs or necessary code modification for JSON document.
@@ -60,6 +70,17 @@ public class EventHashGeneratorPublisherTest {
         EventHashGenerator.fromJson(jsonStream, "sha3-256").subscribe().asStream().toList();
     assertEquals(1, eventHashIds.size());
     System.out.println("\nJSON/JSON-LD document Generated Event Hash Ids : \n" + eventHashIds);
+  }
+
+  // General tst to show pre hashes for JSON document.
+  @Test
+  public void jsonPreHashGeneratorTest() throws Exception {
+    final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
+    final List<String> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash").subscribe().asStream().toList();
+    assertEquals(1, eventHashIds.size());
+    System.out.println(
+        "\nJSON/JSON-LD document Generated Event PreHash String : \n" + eventHashIds);
   }
 
   // Test to ensure the pre-hash string is generated correctly for simple event.
@@ -165,13 +186,50 @@ public class EventHashGeneratorPublisherTest {
     // HttpResponse.BodyHandlers.ofString()).body(), jsonHashIds.get(0));
   }
 
+  // Test to ensure that pre-hash string is created accurately when EPCIS document contains all
+  // possible fields.
+  @Test
+  public void preFullCombinationFieldsTest()
+      throws SAXException, ParserConfigurationException, IOException {
+    // For same event in XML & JSON format check if the generated Hash-IDs match.
+
+    final InputStream xmlStream =
+        getClass().getResourceAsStream("/WithFullCombinationOfFields.xml");
+    final InputStream jsonStream =
+        getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
+
+    final List<String> xmlHashIds =
+        EventHashGenerator.fromXml(xmlStream, "prehash").subscribe().asStream().toList();
+    final List<String> jsonHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash").subscribe().asStream().toList();
+
+    System.out.println("\nXML document Generated XML Event Pre Hashes : \n" + xmlHashIds);
+    System.out.println("\nJSON document Generated XML Event Pre Hashes : \n" + jsonHashIds);
+    assertEquals(xmlHashIds, jsonHashIds);
+
+    // Check if the response from Python Event Hash Generator is same as Java tool
+    // final HttpRequest xmlRequest =
+    // XML_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
+    // String(getClass().getResourceAsStream("/WithFullCombinationOfFields.xml").readAllBytes(),
+    // StandardCharsets.UTF_8))).build();
+    // assertEquals(HttpClient.newHttpClient().send(xmlRequest,
+    // HttpResponse.BodyHandlers.ofString()).body(), xmlHashIds.get(0));
+
+    // Check if the response from Python Event Hash Generator is same as Java tool
+    // final HttpRequest jsonRequest =
+    // JSON_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
+    // String(getClass().getResourceAsStream("/WithFullCombinationOfFields.json").readAllBytes(),
+    // StandardCharsets.UTF_8))).build();
+    // assertEquals(HttpClient.newHttpClient().send(jsonRequest,
+    // HttpResponse.BodyHandlers.ofString()).body(), jsonHashIds.get(0));
+  }
+
   // Test to ensure that order of pre-hash always remains the same even when EPCIS document values
   // are jumbled up.
   @Test
   public void withJumbledOrderFieldsTest()
       throws SAXException, ParserConfigurationException, IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
     final InputStream xmlStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.json");
@@ -188,7 +246,6 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void withUserExtensions() throws SAXException, ParserConfigurationException, IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
     final InputStream xmlStream = getClass().getResourceAsStream("/withUserExtensions.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/withUserExtensions.json");

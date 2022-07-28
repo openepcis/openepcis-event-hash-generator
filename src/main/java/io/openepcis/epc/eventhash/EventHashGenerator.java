@@ -23,7 +23,10 @@ import io.smallrye.mutiny.subscription.MultiEmitter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +36,7 @@ public class EventHashGenerator {
 
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
 
-  private static String PREHASH_JOIN = "";
-
-  public static void prehashJoin(final String s) {
-    EventHashGenerator.PREHASH_JOIN = s.replace("\\n", "\n").replace("\\r", "\r");
-  }
+  private static String prehashJoin = "";
 
   static {
     try {
@@ -48,6 +47,10 @@ public class EventHashGenerator {
   }
 
   private EventHashGenerator() {}
+
+  public static void prehashJoin(final String s) {
+    EventHashGenerator.prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
+  }
 
   /**
    * Generate reactive Multi stream of event hashes from JSON input
@@ -60,7 +63,7 @@ public class EventHashGenerator {
    */
   public static Multi<String> fromJson(final InputStream jsonStream, final String hashAlgorithm)
       throws IOException {
-    return fromJson(jsonStream, new String[] {hashAlgorithm}).map(item -> item.get(hashAlgorithm));
+    return EventHashGenerator.internalFromJson(String.class, jsonStream, hashAlgorithm);
   }
 
   /**
@@ -75,56 +78,109 @@ public class EventHashGenerator {
    */
   public static Multi<Map<String, String>> fromJson(
       final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
+    return EventHashGenerator.internalFromJson(Map.class, jsonStream, hashAlgorithms);
+  }
+
+  private static <T> Multi<T> internalFromJson(
+      final Class<? super T> cls, final InputStream jsonStream, final String... hashAlgorithms)
+      throws IOException {
     final ObjectNodePublisher<ObjectNode> publisher = new ObjectNodePublisher<>(jsonStream);
     final HashMap<String, String> contextHeader = new HashMap<>();
 
     // Loop over the list of event to read them one by one to generate event Hash.
-    return Multi.createFrom()
-        .publisher(publisher)
-        .map(
-            item -> {
-              if (!item.get("type").asText().equalsIgnoreCase("EPCISDocument")) {
-                final ContextNode contextNode = new ContextNode(item.fields(), contextHeader);
-                final String preHashString = contextNode.toShortenedString();
+    return (Multi<T>)
+        Multi.createFrom()
+            .publisher(publisher)
+            .map(
+                item -> {
+                  if (!item.get("type").asText().equalsIgnoreCase("EPCISDocument")) {
+                    final ContextNode contextNode = new ContextNode(item.fields(), contextHeader);
+                    final String preHashString = contextNode.toShortenedString();
 
-                // Call the method generateHashId in HashIdGenerator to
-                return generate(preHashString, hashAlgorithms);
+                    // Call the method generateHashId in HashIdGenerator to
+                    return (T) generate(cls, preHashString, hashAlgorithms);
 
-              } else if (item.get("@context") != null) {
-                final Iterator<JsonNode> contextElements = item.get("@context").elements();
+                  } else if (item.get("@context") != null) {
+                    final Iterator<JsonNode> contextElements = item.get("@context").elements();
 
-                while (contextElements.hasNext()) {
-                  final Iterator<Map.Entry<String, JsonNode>> contextFields =
-                      contextElements.next().fields();
-                  while (contextFields.hasNext()) {
-                    final Map.Entry<String, JsonNode> namespace = contextFields.next();
-                    contextHeader.put(namespace.getKey(), namespace.getValue().textValue());
+                    while (contextElements.hasNext()) {
+                      final Iterator<Map.Entry<String, JsonNode>> contextFields =
+                          contextElements.next().fields();
+                      while (contextFields.hasNext()) {
+                        final Map.Entry<String, JsonNode> namespace = contextFields.next();
+                        contextHeader.put(namespace.getKey(), namespace.getValue().textValue());
+                      }
+                    }
                   }
-                }
-              }
-              return Collections.<String, String>emptyMap();
-            })
-        .filter(m -> !m.isEmpty());
+                  if (cls.isAssignableFrom(String.class)) {
+                    return "";
+                  } else {
+                    return Collections.<String, String>emptyMap();
+                  }
+                })
+            .filter(
+                m -> {
+                  if (cls.isAssignableFrom(String.class)) {
+                    return !((String) m).isEmpty();
+                  }
+                  return !((Map) m).isEmpty();
+                });
   }
 
-  protected static Map<String, String> generate(final String s, final String[] hashAlgorithms)
+  protected static <T> T generate(
+      final Class<? super T> cls, final String s, final String[] hashAlgorithms)
       throws RuntimeException {
     try {
+      if (cls.isAssignableFrom(String.class)) {
+        if (hashAlgorithms.length != 1) {
+          throw new RuntimeException("only one single algorithm allowed for type String");
+        }
+        return (T) HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithms[0]);
+      }
       final Map<String, String> map = new HashMap<>();
       for (final String hashAlgorithm : hashAlgorithms) {
-        if (hashAlgorithm.toLowerCase().equals("prehash")) {
-          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", PREHASH_JOIN));
+        if (hashAlgorithm.equalsIgnoreCase("prehash")) {
+          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin));
         } else {
           map.put(
               hashAlgorithm,
               HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithm));
         }
       }
-      return map;
+      return (T) map;
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }
   }
+
+  private static <T> Multi<T> internalFromXml(
+      final Class<? super T> cls, final InputStream xmlStream, final String... hashAlgorithms) {
+    final SaxHandler saxHandler = new SaxHandler();
+    final Consumer<MultiEmitter<? super ContextNode>> consumer =
+        contextNodeMultiEmitter -> {
+          saxHandler.setEmitter(contextNodeMultiEmitter);
+          try {
+            SAX_PARSER_FACTORY.newSAXParser().parse(xmlStream, saxHandler);
+          } catch (Exception e) {
+            contextNodeMultiEmitter.fail(e);
+          }
+        };
+
+    // After converting each XML event to ContextNode and storing information in rootNode, convert
+    // it to pre-hash string and generate HashId out of it.
+    return (Multi<T>)
+        Multi.createFrom()
+            .emitter(consumer)
+            .map(node -> generate(cls, node.toShortenedString(), hashAlgorithms))
+            .filter(
+                m -> {
+                  if (cls.isAssignableFrom(String.class)) {
+                    return !((String) m).isEmpty();
+                  }
+                  return !((Map<String, String>) m).isEmpty();
+                });
+  }
+
   /**
    * Generate reactive Multi stream of event hashes from XML input
    *
@@ -134,7 +190,7 @@ public class EventHashGenerator {
    * @return hash string representation for each EPCIS event
    */
   public static Multi<String> fromXml(final InputStream xmlStream, final String hashAlgorithm) {
-    return fromXml(xmlStream, new String[] {hashAlgorithm}).map(m -> m.get(hashAlgorithm));
+    return EventHashGenerator.internalFromXml(String.class, xmlStream, hashAlgorithm);
   }
 
   /**
@@ -149,22 +205,6 @@ public class EventHashGenerator {
    */
   public static Multi<Map<String, String>> fromXml(
       final InputStream xmlStream, final String... hashAlgorithms) {
-    final SaxHandler saxHandler = new SaxHandler();
-    final Consumer<MultiEmitter<? super ContextNode>> consumer =
-        contextNodeMultiEmitter -> {
-          saxHandler.setEmitter(contextNodeMultiEmitter);
-          try {
-            SAX_PARSER_FACTORY.newSAXParser().parse(xmlStream, saxHandler);
-          } catch (Exception e) {
-            contextNodeMultiEmitter.fail(e);
-          }
-        };
-
-    // After converting each XML event to ContextNode and storing information in rootNode, convert
-    // it to pre-hash string and generate HashId out of it.
-    return Multi.createFrom()
-        .emitter(consumer)
-        .map(node -> generate(node.toShortenedString(), hashAlgorithms))
-        .filter(m -> !m.isEmpty());
+    return EventHashGenerator.internalFromXml(Map.class, xmlStream, hashAlgorithms);
   }
 }

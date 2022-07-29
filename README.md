@@ -1,9 +1,17 @@
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # openepcis-event-hash-generator
-Project to generate event hash for EPCIS document/event in XML/JSON-LD format.
+Java library to generate event hash for EPCIS document/event in XML/JSON-LD format.
 
 ## Introduction:
 
 For various organizations to communicate with each other and control the flow of goods, there should be a common medium. EPCIS is a GS1 standard to improve cooperation between trading partners through a detailed exchange of data on physical or digital products. EPCIS is an ISO (International Organization for Standardization), IEC (International Electrotechnical Commission), and GS1 Standard that helps to generate and exchange the visibility data within an organization or across multiple organizations based on the business context. The organizations exchange information in the form of events. These events include information on what happened to objects during that specific supply chain step.
+
+### Related Projects for direct usage
+
+#### command-line utility
+
+#### RESTful service
 
 ## Problem & Proposed Solution:
 
@@ -11,12 +19,9 @@ There are instances where the same events are transmitted to the repository more
 
 The tool adheres to a predefined order for properties, and all data included in events is canonicalized at all times. Therefore, it is always assured that the events will have the same Hash-Ids and will be considered duplicate events even if they have the attributes in a different sequence or if they contain the information in URN/WebURI format. Organizations can benefit greatly from using this tool to maintain unique data in their repository and prevent confusion from several copies of the same event. Detailed information on the ordering of the elements and conversion of the value can be found here: https://github.com/RalphTro/epcis-event-hash-generator. 
 
-
 ## Reactive Streams:
 
 The tool makes use of the Reactive stream methodology. It is standard for asynchronous stream processing with a non-blocking back pressure approach which makes it simpler to navigate through hundreds of millions of events without degrading performance or memory. The Reactive stream technique, which is at the heart of this application, allows us to handle hundreds of millions of events easily and effectively. It is crucial to process events along the entire supply chain as soon as possible while using the least amount of memory feasible. Using this approach, events in the EPCIS document are traversed one by one, and generated HashIds are returned to the calling function.
-
-
 
 ## Hash Algorithm:
 

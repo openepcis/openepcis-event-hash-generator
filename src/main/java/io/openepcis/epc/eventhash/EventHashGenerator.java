@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 
 @Slf4j
 public class EventHashGenerator {
@@ -81,43 +82,102 @@ public class EventHashGenerator {
     return EventHashGenerator.internalFromJson(Map.class, jsonStream, hashAlgorithms);
   }
 
-  private static <T> Multi<T> internalFromJson(
-      final Class<? super T> cls, final InputStream jsonStream, final String... hashAlgorithms)
-      throws IOException {
-    final ObjectNodePublisher<ObjectNode> publisher = new ObjectNodePublisher<>(jsonStream);
-    final HashMap<String, String> contextHeader = new HashMap<>();
+  private static void addToContextHeader(
+      final ObjectNode item, final Map<String, String> contextHeader) {
+    if (item.get("@context") != null) {
+      final Iterator<JsonNode> contextElements = item.get("@context").elements();
 
-    // Loop over the list of event to read them one by one to generate event Hash.
+      while (contextElements.hasNext()) {
+        final Iterator<Map.Entry<String, JsonNode>> contextFields = contextElements.next().fields();
+        while (contextFields.hasNext()) {
+          final Map.Entry<String, JsonNode> namespace = contextFields.next();
+          contextHeader.put(namespace.getKey(), namespace.getValue().textValue());
+        }
+      }
+    }
+  }
+
+  /**
+   * Generate reactive Multi stream of hashes from ObjectNode publisher
+   *
+   * @param publisher ObjectNodePublisher
+   * @param hashAlgorithm Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
+   *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
+   * @return hash string representation for each EPCIS event
+   */
+  public static Multi<String> fromPublisher(
+      final Publisher<ObjectNode> publisher, final String hashAlgorithm) {
+    return internalFromPublisher(String.class, publisher, new String[] {hashAlgorithm});
+  }
+
+  /**
+   * Generate reactive Multi stream of mapped hashes from ObjectNode publisher
+   *
+   * @param publisher ObjectNodePublisher
+   * @param hashAlgorithms Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
+   *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
+   * @return mapped hash string representation for each EPCIS event
+   */
+  public static Multi<Map<String, String>> fromPublisher(
+      final Publisher<ObjectNode> publisher, final String... hashAlgorithms) {
+    return internalFromPublisher(Map.class, publisher, hashAlgorithms);
+  }
+
+  /**
+   * Generate hashes string from single ObjectNode
+   *
+   * @param objectNode JSON ObjectNode
+   * @param hashAlgorithm Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
+   *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
+   * @return hash string representation for each EPCIS event
+   */
+  public static String fromObjectNode(final ObjectNode objectNode, final String hashAlgorithm) {
+    return internalFromObjectNode(String.class, objectNode, new HashMap<>(), hashAlgorithm);
+  }
+
+  /**
+   * Generate reactive Multi stream of mapped hashes from single ObjectNode
+   *
+   * @param objectNode JSON ObjectNode
+   * @param hashAlgorithms Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
+   *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
+   * @return mapped hash string representation for each EPCIS event
+   */
+  public static Multi<Map<String, String>> fromObjectNode(
+      final ObjectNode objectNode, final String... hashAlgorithms) {
+    return internalFromObjectNode(Map.class, objectNode, new HashMap<>(), hashAlgorithms);
+  }
+
+  private static <T> T internalFromObjectNode(
+      final Class<? super T> cls,
+      final ObjectNode objectNode,
+      final Map<String, String> contextHeader,
+      final String... hashAlgorithms) {
+    addToContextHeader(objectNode, contextHeader);
+    if (!objectNode.get("type").asText().equalsIgnoreCase("EPCISDocument")) {
+      final ContextNode contextNode = new ContextNode(objectNode.fields(), contextHeader);
+      final String preHashString = contextNode.toShortenedString();
+
+      // Call the method generateHashId in HashIdGenerator to
+      return (T) generate(cls, preHashString, hashAlgorithms);
+    }
+    if (cls.isAssignableFrom(String.class)) {
+      return (T) "";
+    } else {
+      return (T) Collections.<String, String>emptyMap();
+    }
+  }
+
+  private static <T> Multi<T> internalFromPublisher(
+      final Class<? super T> cls,
+      final Publisher<ObjectNode> publisher,
+      final String... hashAlgorithms) {
+    // map event ObjectNodes to event Hash.
+    final Map<String, String> contextHeader = new HashMap<>();
     return (Multi<T>)
         Multi.createFrom()
             .publisher(publisher)
-            .map(
-                item -> {
-                  if (!item.get("type").asText().equalsIgnoreCase("EPCISDocument")) {
-                    final ContextNode contextNode = new ContextNode(item.fields(), contextHeader);
-                    final String preHashString = contextNode.toShortenedString();
-
-                    // Call the method generateHashId in HashIdGenerator to
-                    return (T) generate(cls, preHashString, hashAlgorithms);
-
-                  } else if (item.get("@context") != null) {
-                    final Iterator<JsonNode> contextElements = item.get("@context").elements();
-
-                    while (contextElements.hasNext()) {
-                      final Iterator<Map.Entry<String, JsonNode>> contextFields =
-                          contextElements.next().fields();
-                      while (contextFields.hasNext()) {
-                        final Map.Entry<String, JsonNode> namespace = contextFields.next();
-                        contextHeader.put(namespace.getKey(), namespace.getValue().textValue());
-                      }
-                    }
-                  }
-                  if (cls.isAssignableFrom(String.class)) {
-                    return "";
-                  } else {
-                    return Collections.<String, String>emptyMap();
-                  }
-                })
+            .map(item -> (T) internalFromObjectNode(cls, item, contextHeader, hashAlgorithms))
             .filter(
                 m -> {
                   if (cls.isAssignableFrom(String.class)) {
@@ -125,6 +185,13 @@ public class EventHashGenerator {
                   }
                   return !((Map) m).isEmpty();
                 });
+  }
+
+  private static <T> Multi<T> internalFromJson(
+      final Class<? super T> cls, final InputStream jsonStream, final String... hashAlgorithms)
+      throws IOException {
+    final ObjectNodePublisher<ObjectNode> publisher = new ObjectNodePublisher<>(jsonStream);
+    return internalFromPublisher(cls, publisher, hashAlgorithms);
   }
 
   protected static <T> T generate(
@@ -200,8 +267,8 @@ public class EventHashGenerator {
    * @param hashAlgorithms Type of Hash Algorithms to run: sha-1, sha-224, sha-256, sha-384,
    *     sha-512, sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using pre return pre-hash
    *     strings
-   * @return hash string map where key is hash algorithm and value is hash, representing each EPCIS
-   *     event from InputStream
+   * @return mapped hash string map where key is hash algorithm and value is hash, representing each
+   *     EPCIS event from InputStream
    */
   public static Multi<Map<String, String>> fromXml(
       final InputStream xmlStream, final String... hashAlgorithms) {

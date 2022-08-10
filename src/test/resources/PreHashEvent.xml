@@ -1,0 +1,71 @@
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2"
+                     xmlns:cbvmda="urn:epcglobal:cbv:mda" schemaVersion="2.0" creationDate="2020-06-28T13:41:00.000Z" xmlns:example="http://ns.example.com/epcis">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent>
+                <eventTime>2005-04-03T20:33:31.116-06:00</eventTime>
+                <eventTimeZoneOffset>-06:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2014</epc>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2015</epc>
+                </epcList>
+                <action>ADD</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:shipping</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_transit</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:0614141.07346.100</id>
+                </readPoint>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:po">http://transaction.acme.com/po/12345678</bizTransaction>
+                </bizTransactionList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2005-04-04T20:33:31.116-06:00</eventTime>
+                <eventTimeZoneOffset>-06:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2016</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:receiving</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:0012345.11111.101</id>
+                </readPoint>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:0012345.11111.200</id>
+                </bizLocation>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:po">http://transaction.acme.com/po/12345678</bizTransaction>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:desadv">urn:epcglobal:cbv:bt:0614141073467:1152</bizTransaction>
+                </bizTransactionList>
+                <example:myField>Example of a vendor/user extension</example:myField>
+            </ObjectEvent>
+            <!-- UNPACKING event with VERIFICATION of COMPLETENESS -->
+            <AggregationEvent>
+                <eventTime>2020-06-08T18:11:16Z</eventTime>
+                <eventTimeZoneOffset>+02:00</eventTimeZoneOffset>
+                <parentID>urn:epc:id:sgtin:952001.1012345.22222223333</parentID>
+                <childEPCs>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001001</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001002</epc>
+                </childEPCs>
+                <action>DELETE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:unpacking</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:9529999.99999.0</id>
+                </readPoint>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:9529999.99999.0</id>
+                </bizLocation>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:inv">urn:epcglobal:cbv:bt:9520011111116:A123</bizTransaction>
+                </bizTransactionList>
+                <persistentDisposition>
+                    <unset>urn:epcglobal:cbv:disp:completeness_inferred</unset>
+                    <set>urn:epcglobal:cbv:disp:completeness_verified</set>
+                </persistentDisposition>
+            </AggregationEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

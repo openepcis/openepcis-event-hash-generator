@@ -18,6 +18,7 @@ package io.openepcis.epc.eventhash;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+import io.smallrye.mutiny.Multi;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,11 +26,8 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.Map;
 import org.junit.Test;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 public class EventHashGeneratorPublisherTest {
 
@@ -42,8 +40,7 @@ public class EventHashGeneratorPublisherTest {
 
   // General test to fix bugs or necessary code modification for XML document.
   @Test
-  public void xmlHashGeneratorTest()
-      throws SAXException, ParserConfigurationException, IOException {
+  public void xmlHashGeneratorTest() {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
     final List<String> eventHashIds =
         EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
@@ -53,18 +50,16 @@ public class EventHashGeneratorPublisherTest {
 
   // General test to show pre hashes for XML document.
   @Test
-  public void xmlPreHashGeneratorTest()
-      throws SAXException, ParserConfigurationException, IOException {
+  public void xmlPreHashGeneratorTest() {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
-    final List<String> eventHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash").subscribe().asStream().toList();
-    assertEquals(1, eventHashIds.size());
-    System.out.println("\nXML document Generated Event PreHash String : \n" + eventHashIds);
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromXml(xmlStream, new String[] {"prehash", "sha-384"});
+    assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
   }
 
   // General test to fix bugs or necessary code modification for JSON document.
   @Test
-  public void jsonHashGeneratorTest() throws Exception {
+  public void jsonHashGeneratorTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
     final List<String> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "sha3-256").subscribe().asStream().toList();
@@ -74,19 +69,16 @@ public class EventHashGeneratorPublisherTest {
 
   // General tst to show pre hashes for JSON document.
   @Test
-  public void jsonPreHashGeneratorTest() throws Exception {
+  public void jsonPreHashGeneratorTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
-    final List<String> eventHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash").subscribe().asStream().toList();
-    assertEquals(1, eventHashIds.size());
-    System.out.println(
-        "\nJSON/JSON-LD document Generated Event PreHash String : \n" + eventHashIds);
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha-384"});
+    assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
   }
 
   // Test to ensure the pre-hash string is generated correctly for simple event.
   @Test
-  public void withSimpleSingleEventTest()
-      throws SAXException, ParserConfigurationException, IOException, InterruptedException {
+  public void withSimpleSingleEventTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
 
     final InputStream xmlStream = getClass().getResourceAsStream("/SingleEvent.xml");
@@ -119,8 +111,7 @@ public class EventHashGeneratorPublisherTest {
   // Test to ensure the pre-hash string is generated correctly when errorDeclaration information are
   // present.
   @Test
-  public void withErrorDeclarationEventTest()
-      throws SAXException, ParserConfigurationException, IOException {
+  public void withErrorDeclarationEventTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
 
     final InputStream xmlStream = getClass().getResourceAsStream("/WithErrorDeclaration.xml");
@@ -153,8 +144,7 @@ public class EventHashGeneratorPublisherTest {
   // Test to ensure that pre-hash string is created accurately when EPCIS document contains all
   // possible fields.
   @Test
-  public void withFullCombinationFieldsTest()
-      throws SAXException, ParserConfigurationException, IOException {
+  public void withFullCombinationFieldsTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
 
     final InputStream xmlStream =
@@ -189,8 +179,7 @@ public class EventHashGeneratorPublisherTest {
   // Test to ensure that pre-hash string is created accurately when EPCIS document contains all
   // possible fields.
   @Test
-  public void preFullCombinationFieldsTest()
-      throws SAXException, ParserConfigurationException, IOException {
+  public void preFullCombinationFieldsTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
 
     final InputStream xmlStream =
@@ -227,8 +216,7 @@ public class EventHashGeneratorPublisherTest {
   // Test to ensure that order of pre-hash always remains the same even when EPCIS document values
   // are jumbled up.
   @Test
-  public void withJumbledOrderFieldsTest()
-      throws SAXException, ParserConfigurationException, IOException {
+  public void withJumbledOrderFieldsTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
 
     final InputStream xmlStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.xml");
@@ -244,7 +232,7 @@ public class EventHashGeneratorPublisherTest {
 
   // Test to ensure order of User Extensions are always lexicographical order.
   @Test
-  public void withUserExtensions() throws SAXException, ParserConfigurationException, IOException {
+  public void withUserExtensions() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
 
     final InputStream xmlStream = getClass().getResourceAsStream("/withUserExtensions.xml");
@@ -260,9 +248,7 @@ public class EventHashGeneratorPublisherTest {
 
   // Test to ensure different combination of events in single EPCIS document
   @Test
-  public void withCombinationOfEvents()
-      throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException,
-          IOException {
+  public void withCombinationOfEvents() throws IOException {
 
     final InputStream xmlStream = getClass().getResourceAsStream("/EventCombination.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/EventCombination.json");
@@ -279,9 +265,7 @@ public class EventHashGeneratorPublisherTest {
 
   // Test to ensure invalid input data throws exception
   @Test
-  public void withInvalidInputData()
-      throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException,
-          IOException {
+  public void withInvalidInputData() {
 
     final InputStream xmlStream =
         new ByteArrayInputStream("bogus-data".getBytes(StandardCharsets.UTF_8));

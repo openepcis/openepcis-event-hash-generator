@@ -37,7 +37,8 @@ public class EventHashGenerator {
 
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
 
-  private static String prehashJoin = "";
+  private static final ThreadLocal<String> prehashJoin =
+      ThreadLocal.withInitial(() -> new String());
 
   static {
     try {
@@ -50,7 +51,8 @@ public class EventHashGenerator {
   private EventHashGenerator() {}
 
   public static void prehashJoin(final String s) {
-    EventHashGenerator.prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
+    // EventHashGenerator.prehashJoin.remove();
+    EventHashGenerator.prehashJoin.set(s.replace("\\n", "\n").replace("\\r", "\r"));
   }
 
   /**
@@ -296,7 +298,7 @@ public class EventHashGenerator {
       final Map<String, String> map = new HashMap<>();
       for (final String hashAlgorithm : hashAlgorithms) {
         if (hashAlgorithm.equalsIgnoreCase("prehash")) {
-          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin));
+          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin.get()));
         } else {
           map.put(
               hashAlgorithm,

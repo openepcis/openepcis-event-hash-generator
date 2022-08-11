@@ -53,8 +53,13 @@ public class EventHashGeneratorPublisherTest {
   public void xmlPreHashGeneratorTest() {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
     final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromXml(xmlStream, new String[] {"prehash", "sha-384"});
+        EventHashGenerator.fromXml(xmlStream, new String[] {"prehash", "sha3-512"});
     assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
+    /*
+        eventHashIds.subscribe().with(
+        xmlHash -> System.out.println(xmlHash),
+        failure -> System.out.println("JSON HashId Generation Failed with " + failure));
+    */
   }
 
   // General test to fix bugs or necessary code modification for JSON document.
@@ -72,8 +77,13 @@ public class EventHashGeneratorPublisherTest {
   public void jsonPreHashGeneratorTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
     final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha-384"});
+        EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha3-512"});
     assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
+    /*
+       eventHashIds.subscribe().with(
+       jsonHash -> System.out.println(jsonHash),
+       failure -> System.out.println("JSON HashId Generation Failed with " + failure));
+    */
   }
 
   // Test to ensure the pre-hash string is generated correctly for simple event.

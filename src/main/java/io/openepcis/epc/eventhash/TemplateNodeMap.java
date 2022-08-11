@@ -285,6 +285,8 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
     sensorReport.put("percRank", new LinkedHashMap<>());
     sensorReport.put("percValue", new LinkedHashMap<>());
     sensorReport.put("uom", new LinkedHashMap<>());
+    sensorReport.put("coordinateReferenceSystem", new LinkedHashMap<>());
+    sensorReport.put("exception", new LinkedHashMap<>());
 
     LinkedHashMap<String, Object> sensorElementList = new LinkedHashMap<>();
     sensorElementList.put("sensorMetadata", sensorMetadata);

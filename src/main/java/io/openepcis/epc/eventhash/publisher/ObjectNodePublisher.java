@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.openepcis.epc.eventhash.ConstantEventHashInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
   private final AtomicBoolean ignoreEventList = new AtomicBoolean(false);
   private final AtomicLong nodeCount = new AtomicLong();
   private final AtomicReference<ObjectNodeSubscription> subscription = new AtomicReference<>();
+  private final AtomicBoolean isSingleEvent = new AtomicBoolean(false);
 
   private JsonToken token;
 
@@ -79,6 +81,13 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
           return Optional.empty();
         } else if (!"epcisBody".equals(fieldName) && fieldName != null) {
           final JsonNode o = jsonParser.readValueAsTree();
+
+          // Check if the provided JSON/JSON-LD contains single event, if so set the variable
+          if (fieldName.equalsIgnoreCase("type")
+              && ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(o.asText())) {
+            isSingleEvent.set(Boolean.TRUE);
+          }
+
           if (o != null) {
             header.set(fieldName, o);
           }
@@ -192,6 +201,11 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
      * @throws IOException in case of error while reading
      */
     private long readEventList(final long requested) throws IOException {
+      // For Single EPCIS document return the header containing the EPCIS event.
+      if (isSingleEvent.get()) {
+        subscriber.get().onNext((T) header);
+      }
+
       if (!inEventList.get() || requested == 0) {
         return 0;
       }

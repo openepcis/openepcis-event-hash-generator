@@ -11,38 +11,21 @@
   "epcisBody": {
     "eventList": [
       {
+        "eventID": "ni:///sha-256;00e1e6eba3a7cc6125be4793a631f0af50f8322e0ab5f2c0bab994a11cec1d79?ver=CBV2.0",
         "type": "ObjectEvent",
-        "eventTime": "2020-06-07T17:10:16.000Z",
-        "sensorElementList": [
-          {
-            "sensorMetadata": {
-              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
-              "ext1:example": "some text"
-            },
-            "sensorReport": [
-              {
-                "exception": "Test Exception - 1",
-                "type": "Temperature",
-                "microorganism": "https://www.ncbi.nlm.nih.gov/taxonomy/1126011",
-                "coordinateReferenceSystem": "11"
-              }
-            ]
-          },
-          {
-            "sensorMetadata": {
-              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
-              "ext1:example": "some text"
-            },
-            "sensorReport": [
-              {
-                "type": "Temperature",
-                "coordinateReferenceSystem": "11",
-                "exception": "Test Exception - 1",
-                "microorganism": "https://www.ncbi.nlm.nih.gov/taxonomy/1126011"
-              }
-            ]
-          }
-        ]
+        "action": "OBSERVE",
+        "bizStep": "receiving",
+        "disposition": "in_progress",
+        "epcList": ["urn:epc:id:sgtin:0614141.107346.2018"],
+        "eventTime": "2005-04-04T20:33:31.116-06:00",
+        "eventTimeZoneOffset": "-06:00",
+        "readPoint": {"id": "urn:epc:id:sgln:0012345.11111.400"},
+        "bizLocation": {"id": "urn:epc:id:sgln:0012345.11111.0"},
+        "bizTransactionList": [
+          {"type": "po", "bizTransaction": "http://transaction.acme.com/po/12345678" },
+          {"type": "desadv", "bizTransaction": "urn:epcglobal:cbv:bt:0614141073467:1152" }
+        ],
+        "example:myField": "Example of a vendor/user extension"
       }
     ]
   }

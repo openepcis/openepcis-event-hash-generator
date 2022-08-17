@@ -76,14 +76,16 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void jsonPreHashGeneratorTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
+    // EventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha3-512"});
     assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
-    /*
-       eventHashIds.subscribe().with(
-       jsonHash -> System.out.println(jsonHash),
-       failure -> System.out.println("JSON HashId Generation Failed with " + failure));
-    */
+
+    /*eventHashIds
+    .subscribe()
+    .with(
+        jsonHash -> System.out.println(jsonHash),
+        failure -> System.out.println("JSON HashId Generation Failed with " + failure));*/
   }
 
   // Test to ensure the pre-hash string is generated correctly for simple event.

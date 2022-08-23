@@ -276,8 +276,7 @@ public class ContextNode {
         && getName() != null
         && getValue() != null
         && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-        && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())
-        && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)) {
+        && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())) {
       // Add information related to direct name and value based fields. Then if attributes are
       // present then call the method to format them.
       return userExtensionsFormatter(name, value) + "\n";
@@ -289,8 +288,7 @@ public class ContextNode {
 
       if (getName() != null
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-          && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())
-          && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)) {
+          && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())) {
         sb.append(userExtensionsFormatter(getName(), getValue())).append("\n");
       }
 
@@ -376,9 +374,7 @@ public class ContextNode {
     // Check if the provided key contains the namespace if so then obtain the namespace else
     // namespace will be blank
     final String nameSpace =
-        name != null && name.contains(":")
-            ? namespaces.get(name.substring(0, name.indexOf(":")))
-            : null;
+        name.contains(":") ? namespaces.get(name.substring(0, name.indexOf(":"))) : null;
 
     // Based on namespace and value return the respective formatted User Extensions string
     if (nameSpace != null && value != null && !value.equals("")) {

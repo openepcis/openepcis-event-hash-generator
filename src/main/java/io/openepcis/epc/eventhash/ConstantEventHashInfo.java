@@ -43,6 +43,7 @@ public class ConstantEventHashInfo {
   protected static final String QUANTITY_ELEMENT = "quantityElement";
   protected static final String SENSOR_ELEMENT = "sensorElement";
   protected static final String SENSOR_REPORT = "sensorReport";
+  protected static final String CONTEXT = "@context";
   protected static final List<String> DUPLICATE_ENTRY_CHECK = Arrays.asList("set", "unset");
   protected static final Map<String, String> LIST_OF_OBJECTS =
       Map.ofEntries(
@@ -66,7 +67,8 @@ public class ConstantEventHashInfo {
           "urn:epcglobal:cbv:er:");
   protected static final MultiValuedMap<String, String> BARE_STRING_FIELD_PARENT_CHILD =
       new ArrayListValuedHashMap<>();
-  protected static final List<String> IGNORE_FIELDS = Arrays.asList("recordTime", "eventID");
+  protected static final List<String> IGNORE_FIELDS =
+      Arrays.asList("recordTime", "eventID", CONTEXT);
   protected static final DateTimeFormatter DATE_FORMATTER =
       new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 

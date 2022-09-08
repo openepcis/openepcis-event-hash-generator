@@ -1,0 +1,54 @@
+{
+  "@context": [
+    "https://gs1.github.io/EPCIS/epcis-context.jsonld"
+  ],
+  "type": "EPCISDocument",
+  "schemaVersion": "2.0",
+  "creationDate": "2013-06-04T14:59:02.099+02:00",
+  "epcisBody": {
+    "eventList": [
+      {
+        "type": "TransformationEvent",
+        "eventTime": "2013-10-31T14:58:56.591Z",
+        "eventTimeZoneOffset": "+02:00",
+        "inputEPCList": [
+          "urn:epc:id:sgtin:4012345.011122.25",
+          "urn:epc:id:sgtin:4000001.065432.99886655"
+        ],
+        "outputEPCList": [
+          "urn:epc:id:sgtin:4012345.077889.28",
+          "urn:epc:id:sgtin:4012345.077889.25",
+          "urn:epc:id:sgtin:4012345.077889.27",
+          "urn:epc:id:sgtin:4012345.077889.26"
+        ],
+        "transformationID": "urn:epc:id:gdti:0614141.12345.400",
+        "bizStep": "commissioning",
+        "disposition": "in_progress",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00001.0"
+        }
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2005-04-04T02:33:31.116Z",
+        "eventTimeZoneOffset": "-06:00",
+        "epcList": [
+          "urn:epc:id:sgtin:0614141.107346.2018",
+          "urn:epc:id:sgtin:0614141.107346.2017"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "shipping",
+        "disposition": "in_transit",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:0614141.07346.1234"
+        },
+        "bizTransactionList": [
+          {
+            "type": "po",
+            "bizTransaction": "http://transaction.acme.com/po/12345678"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -71,16 +71,14 @@ EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().with(
 
 ### Related Projects for direct usage
 
-#### command-line utility :
-Project: openepcis-event-hash-generator-cli
+#### core library :
+[openepcis-event-hash-generator](core)
 
-Reference: https://github.com/openepcis/openepcis-event-hash-generator-cli
+#### command-line utility :
+[openepcis-event-hash-generator-cli](cli)
 
 #### RESTful service
-Project: openepcis-event-hash-generator-rest-api
-
-Reference: https://github.com/openepcis/openepcis-event-hash-generator-rest-api
-
+[openepcis-event-hash-generator-rest-api](rest-api)
 
 ### References:
 For more information on Event Hash Generation, ordering of elements, or canonicalization, please refer to the detailed Documentation by Ralph Tröger: https://github.com/RalphTro/epcis-event-hash-generator.

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:Document xmlns:epcis="urn:epcglobal:epcis:xsd:2" schemaVersion="2.0" creationDate="2020-06-28T13:41:00.000Z">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent xmlns:ext1="https://example.com/">
+                <eventTime>2020-06-07T17:10:16Z</eventTime>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata deviceMetadata="https://id.gs1.org/8004/4000001111" ext1:example="some text" />
+                        <sensorReport type="gs1:Temperature" exception="Test Exception - 1" coordinateReferenceSystem="11" microorganism="https://www.ncbi.nlm.nih.gov/taxonomy/1126011" />
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorMetadata deviceMetadata="https://id.gs1.org/8004/4000001111" ext1:example="some text" />
+                        <sensorReport type="gs1:Temperature" exception="Test Exception - 1" coordinateReferenceSystem="11" microorganism="https://www.ncbi.nlm.nih.gov/taxonomy/1126011" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:Document>

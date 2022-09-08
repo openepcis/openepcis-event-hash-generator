@@ -25,8 +25,9 @@
         <artifactId>openepcis-bom</artifactId>
         <version>0.9.1-SNAPSHOT</version>
     </parent>
-    <artifactId>openepcis-event-hash-generator</artifactId>
-    <name>openepcis-event-hash-generator</name>
+    <artifactId>openepcis-event-hash-generator-build</artifactId>
+    <packaging>pom</packaging>
+    <name>openepcis-event-hash-generator-build</name>
     <description>openEPCIS EPC GS1 Digital Link Translation Tools</description>
     <url>https://github.com/openepcis/openepcis-event-hash-generator</url>
 
@@ -59,52 +60,35 @@
     </scm>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
     </properties>
 
-    <dependencies>
-        <!-- EPC/Class identifiers format converter-->
-        <dependency>
-            <groupId>io.openepcis</groupId>
-            <artifactId>openepcis-epc-digitallink-translator</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
+    <modules>
+        <module>core</module>
+        <module>cli</module>
+        <module>rest-api</module>
+    </modules>
 
-        <!-- Mutiny dependency for Reactive Streams -->
-        <dependency>
-            <groupId>io.smallrye.reactive</groupId>
-            <artifactId>mutiny</artifactId>
-        </dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <!-- sonatype snapshots -->
+        <repository>
+            <id>sonatype-staging</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
 
-        <!-- Xml Bind for Hash ID creation -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
-
-        <!-- Apache commons for MultiValueMap for storing info -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
 
 
 </project>

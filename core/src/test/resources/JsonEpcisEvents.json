@@ -1,0 +1,49 @@
+{
+  "@context": [
+    "https://gs1.github.io/EPCIS/epcis-context.jsonld",
+    {
+      "ext1": "https://example.com/"
+    }
+  ],
+  "type": "EPCISDocument",
+  "schemaVersion": "2.0",
+  "creationDate": "2020-06-28T13:41:00.000Z",
+  "epcisBody": {
+    "eventList": [
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2020-06-07T17:10:16.000Z",
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "ext1:example": "some text"
+            },
+            "sensorReport": [
+              {
+                "exception": "Test Exception - 1",
+                "type": "Temperature",
+                "microorganism": "https://www.ncbi.nlm.nih.gov/taxonomy/1126011",
+                "coordinateReferenceSystem": "11"
+              }
+            ]
+          },
+          {
+            "sensorMetadata": {
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "ext1:example": "some text"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "coordinateReferenceSystem": "11",
+                "exception": "Test Exception - 1",
+                "microorganism": "https://www.ncbi.nlm.nih.gov/taxonomy/1126011"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

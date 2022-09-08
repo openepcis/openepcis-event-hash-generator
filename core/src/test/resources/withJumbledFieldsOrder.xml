@@ -1,0 +1,62 @@
+<epcis:EPCISDocument schemaVersion="2.0"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     creationDate="2013-06-04T14:59:02.099+02:00"
+                     xmlns:epcis="urn:epcglobal:epcis:xsd:2">
+    <EPCISBody>
+        <EventList>
+            <TransactionEvent>
+                <disposition>urn:epcglobal:cbv:disp:in_transit</disposition>
+                <eventTimeZoneOffset>-06:00</eventTimeZoneOffset>
+                <parentID>urn:epc:id:sscc:0614141.1234567890</parentID>
+                <eventTime>2005-04-03T20:33:31.116-06:00</eventTime>
+                <action>ADD</action>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:po">urn:epc:id:gdti:0614141.00001.1618034</bizTransaction>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:pedigree">urn:epc:id:gsrn:0614141.0000010253
+                    </bizTransaction>
+                </bizTransactionList>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:0614141.00888.0</id>
+                </bizLocation>
+                <bizStep>urn:epcglobal:cbv:bizstep:shipping</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:0614141.07346.1234</id>
+                </readPoint>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2017</epc>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2018</epc>
+                </epcList>
+                <destinationList>
+                    <destination type="urn:epcglobal:cbv:sdt:possessing_party">urn:epc:id:pgln:0614141.00777</destination>
+                    <destination type="urn:epcglobal:cbv:sdt:location">urn:epc:id:sgln:0614141.00777.0</destination>
+                    <destination type="urn:epcglobal:cbv:sdt:owning_party">urn:epc:id:pgln:0614141.00777</destination>
+                </destinationList>
+                <sourceList>
+                    <source type="urn:epcglobal:cbv:sdt:owning_party">urn:epc:id:pgln:4012345.00225</source>
+                    <source type="urn:epcglobal:cbv:sdt:location">urn:epc:id:sgln:4012345.00225.0</source>
+                    <source type="urn:epcglobal:cbv:sdt:possessing_party">urn:epc:id:pgln:4012345.00225</source>
+                </sourceList>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata deviceMetadata="https://id.gs1.org/8004/4000001111" time="2019-04-02T14:05:00.000+01:00"
+                                        dataProcessingMethod="https://example.com/253/4012345000054987" bizRules="https://example.com/253/4012345000054987"
+                                        deviceID="urn:epc:id:giai:4000001.111"/>
+                        <sensorReport rawData="https://example.org/8004/401234599999" component="example:x" stringValue="SomeString"
+                                      booleanValue="true" hexBinaryValue="f0f0f0"
+                                      value="26.0" type="gs1:Temperature"
+                                      percRank="50" percValue="12.7"
+                                      time="2019-07-19T14:00:00.000+01:00" meanValue="13.2"
+                                      dataProcessingMethod="https://example.com/253/4012345000054987"/>
+                    </sensorElement>
+                </sensorElementList>
+                <quantityList>
+                    <quantityElement>
+                        <uom>KGM</uom>
+                        <quantity>10</quantity>
+                        <epcClass>urn:epc:class:lgtin:4012345.011111.4444</epcClass>
+                    </quantityElement>
+                </quantityList>
+            </TransactionEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

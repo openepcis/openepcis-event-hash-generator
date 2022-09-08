@@ -135,7 +135,7 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run: |
-          native-image --no-server --no-fallback  --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./src/native/resources/reflect.json -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
+          native-image --no-server --no-fallback  --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./cli/src/native/resources/reflect.json -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
 
       - name: 'Publish Native Image'
         if: success()
@@ -207,7 +207,7 @@ jobs:
           GRAALVM_HOME: ./graalvm-ce-java17-22.2.0
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          ./graalvm-ce-java17-22.2.0/bin/native-image --no-server --no-fallback --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./src/native/resources/reflect.json  -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
+          ./graalvm-ce-java17-22.2.0/bin/native-image --no-server --no-fallback --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./cli/src/native/resources/reflect.json  -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
       - name: 'Publish Windows Image'
         if: success()
         uses: actions/upload-artifact@v3

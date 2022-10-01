@@ -80,8 +80,8 @@
 
         <!-- Xml Bind for Hash ID creation -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
 
         <!-- Apache commons for MultiValueMap for storing info -->

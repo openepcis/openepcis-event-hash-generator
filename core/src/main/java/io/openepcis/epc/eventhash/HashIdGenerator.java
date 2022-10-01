@@ -15,10 +15,10 @@
  */
 package io.openepcis.epc.eventhash;
 
+import jakarta.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.xml.bind.DatatypeConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

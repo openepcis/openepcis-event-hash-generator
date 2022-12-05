@@ -175,6 +175,8 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
 
     put("eventTimeZoneOffset", new LinkedHashMap<>());
 
+    put("certificationInfo", new LinkedHashMap<>());
+
     final LinkedHashMap<String, Object> errorCorrectiveId = new LinkedHashMap<>();
     errorCorrectiveId.put("correctiveEventID", new LinkedHashMap<>());
 
@@ -265,6 +267,7 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
 
     final LinkedHashMap<String, Object> sensorReport = new LinkedHashMap<>();
     sensorReport.put("type", new LinkedHashMap<>());
+    sensorReport.put("exception", new LinkedHashMap<>());
     sensorReport.put("deviceID", new LinkedHashMap<>());
     sensorReport.put("deviceMetadata", new LinkedHashMap<>());
     sensorReport.put("rawData", new LinkedHashMap<>());
@@ -286,7 +289,6 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
     sensorReport.put("percValue", new LinkedHashMap<>());
     sensorReport.put("uom", new LinkedHashMap<>());
     sensorReport.put("coordinateReferenceSystem", new LinkedHashMap<>());
-    sensorReport.put("exception", new LinkedHashMap<>());
 
     LinkedHashMap<String, Object> sensorElementList = new LinkedHashMap<>();
     sensorElementList.put("sensorMetadata", sensorMetadata);

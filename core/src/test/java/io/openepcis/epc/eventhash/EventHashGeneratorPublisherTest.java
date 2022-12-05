@@ -289,4 +289,35 @@ public class EventHashGeneratorPublisherTest {
         RuntimeException.class,
         () -> EventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList());
   }
+
+  // Test to ensure new element's exception, coordinateReferenceSystem and certificateInfo are
+  // ordered
+  @Test
+  public void withNewElementsJsonTest() throws IOException {
+    final InputStream jsonStream = getClass().getResourceAsStream("/withNewElements.json");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha3-512"});
+    EventHashGenerator.prehashJoin("\\n");
+    eventHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
+            failure -> System.out.println("JSON HashId Generation Failed with " + failure));
+  }
+
+  // Test to ensure new element's exception, coordinateReferenceSystem and certificateInfo are
+  // ordered
+  @Test
+  public void withNewElementsXmlTest() {
+    final InputStream jsonStream = getClass().getResourceAsStream("/withNewElements.xml");
+    EventHashGenerator.prehashJoin("\\n");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromXml(jsonStream, new String[] {"prehash", "sha3-512"});
+    eventHashIds
+        .subscribe()
+        .with(
+            xmlHash -> System.out.println(xmlHash.get("prehash") + "\n" + xmlHash.get("sha3-512")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure));
+  }
 }

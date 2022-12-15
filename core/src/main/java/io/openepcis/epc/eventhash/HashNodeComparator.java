@@ -53,7 +53,12 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       // For the User Extensions field when both elements are not part of the epcis standard fields
       // then sort them based on the name.
       if (result == 0 && o1Index == -1 && o2Index == -1) {
-        if (o1.getName() != null && o2.getName() != null) {
+        // Check if the element is of user extension
+        if (!TemplateNodeMap.isEpcisField(o1) && !TemplateNodeMap.isEpcisField(o2)) {
+          // For user extensions consider the namespace and then sort
+          return sortUserExtensions(o1, o2);
+        } else if (o1.getName() != null && o2.getName() != null) {
+          // For dedicated epcis fields sort based on the name
           return o1.getName().compareTo(o2.getName());
         }
       } else if (result == 0) {
@@ -73,6 +78,36 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       }
     }
     return 0;
+  }
+
+  private int sortUserExtensions(final ContextNode o1, final ContextNode o2) {
+    final String o1Namespace =
+        o1.getName() != null
+            ? o1.getNamespaces().get(o1.getName().substring(0, o1.getName().indexOf(":")))
+            : null;
+    final String o2Namespace =
+        o2.getName() != null
+            ? o2.getNamespaces().get(o2.getName().substring(0, o2.getName().indexOf(":")))
+            : null;
+    final String o1String =
+        o1Namespace != null
+            ? "{"
+                + o1Namespace
+                + "}"
+                + o1.getName().substring(o1.getName().indexOf(":") + 1)
+                + "="
+                + o1.getValue()
+            : o1.getName();
+    final String o2String =
+        o2Namespace != null
+            ? "{"
+                + o2Namespace
+                + "}"
+                + o2.getName().substring(o2.getName().indexOf(":") + 1)
+                + "="
+                + o2.getValue()
+            : o2.getName();
+    return o1String.compareTo(o2String);
   }
 
   // For nested hashnode values loop over its children and get values.

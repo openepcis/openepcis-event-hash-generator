@@ -22,21 +22,12 @@ import io.smallrye.mutiny.Multi;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
 public class EventHashGeneratorPublisherTest {
-
-  private static final String PYTHON_TOOL_API = "https://event-hash-generator.openepcis.io/hash";
-  private static final HttpRequest.Builder XML_REQUEST_BUILDER =
-      HttpRequest.newBuilder(URI.create(PYTHON_TOOL_API)).header("content-type", "application/xml");
-  private static final HttpRequest.Builder JSON_REQUEST_BUILDER =
-      HttpRequest.newBuilder(URI.create(PYTHON_TOOL_API))
-          .header("content-type", "application/json");
 
   // General test to fix bugs or necessary code modification for XML document.
   @Test
@@ -53,13 +44,8 @@ public class EventHashGeneratorPublisherTest {
   public void xmlPreHashGeneratorTest() {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
     final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromXml(xmlStream, new String[] {"prehash", "sha3-512"});
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
-    /*
-        eventHashIds.subscribe().with(
-        xmlHash -> System.out.println(xmlHash),
-        failure -> System.out.println("JSON HashId Generation Failed with " + failure));
-    */
   }
 
   // General test to fix bugs or necessary code modification for JSON document.
@@ -77,13 +63,8 @@ public class EventHashGeneratorPublisherTest {
   public void jsonPreHashGeneratorTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
     final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha3-512"});
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
     assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
-    /*
-       eventHashIds.subscribe().with(
-       jsonHash -> System.out.println(jsonHash),
-       failure -> System.out.println("JSON HashId Generation Failed with " + failure));
-    */
   }
 
   // Test to ensure the pre-hash string is generated correctly for simple event.
@@ -100,22 +81,6 @@ public class EventHashGeneratorPublisherTest {
         EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest xmlRequest =
-    // XML_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/SingleEvent.xml").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(xmlRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), xmlHashIds.get(0));
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest jsonRequest =
-    // JSON_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/SingleEvent.json").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(jsonRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), jsonHashIds.get(0));
   }
 
   // Test to ensure the pre-hash string is generated correctly when errorDeclaration information are
@@ -133,22 +98,6 @@ public class EventHashGeneratorPublisherTest {
         EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest xmlRequest =
-    // XML_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/WithErrorDeclaration.xml").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(xmlRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), xmlHashIds.get(0));
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest jsonRequest =
-    // JSON_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/WithErrorDeclaration.json").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(jsonRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), jsonHashIds.get(0));
   }
 
   // Test to ensure that pre-hash string is created accurately when EPCIS document contains all
@@ -168,22 +117,6 @@ public class EventHashGeneratorPublisherTest {
         EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest xmlRequest =
-    // XML_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/WithFullCombinationOfFields.xml").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(xmlRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), xmlHashIds.get(0));
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest jsonRequest =
-    // JSON_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/WithFullCombinationOfFields.json").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(jsonRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), jsonHashIds.get(0));
   }
 
   // Test to ensure that pre-hash string is created accurately when EPCIS document contains all
@@ -205,22 +138,6 @@ public class EventHashGeneratorPublisherTest {
     System.out.println("\nXML document Generated XML Event Pre Hashes : \n" + xmlHashIds);
     System.out.println("\nJSON document Generated XML Event Pre Hashes : \n" + jsonHashIds);
     assertEquals(xmlHashIds, jsonHashIds);
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest xmlRequest =
-    // XML_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/WithFullCombinationOfFields.xml").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(xmlRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), xmlHashIds.get(0));
-
-    // Check if the response from Python Event Hash Generator is same as Java tool
-    // final HttpRequest jsonRequest =
-    // JSON_REQUEST_BUILDER.POST(HttpRequest.BodyPublishers.ofString(new
-    // String(getClass().getResourceAsStream("/WithFullCombinationOfFields.json").readAllBytes(),
-    // StandardCharsets.UTF_8))).build();
-    // assertEquals(HttpClient.newHttpClient().send(jsonRequest,
-    // HttpResponse.BodyHandlers.ofString()).body(), jsonHashIds.get(0));
   }
 
   // Test to ensure that order of pre-hash always remains the same even when EPCIS document values
@@ -295,29 +212,35 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void withNewElementsJsonTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/withNewElements.json");
-    final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromJson(jsonStream, new String[] {"prehash", "sha3-512"});
+    final InputStream xmlStream = getClass().getResourceAsStream("/withNewElements.xml");
+
     EventHashGenerator.prehashJoin("\\n");
+
+    final Multi<Map<String, String>> xmlEventHash =
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
+    final String xmlHashId = xmlEventHash.subscribe().asStream().toList().get(0).get("sha3-512");
+
+    final Multi<Map<String, String>> jsonEventHash =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+    final String jsonHashId = jsonEventHash.subscribe().asStream().toList().get(0).get("sha3-512");
+
+    assertEquals(xmlHashId, jsonHashId);
+  }
+
+  // Ordering of user extensions http should appear before https, JSON document
+  @Test
+  public void userExtensionsOrderJsonTest() throws IOException {
+    final InputStream jsonStream = getClass().getResourceAsStream("/UserExtensionsOrder.json");
+    EventHashGenerator.prehashJoin("\\n");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+
     eventHashIds
         .subscribe()
         .with(
             jsonHash ->
                 System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
-            failure -> System.out.println("JSON HashId Generation Failed with " + failure));
-  }
-
-  // Test to ensure new element's exception, coordinateReferenceSystem and certificateInfo are
-  // ordered
-  @Test
-  public void withNewElementsXmlTest() {
-    final InputStream jsonStream = getClass().getResourceAsStream("/withNewElements.xml");
-    EventHashGenerator.prehashJoin("\\n");
-    final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromXml(jsonStream, new String[] {"prehash", "sha3-512"});
-    eventHashIds
-        .subscribe()
-        .with(
-            xmlHash -> System.out.println(xmlHash.get("prehash") + "\n" + xmlHash.get("sha3-512")),
-            failure -> System.out.println("XML HashId Generation Failed with " + failure));
+            failure -> System.out.println("XML HashId Generation Failed with " + failure),
+            () -> System.out.println("Completed"));
   }
 }

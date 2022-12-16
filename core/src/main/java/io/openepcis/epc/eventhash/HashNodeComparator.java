@@ -91,18 +91,14 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             : null;
     final String o1String =
         o1Namespace != null
-            ? "{"
-                + o1Namespace
-                + "}"
+            ? o1Namespace
                 + o1.getName().substring(o1.getName().indexOf(":") + 1)
                 + "="
                 + o1.getValue()
             : o1.getName();
     final String o2String =
         o2Namespace != null
-            ? "{"
-                + o2Namespace
-                + "}"
+            ? o2Namespace
                 + o2.getName().substring(o2.getName().indexOf(":") + 1)
                 + "="
                 + o2.getValue()

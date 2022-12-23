@@ -85,7 +85,7 @@ public class ContextNode {
           && ConstantEventHashInfo.EPC_LISTS.stream().anyMatch(name::equals)) {
         children.add(new ContextNode(this, "epc", n.textValue()));
       } else if (n.isValueNode() && !n.isArray()) {
-        children.add(new ContextNode(this, name, n.textValue()));
+        children.add(new ContextNode(this, name, n.asText()));
       } else if (n.isArray()) {
         // If the array contains another array then add the values as arrayNode.
         final ArrayNode arrayNode = (ArrayNode) n;

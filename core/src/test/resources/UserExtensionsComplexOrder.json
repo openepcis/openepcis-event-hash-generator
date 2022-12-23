@@ -1,0 +1,457 @@
+{
+  "@context": [
+    "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
+    {
+      "fskx": "https://medifit-prima.github.io/fsklab-json/1.0.4/FSKModel.json"
+    }
+  ],
+  "id": "fskx:test:document5",
+  "type": "EPCISDocument",
+  "schemaVersion": "2.0",
+  "creationDate": "2021-03-03T11:30:47.0Z",
+  "epcisBody": {
+    "eventList": [
+      {
+        "fskx:modelType": "genericModel",
+        "fskx:generalInformation": {
+          "fskx:name": "Cooking-A farm-to-fork model for the risk of human trichinellosis from pork and wild boar meat",
+          "fskx:source": "PUBLISHED SCIENTIFIC STUDIES",
+          "fskx:identifier": "02592227-3f31-4f75-ab4e-97ef91cd931c",
+          "fskx:author": [
+            {
+              "fskx:familyName": "Franssen",
+              "fskx:givenName": "Frits",
+              "fskx:email": "frits.franssen@rivm.nl",
+              "fskx:country": "Netherlands",
+              "fskx:organization": "National Institute for Public Health and the Environment (RIVM)"
+            },
+            {
+              "fskx:familyName": "Swart",
+              "fskx:givenName": "Arno",
+              "fskx:email": "arno.swart@rivm.nl",
+              "fskx:country": "Netherlands",
+              "fskx:organization": "National Institute for Public Health and the Environment (RIVM)"
+            },
+            {
+              "fskx:familyName": "van der Giessen",
+              "fskx:givenName": "Joke",
+              "fskx:email": "joke.van.der.giessen@rivm.nl",
+              "fskx:country": "Netherlands",
+              "fskx:organization": "National Institute for Public Health and the Environment (RIVM)"
+            },
+            {
+              "fskx:familyName": "Havelaar",
+              "fskx:givenName": "Arie",
+              "fskx:email": "ariehavelaar@ufl.edu",
+              "fskx:country": "Netherlands",
+              "fskx:organization": "National Institute for Public Health and the Environment (RIVM)"
+            },
+            {
+              "fskx:familyName": "Takumi",
+              "fskx:givenName": "Katsuhisa",
+              "fskx:email": "katsuhisa.takumi@rivm.nl",
+              "fskx:country": "Netherlands",
+              "fskx:organization": "National Institute for Public Health and the Environment (RIVM)"
+            }
+          ],
+          "fskx:creator": [
+            {
+              "fskx:familyName": "Sundermann",
+              "fskx:givenName": "Esther",
+              "fskx:email": "esther-maria.sundermann@bfr.bund.de",
+              "fskx:country": "Germany",
+              "fskx:organization": "German Federal Institute for Risk Assessment"
+            },
+            {
+              "fskx:title": "-",
+              "fskx:familyName": "Ganas",
+              "fskx:givenName": "Petra",
+              "fskx:email": "petra.ganas@bfr.bund.de",
+              "fskx:telephone": "-",
+              "fskx:streetAddress": "-",
+              "fskx:country": "Germany",
+              "fskx:zipCode": "-",
+              "fskx:region": "-",
+              "fskx:timeZone": "-",
+              "fskx:gender": "-",
+              "fskx:note": "-",
+              "fskx:organization": "German Federal Institute for Risk Assessment"
+            }
+          ],
+          "fskx:creationDate": [
+            2021,
+            9,
+            3
+          ],
+          "fskx:modificationDate": [
+            [
+              2021,
+              10,
+              12
+            ],
+            [
+              2021,
+              10,
+              12
+            ],
+            [
+              2021,
+              10,
+              18
+            ],
+            [
+              2021,
+              10,
+              20
+            ],
+            [
+              2022,
+              2,
+              4
+            ]
+          ],
+          "fskx:rights": "Creative Commons Attribution 4.0",
+          "fskx:availability": "Open access",
+          "fskx:format": ".fskx",
+          "fskx:reference": [
+            {
+              "fskx:date": "2016",
+              "fskx:pmid": "27816842",
+              "fskx:doi": "10.1016/j.ijfoodmicro.2016.10.029 ",
+              "fskx:authorList": "Frits Franssen, Arno Swart, Joke van der Giessen, Arie Havelaar, Katsuhisa Takumi",
+              "fskx:title": "Parasite to patient: A quantitative risk model for Trichinella spp. in pork and wild boar meat",
+              "fskx:journal": "International Journal of Food Microbiology",
+              "fskx:volume": "241",
+              "fskx:issue": "-",
+              "fskx:status": "Published",
+              "fskx:website": "https://www.sciencedirect.com/science/article/pii/S0168160516305669?via%3Dihub",
+              "fskx:comment": "-",
+              "fskx:abstract": "Consumption of raw or inadequately cooked pork meat may result in trichinellosis, a human disease due to nematodes of the genus Trichinella. In many countries worldwide, individual control of pig carcasses at meat inspection is mandatory but incurs high costs in relation to absence of positive carcasses from pigs reared under controlled housing. EU regulation 2015/1375 implements an alternative risk-based approach, in view of absence of positive findings in pigs under controlled housing conditions. Moreover, Codex Alimentarius guidelines for the control of Trichinella spp. in meat of suidae have been published (CAC, 2015) and used in conjunction with the OIE terrestrial Animal health code, to provide guidance to governments and industry on risk based control measures to prevent human exposure to Trichinella spp. and to facilitate international pork trade. To further support such a risk-based approach, we model the risk of human trichinellosis due to consumption of meat from infected pigs, raised under non-controlled housing and wild boar, using Quantitative Microbial Risk Assessment (QMRA) methods. Our model quantifies the distribution of Trichinella muscle larve (ML) in swine, test sensitivity at carcass control, partitioning of edible pork parts, Trichinella ML distribution in edible muscle types, heat inactivation by cooking and portion sizes. The resulting exposure estimate is combined with a dose response model for Trichinella species to estimate the incidence of human illness after consumption of infected meat. Paramater estimation is based on experimental and observational datasets. In Poland, which served as example, we estimated an average incidence of 0.90 (95%CI: 0.00-3.68) trichinellosis cases per million persons per year (Mpy) due to consumption of pork from pigs that were reared under non-controlled housing, and 1.97 (95%CI: 0.82-4.00) cases per Mpy due to consumption of wild boar. The total estimated incidence of human trichinellosis attributed to pigs from non-controlled housing and wild boar in Poland, is similar to the incidence of human trichinellosis in that country reported by EFSA. Overall, in Europe, we estimated an upper incidence limit of 5.3×10-4 cases per Mpy, or less than one predicted case of trichinellosis in the European Union every 4years, due to consumption of pork from controlled housing. Therefore, Trichinella testing of pigs under controlled housing is not adding any value to protect human health. We suggest applying our farm-to-fork QMRA model to further support decision making on the global scale. "
+            },
+            {
+              "fskx:date": "2018",
+              "fskx:pmid": "32095597",
+              "fskx:doi": "10.1016/j.fawpar.2018.04.003 ",
+              "fskx:authorList": "\nFrits Franssen, Katsuhisa Takumi, Joke van der Giessen, Arno Swart\n",
+              "fskx:title": "Assessing the risk of human trichinellosis from pigs kept under controlled and non-controlled housing in Europe ",
+              "fskx:journal": "Food and Waterborne Parasitology",
+              "fskx:volume": "10",
+              "fskx:status": "Published",
+              "fskx:website": "https://www.sciencedirect.com/science/article/pii/S2405676618300039",
+              "fskx:abstract": "To support risk-based approach to prevent human trichinellosis, we estimated the human incidence for pigs originating from controlled and non-controlled housing, using a quantitative microbial risk assessment model for Trichinella (QMRA-T). Moreover, the effect of test sensitivity on human trichinellosis incidence from pigs from non-controlled housing was quantified. The estimated annual risk from pigs from non-controlled housing was 59,443 human trichinellosis cases without testing at meat inspection and 832 (95%CI 346-1410) cases with Trichinella testing, thus preventing 98.6% of trichinellosis cases per year by testing at meat inspection. Using the QMRA-T, a slight decrease in test sensitivity had a significant effect on the number of human trichinellosis cases from this housing type. The estimated annual risk for pigs from controlled housing was <0.002 (range 0.000-0.007) human cases with- and <0.010 (0.001-0.023) cases without Trichinella testing at meat inspection, which does not differ significantly (p = 0.2075). In practice, this means no cases per year irrespective of Trichinella testing. Thus controlled housing effectively prevents infection and Trichinella testing does not contribute to food safety for this housing type. Not testing for Trichinella requires evidence based full compliance with regulations for controlled housing. "
+            },
+            {
+              "fskx:date": "2021",
+              "fskx:pmid": "33713660",
+              "fskx:doi": "10.1016/j.exppara.2021.108099 ",
+              "fskx:authorList": "Frits Franssen, Huifang Deng, Arno Swart, Axel Bonačić Marinović, Xiaolei Liu, Mingyuan Liu, Joke van der Giessen",
+              "fskx:title": "Inactivation of Trichinella muscle larvae at different time-temperature heating profiles simulating home-cooking ",
+              "fskx:journal": "Experimental Parasitology",
+              "fskx:volume": "224",
+              "fskx:status": "Published",
+              "fskx:website": "https://www.sciencedirect.com/science/article/pii/S0014489421000369?via%3Dihub",
+              "fskx:abstract": "\n\nBackground: Trichinellosis is caused by consumption of raw or undercooked meat containing infective Trichinella muscle larvae (ML). Only few studies on heat-inactivation of Trichinella ML are available in literature and more validated data concerning heat inactivation is needed to improve the risk estimation.\n\nObjective and methods: The aim of the present study was to evaluate the two in vitro methods \"staining\" and \"morphological examination\" as proxies for Trichinella ML heat inactivation in comparison with the mouse bioassay method to get more insight in the relationship between heat, heating time and inactivation of Trichinella ML. The second aim was to evaluate whether these methods could replace the bioassay in the light of ongoing animal use reduction in lifescience research. Tubes containing quantified live Trichinella ML were exposed to heat profiles ranging from 40 to 80 °C. Subsequently, inactivation was evaluated using both methylene blue staining and morphological examination, which was validated by bioassay. Results were used to model Trichinella inactivation.\n\nResults: Trichinella muscle larvae exposed to 60 °C or higher for 12-12.5 min were not infective to mice. We found that morphological examination was more consistent with the bioassay than methylene blue staining. Modelled inactivation fitted experimental data consistently. Moreover, this study shows that larval Trichinella morphology may be used in situations where bioassays are not possible or prohibited.\n\nConclusions: The relationship between heat and inactivation of larvae obtained from this study could be used in Trichinella QMRA models to improve quantification of the risk of Trichinella infection. "
+            }
+          ],
+          "fskx:language": "English",
+          "fskx:software": "FSK-Lab",
+          "fskx:languageWrittenIn": "R 3",
+          "fskx:modelCategory": {
+            "fskx:modelClass": "Exposure model",
+            "fskx:modelClassComment": "Farm-to-fork model"
+          },
+          "fskx:status": "Uncurated",
+          "fskx:objective": "A farm-to-fork model for the risk of human trichinellosis from pork and wild boar meat. ",
+          "fskx:description": "The mathematical model simulates the risk of human trichinellosis due to consumption of meat from infected pigs, raised under non-controlled housing and wild boar, using Quantitative Microbial Risk Assessment (QMRA) methods. The model quantifies the distribution of Trichinella muscle larve (ML) in swine, test sensitivity at carcass control, partitioning of edible pork parts, Trichinella ML distribution in edible muscle types, heat inactivation by cooking and portion sizes. The resulting exposure estimate is combined with a dose response model for Trichinella species to estimate the incidence of human illness after consumption of infected meat. Parameter estimation is based on experimental and observational datasets. "
+        },
+        "fskx:scope": {
+          "fskx:product": [
+            {
+              "fskx:name": "Swine",
+              "fskx:unit": "Animal",
+              "fskx:originCountry": "PL"
+            },
+            {
+              "fskx:name": "Swine",
+              "fskx:description": "shoulder, bally or lion",
+              "fskx:unit": "Portion",
+              "fskx:originCountry": "PL"
+            }
+          ],
+          "fskx:hazard": [
+            {
+              "fskx:type": "Nematode parasite",
+              "fskx:name": "Trichinella spp., unspecified",
+              "fskx:description": "Trichinella muscle larve (ML)"
+            }
+          ],
+          "fskx:populationGroup": [
+            {
+              "fskx:name": "human consumer, no age specification",
+              "fskx:country": [
+                "Poland"
+              ]
+            }
+          ],
+          "fskx:generalComment": "A farm-to-fork model for the risk of human trichinellosis from pork and wild boar meat that is based on experimental and observational datasets. ",
+          "fskx:temporalInformation": "2007-2012",
+          "fskx:spatialInformation": [
+            "Poland"
+          ]
+        },
+        "fskx:dataBackground": {
+          "fskx:study": {
+            "fskx:identifier": "FranssenEtAl2017",
+            "fskx:title": "Parasite to patient: A quantitative risk model for Trichinella spp. in pork and wild boar meat",
+            "fskx:description": "A farm-to-fork model for the risk of human trichinellosis from pork and wild boar meat that is based on experimental and observational datasets. In order to parameterize the model, diverse datasets, e.g. from EFSA and ECDC, were used. "
+          }
+        },
+        "fskx:modelMath": {
+          "fskx:parameter": [
+            {
+              "fskx:id": "df_larvae_in_portions_afterConsump_join",
+              "fskx:classification": "INPUT",
+              "fskx:name": "df_larvae_in_portions_afterConsump",
+              "fskx:description": "Outcomes of consumption model for joining",
+              "fskx:unit": "[]",
+              "fskx:unitCategory": "Dimensionless Quantity",
+              "fskx:dataType": "FILE",
+              "fskx:source": "Data",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "\" \"",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "df_zero_larvae_in_portions_afterConsump_join",
+              "fskx:classification": "INPUT",
+              "fskx:name": "df_zero_larvae_in_portions_afteConsump",
+              "fskx:description": "Outcomes of consumption model for joining",
+              "fskx:unit": "[]",
+              "fskx:unitCategory": "Dimensionless Quantity",
+              "fskx:dataType": "FILE",
+              "fskx:source": "Data",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "\" \"",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "inactivation_params_join",
+              "fskx:classification": "INPUT",
+              "fskx:name": "inactivation parameters",
+              "fskx:description": "Outcome of inactivation model for joining",
+              "fskx:unit": "[]",
+              "fskx:unitCategory": "-",
+              "fskx:dataType": "VECTOROFNUMBERS",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "c(k = 0.17, alpha_plus = 0.63, T_star = 59.3)",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "inactivation_join",
+              "fskx:classification": "INPUT",
+              "fskx:name": "inactivation function",
+              "fskx:description": "Outcome of inactivation model for joining",
+              "fskx:unit": "[]",
+              "fskx:unitCategory": "-",
+              "fskx:dataType": "STRING",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "\" \"",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "rare_start_temp",
+              "fskx:classification": "INPUT",
+              "fskx:name": "rare_start_temp",
+              "fskx:description": "Start temperature for cooking scenario larvae_rare",
+              "fskx:unit": "°C",
+              "fskx:unitCategory": "Temperature",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "20",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "rare_end_temp",
+              "fskx:classification": "INPUT",
+              "fskx:name": "rare_end_temp",
+              "fskx:description": "End temperature for cooking scenario larvae_rare",
+              "fskx:unit": "°C",
+              "fskx:unitCategory": "Temperature",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "54",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "rare_end_time",
+              "fskx:classification": "INPUT",
+              "fskx:name": "rare_end_time",
+              "fskx:description": "End of cooking time for scenario larvae_rare",
+              "fskx:unit": "min",
+              "fskx:unitCategory": "Time",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "2.5",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "welldone_end_temp",
+              "fskx:classification": "INPUT",
+              "fskx:name": "welldone_end_temp",
+              "fskx:description": "End temperature for cooking scenario larvae_welldone",
+              "fskx:unit": "°C",
+              "fskx:unitCategory": "Temperature",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "76.7",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "welldone_end_time",
+              "fskx:classification": "INPUT",
+              "fskx:name": "welldone_end_time",
+              "fskx:description": "End of cooking time for scenario larvae_welldone",
+              "fskx:unit": "min",
+              "fskx:unitCategory": "Time",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "15",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "medium_end_temp",
+              "fskx:classification": "INPUT",
+              "fskx:name": "medium_end_temp",
+              "fskx:description": "End temperature for cooking scenario larvae_medium",
+              "fskx:unit": "°C",
+              "fskx:unitCategory": "Temperature",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "63",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "medium_end_time",
+              "fskx:classification": "INPUT",
+              "fskx:name": "medium_end_time",
+              "fskx:description": "End of cooking time for scenario larvae_medium",
+              "fskx:unit": "min",
+              "fskx:unitCategory": "Time",
+              "fskx:dataType": "DOUBLE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "1.5",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "df_larvae_in_portions_afterCook_file",
+              "fskx:classification": "OUTPUT",
+              "fskx:name": "df_larvae_in_portions_afterCook",
+              "fskx:description": "Model outcomes",
+              "fskx:unit": "[]",
+              "fskx:unitCategory": "Dimensionless Quantity",
+              "fskx:dataType": "FILE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "-",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            },
+            {
+              "fskx:id": "df_zero_larvae_in_portions_afterCook_file",
+              "fskx:classification": "OUTPUT",
+              "fskx:name": "df_zero_larvae_in_portions_afterCook",
+              "fskx:description": "Model outcomes",
+              "fskx:unit": "[]",
+              "fskx:unitCategory": "Dimensionless Quantity",
+              "fskx:dataType": "FILE",
+              "fskx:source": "-",
+              "fskx:subject": "-",
+              "fskx:distribution": "-",
+              "fskx:value": "-",
+              "fskx:variabilitySubject": "-",
+              "fskx:minValue": "-",
+              "fskx:maxValue": "-",
+              "fskx:error": "-"
+            }
+          ],
+          "fskx:fittingProcedure": "Maximize the log-likelihood to calculate the maximum likelihood estimates for the parameters m and k as well as alpha and beta. "
+        },
+        "type": "ObjectEvent",
+        "eventID": "urn:uuid:5d3c82cc-3fb2-4b70-af4a-914f1f839c5b",
+        "eventTimeZoneOffset": "+02:00",
+        "eventTime": "2022-06-16T08:14:16Z",
+        "action": "ADD",
+        "bizStep": "commissioning",
+        "disposition": "completeness_inferred",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:0123456.78912.44"
+        },
+        "bizTransactionList": [
+          {
+            "type": "po",
+            "bizTransaction": "http://transaction.acme.com/po/12345679"
+          }
+        ],
+        "epcList": [
+          "fskx:model:uuid:65b159d1-cd9e-4783-8aad-7f3e9da421"
+        ]
+      }
+    ]
+  }
+}

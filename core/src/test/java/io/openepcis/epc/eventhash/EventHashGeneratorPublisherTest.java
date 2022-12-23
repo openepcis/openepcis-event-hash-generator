@@ -243,4 +243,21 @@ public class EventHashGeneratorPublisherTest {
             failure -> System.out.println("XML HashId Generation Failed with " + failure),
             () -> System.out.println("Completed"));
   }
+
+  @Test
+  public void userExtensionsComplexOrderJsonTest() throws IOException {
+    final InputStream jsonStream =
+        getClass().getResourceAsStream("/UserExtensionsComplexOrder.json");
+    EventHashGenerator.prehashJoin("\\n");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+
+    eventHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure),
+            () -> System.out.println("Completed"));
+  }
 }

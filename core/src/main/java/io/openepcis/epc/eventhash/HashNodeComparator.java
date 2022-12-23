@@ -81,29 +81,33 @@ public class HashNodeComparator implements Comparator<ContextNode> {
   }
 
   private int sortUserExtensions(final ContextNode o1, final ContextNode o2) {
-    final String o1Namespace =
-        o1.getName() != null
-            ? o1.getNamespaces().get(o1.getName().substring(0, o1.getName().indexOf(":")))
-            : null;
-    final String o2Namespace =
-        o2.getName() != null
-            ? o2.getNamespaces().get(o2.getName().substring(0, o2.getName().indexOf(":")))
-            : null;
-    final String o1String =
-        o1Namespace != null
-            ? o1Namespace
-                + o1.getName().substring(o1.getName().indexOf(":") + 1)
-                + "="
-                + o1.getValue()
-            : o1.getName();
-    final String o2String =
-        o2Namespace != null
-            ? o2Namespace
-                + o2.getName().substring(o2.getName().indexOf(":") + 1)
-                + "="
-                + o2.getValue()
-            : o2.getName();
-    return o1String.compareTo(o2String);
+    // Ensure only user extensions are sorted
+    if (o1.getName().contains(":") && o2.getName().contains(":")) {
+      final String o1Namespace =
+          o1.getName() != null
+              ? o1.getNamespaces().get(o1.getName().substring(0, o1.getName().indexOf(":")))
+              : null;
+      final String o2Namespace =
+          o2.getName() != null
+              ? o2.getNamespaces().get(o2.getName().substring(0, o2.getName().indexOf(":")))
+              : null;
+      final String o1String =
+          o1Namespace != null
+              ? o1Namespace
+                  + o1.getName().substring(o1.getName().indexOf(":") + 1)
+                  + "="
+                  + o1.getValue()
+              : o1.getName();
+      final String o2String =
+          o2Namespace != null
+              ? o2Namespace
+                  + o2.getName().substring(o2.getName().indexOf(":") + 1)
+                  + "="
+                  + o2.getValue()
+              : o2.getName();
+      return o1String.compareTo(o2String);
+    }
+    return o1.getName().compareTo(o2.getName());
   }
 
   // For nested hashnode values loop over its children and get values.

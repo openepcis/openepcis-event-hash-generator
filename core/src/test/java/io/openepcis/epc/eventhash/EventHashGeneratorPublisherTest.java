@@ -173,6 +173,23 @@ public class EventHashGeneratorPublisherTest {
     assertEquals(xmlHashIds, jsonHashIds);
   }
 
+  @Test
+  public void withUserExtensionsHavingEventID() throws IOException {
+    // For same event in XML & JSON format check if the generated Hash-IDs match.
+
+    final InputStream xmlStream =
+        getClass().getResourceAsStream("/withUserExtensionsHavingEventID.xml");
+    final InputStream jsonStream =
+        getClass().getResourceAsStream("/withUserExtensionsHavingEventID.json");
+
+    final List<String> xmlHashIds =
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+    final List<String> jsonHashIds =
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+
+    assertEquals(xmlHashIds, jsonHashIds);
+  }
+
   // Test to ensure different combination of events in single EPCIS document
   @Test
   public void withCombinationOfEvents() throws IOException {
@@ -231,6 +248,23 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void userExtensionsOrderJsonTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/UserExtensionsOrder.json");
+    EventHashGenerator.prehashJoin("\\n");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+
+    eventHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure),
+            () -> System.out.println("Completed"));
+  }
+
+  @Test
+  public void userExtensionsComplexOrderJsonTest() throws IOException {
+    final InputStream jsonStream =
+        getClass().getResourceAsStream("/UserExtensionsComplexOrder.json");
     EventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");

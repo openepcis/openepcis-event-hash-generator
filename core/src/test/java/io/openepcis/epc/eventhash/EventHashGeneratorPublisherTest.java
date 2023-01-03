@@ -173,6 +173,23 @@ public class EventHashGeneratorPublisherTest {
     assertEquals(xmlHashIds, jsonHashIds);
   }
 
+  @Test
+  public void withUserExtensionsHavingEventID() throws IOException {
+    // For same event in XML & JSON format check if the generated Hash-IDs match.
+
+    final InputStream xmlStream =
+        getClass().getResourceAsStream("/withUserExtensionsHavingEventID.xml");
+    final InputStream jsonStream =
+        getClass().getResourceAsStream("/withUserExtensionsHavingEventID.json");
+
+    final List<String> xmlHashIds =
+        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+    final List<String> jsonHashIds =
+        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+
+    assertEquals(xmlHashIds, jsonHashIds);
+  }
+
   // Test to ensure different combination of events in single EPCIS document
   @Test
   public void withCombinationOfEvents() throws IOException {

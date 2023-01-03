@@ -1,0 +1,56 @@
+<epcis:EPCISDocument schemaVersion="2.0"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xmlns:ext1="http://example.com/ext1/"
+                     xmlns:ext2="http://example.com/ext2/"
+                     xmlns:ext3="http://example.com/ext3/"
+                     creationDate="2013-06-04T14:59:02.099+02:00"
+                     xmlns:epcis="urn:epcglobal:epcis:xsd:2">
+    <EPCISBody>
+        <EventList>
+            <AggregationEvent>
+                <eventTime>2013-06-08T14:58:56.591Z</eventTime>
+                <eventTimeZoneOffset>+02:00</eventTimeZoneOffset>
+                <eventID>urn:uuid:5d3c82cc-3fb2-4b70-af4a-914f1f839c5b</eventID>
+                <parentID>urn:epc:id:sscc:0614141.1234567890</parentID>
+                <childEPCs>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2017</epc>
+                    <epc>urn:epc:id:sgtin:0614141.107346.2018</epc>
+                </childEPCs>
+                <action>OBSERVE</action>
+                <readPoint>
+                    <id>urn:epc:id:sgln:0037000.00729.8202</id>
+                    <ext2:readPointExtension1>ReadPoint-1</ext2:readPointExtension1>
+                    <ext1:readPointExtension0>ReadPoint-2</ext1:readPointExtension0>
+                    <ext3:readPointExtension1>ReadPoint-3</ext3:readPointExtension1>
+                </readPoint>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:0037000.00729.8202</id>
+                    <ext1:bizLocationExtension2>bizLocation-1</ext1:bizLocationExtension2>
+                    <ext1:bizLocationExtension0>bizLocation-2</ext1:bizLocationExtension0>
+                    <ext3:bizLocationExtension1>bizLocation-3</ext3:bizLocationExtension1>
+                    <ext2:bizLocationExtension2>bizLocation-4</ext2:bizLocationExtension2>
+                </bizLocation>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata time="2019-04-02T14:05:00.000+01:00" ext1:someFurtherMetadata="someText" ext2:someFurtherMetadata1="someText"/>
+                        <sensorReport value="26.0" type="gs1:Temperature" ext1:someFurtherReportData1="someText" ext2:someFurtherReportData="someText"/>
+                        <ext1:default>stringAsDefaultValue</ext1:default>
+                        <ext2:int xsi:type="xsd:integer">10</ext2:int>
+                    </sensorElement>
+                </sensorElementList>
+                <ilmd>
+                    <ext1:ilmdExtension1>Ilmd-1</ext1:ilmdExtension1>
+                    <ext2:ilmdExtension2>Ilmd-2</ext2:ilmdExtension2>
+                    <ext3:ilmdExtension3>Ilmd-3</ext3:ilmdExtension3>
+                </ilmd>
+                <ext2:userExtensions2>20</ext2:userExtensions2>
+                <ext1:userExtensions1>20</ext1:userExtensions1>
+                <ext2:userExtensions3>20</ext2:userExtensions3>
+                <ext1:default>stringAsDefaultValue</ext1:default>
+                <ext1:int xsi:type="xsd:integer">10</ext1:int>
+                <ext1:float xsi:type="xsd:double">20</ext1:float>
+            </AggregationEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

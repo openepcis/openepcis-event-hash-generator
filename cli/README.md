@@ -35,7 +35,7 @@ The java sources are using some of the latest java language improvements that ar
 
 ### Releases:
 There is no need to compile this project by yourself, we are providing release build assets, which can be found at the following link: 
-[https://github.com/openepcis/openepcis-event-hash-generator/releases]([https://github.com/openepcis/openepcis-event-hash-generator/releases])
+[https://github.com/openepcis/openepcis-event-hash-generator/releases](https://github.com/openepcis/openepcis-event-hash-generator/releases)
 
 #### Assets:
 | name | description |

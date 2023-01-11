@@ -266,12 +266,5 @@ public class EventHashGeneratorPublisherTest {
     final Multi<Map<String, String>> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
     assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
-    /*eventHashIds
-    .subscribe()
-    .with(
-            jsonHash ->
-                    System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
-            failure -> System.out.println("XML HashId Generation Failed with " + failure),
-            () -> System.out.println("Completed"));*/
   }
 }

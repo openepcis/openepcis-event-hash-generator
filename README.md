@@ -78,7 +78,7 @@ The easiest and fastest way to try it out, is by downloading the jar or the nati
 
 #### Usage
 
-For a detailed description, check out the [command line client documentation](blob/main/cli/README.md).
+For a detailed description, check out the [command line client documentation](cli/README.md).
 
 ### Related Projects for direct usage
 

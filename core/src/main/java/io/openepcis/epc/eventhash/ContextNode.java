@@ -17,7 +17,7 @@ package io.openepcis.epc.eventhash;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.openepcis.epc.translator.ConverterUtil;
+import io.openepcis.epc.translator.util.ConverterUtil;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;

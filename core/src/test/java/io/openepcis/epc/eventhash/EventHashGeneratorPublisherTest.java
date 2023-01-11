@@ -36,7 +36,6 @@ public class EventHashGeneratorPublisherTest {
     final List<String> eventHashIds =
         EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     assertEquals(1, eventHashIds.size());
-    System.out.println("\nXML document Generated Event Hash Ids : \n" + eventHashIds);
   }
 
   // General test to show pre hashes for XML document.
@@ -55,7 +54,6 @@ public class EventHashGeneratorPublisherTest {
     final List<String> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "sha3-256").subscribe().asStream().toList();
     assertEquals(1, eventHashIds.size());
-    System.out.println("\nJSON/JSON-LD document Generated Event Hash Ids : \n" + eventHashIds);
   }
 
   // General tst to show pre hashes for JSON document.
@@ -134,9 +132,6 @@ public class EventHashGeneratorPublisherTest {
         EventHashGenerator.fromXml(xmlStream, "prehash").subscribe().asStream().toList();
     final List<String> jsonHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash").subscribe().asStream().toList();
-
-    System.out.println("\nXML document Generated XML Event Pre Hashes : \n" + xmlHashIds);
-    System.out.println("\nJSON document Generated XML Event Pre Hashes : \n" + jsonHashIds);
     assertEquals(xmlHashIds, jsonHashIds);
   }
 
@@ -251,14 +246,7 @@ public class EventHashGeneratorPublisherTest {
     EventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
-
-    eventHashIds
-        .subscribe()
-        .with(
-            jsonHash ->
-                System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
-            failure -> System.out.println("XML HashId Generation Failed with " + failure),
-            () -> System.out.println("Completed"));
+    assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
   }
 
   @Test
@@ -268,13 +256,22 @@ public class EventHashGeneratorPublisherTest {
     EventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+    assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
+  }
 
-    eventHashIds
-        .subscribe()
-        .with(
+  @Test
+  public void bizTransactionOrderTest() throws IOException {
+    final InputStream jsonStream = getClass().getResourceAsStream("/bizTransactionOrder.json");
+    EventHashGenerator.prehashJoin("\\n");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+    assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
+    /*eventHashIds
+    .subscribe()
+    .with(
             jsonHash ->
-                System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
+                    System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
             failure -> System.out.println("XML HashId Generation Failed with " + failure),
-            () -> System.out.println("Completed"));
+            () -> System.out.println("Completed"));*/
   }
 }

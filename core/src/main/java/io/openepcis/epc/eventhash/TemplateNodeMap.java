@@ -238,20 +238,20 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
     put("bizLocation", bizLocation);
 
     final LinkedHashMap<String, Object> bizTransactionList = new LinkedHashMap<>();
-    bizTransactionList.put("bizTransaction", new LinkedHashMap<>());
     bizTransactionList.put("type", new LinkedHashMap<>());
+    bizTransactionList.put("bizTransaction", new LinkedHashMap<>());
 
     put("bizTransactionList", bizTransactionList);
 
     final LinkedHashMap<String, Object> sourceList = new LinkedHashMap<>();
-    sourceList.put("source", new LinkedHashMap<>());
     sourceList.put("type", new LinkedHashMap<>());
+    sourceList.put("source", new LinkedHashMap<>());
 
     put("sourceList", sourceList);
 
     final LinkedHashMap<String, Object> destinationList = new LinkedHashMap<>();
-    destinationList.put("destination", new LinkedHashMap<>());
     destinationList.put("type", new LinkedHashMap<>());
+    destinationList.put("destination", new LinkedHashMap<>());
 
     put("destinationList", destinationList);
 

@@ -35,7 +35,7 @@ The java sources are using some of the latest java language improvements that ar
 
 ### Releases:
 There is no need to compile this project by yourself, we are providing release build assets, which can be found at the following link: 
-[https://github.com/openepcis/openepcis-event-hash-generator-cli/releases]([https://github.com/openepcis/openepcis-event-hash-generator-cli/releases])
+[https://github.com/openepcis/openepcis-event-hash-generator/releases]([https://github.com/openepcis/openepcis-event-hash-generator/releases])
 
 #### Assets:
 | name | description |
@@ -45,7 +45,7 @@ There is no need to compile this project by yourself, we are providing release b
 |openepcis-event-hash-generator-cli-${VERSION}-windows| Windows binary executable [amd64]|
 |openepcis-event-hash-generator-cli-${VERSION}-mac|MacOS Intel binary executable|
 
-We do not provide binaries for any arm-based platforms yet,     but that might change in the near future. 
+We do not provide binaries for any arm-based platforms yet, but that might change in the near future. 
 If you need to run it on any other OS, please download and install a Java 17 Runtime Environment that is suitable for your environment and execute the runnable jar using the appropriate JVM for your platform.  
 
 ### Example commands:

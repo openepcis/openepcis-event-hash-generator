@@ -68,6 +68,17 @@ EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().with(
                 failure -> System.out.println("JSON HashId Generation Failed with " + failure));
 ```
 
+### Releases
+
+#### Release Builds
+
+The easiest and fastest way to try it out, is by downloading the jar or the native command line clients directly from the latest release:
+
+[v0.9.2-beta3](https://github.com/openepcis/openepcis-event-hash-generator/releases/tag/v0.9.2-beta3)
+
+#### Usage
+
+For a detailed description, check out the [command line client documentation](blob/main/cli/README.md).
 
 ### Related Projects for direct usage
 

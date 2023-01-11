@@ -23,8 +23,9 @@
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.2-SNAPSHOT</version>
     </parent>
+
     <artifactId>openepcis-event-hash-generator-build</artifactId>
     <packaging>pom</packaging>
     <name>openepcis-event-hash-generator-build</name>

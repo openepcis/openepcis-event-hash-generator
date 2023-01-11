@@ -22,8 +22,9 @@
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.2-SNAPSHOT</version>
     </parent>
+
     <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
     <name>openepcis-event-hash-generator-rest-api</name>
     <description>REST API Application to generate Hash-Ids based on XML/JSON EPCIS document provided by user.</description>

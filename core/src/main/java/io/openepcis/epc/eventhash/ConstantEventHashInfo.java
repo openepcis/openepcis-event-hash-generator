@@ -43,6 +43,8 @@ public class ConstantEventHashInfo {
   protected static final String QUANTITY_ELEMENT = "quantityElement";
   protected static final String SENSOR_ELEMENT = "sensorElement";
   protected static final String SENSOR_REPORT = "sensorReport";
+  protected static final String PERSISTENT_DISPOSITION = "persistentDisposition";
+  protected static final String SENSOR_ELEMENT_LIST = "sensorElementList";
   protected static final String CONTEXT = "@context";
   protected static final List<String> DUPLICATE_ENTRY_CHECK = Arrays.asList("set", "unset");
   protected static final Map<String, String> LIST_OF_OBJECTS =
@@ -51,7 +53,7 @@ public class ConstantEventHashInfo {
           entry("childQuantityList", QUANTITY_ELEMENT),
           entry("inputQuantityList", QUANTITY_ELEMENT),
           entry("outputQuantityList", QUANTITY_ELEMENT),
-          entry("sensorElementList", SENSOR_ELEMENT),
+          entry(SENSOR_ELEMENT_LIST, SENSOR_ELEMENT),
           entry(SENSOR_REPORT, SENSOR_REPORT));
   protected static final String INSTANCE_IDENTIFIER_URN_FORMAT = "urn:epc:id:";
   protected static final List<String> CLASS_IDENTIFIER_URN_FORMAT =
@@ -92,14 +94,39 @@ public class ConstantEventHashInfo {
           "sensorMetadata/sensorElement/sensorElementList",
           "sensorReport/sensorElement/sensorElementList");
   protected static final List<String> USER_EXTENSION_WRAPPER =
-      Arrays.asList("sensorElementList", SENSOR_ELEMENT);
+      Arrays.asList(SENSOR_ELEMENT_LIST, SENSOR_ELEMENT);
+
+  protected static final List<String> EXCLUDE_LINE_BREAK =
+      Arrays.asList(
+          "epcList",
+          "childEPCs",
+          "inputEPCList",
+          "outputEPCList",
+          "quantityList",
+          "childQuantityList",
+          "inputQuantityList",
+          "outputQuantityList",
+          QUANTITY_ELEMENT,
+          "readPoint",
+          "bizLocation",
+          "bizTransactionList",
+          "sourceList",
+          "destinationList",
+          "errorDeclaration",
+          SENSOR_ELEMENT_LIST,
+          SENSOR_ELEMENT,
+          "sensorMetadata",
+          SENSOR_REPORT,
+          "type",
+          PERSISTENT_DISPOSITION,
+          "bizTransaction");
 
   static {
     BARE_STRING_FIELD_PARENT_CHILD.put("bizStep", "bizStep");
     BARE_STRING_FIELD_PARENT_CHILD.put("disposition", "disposition");
     BARE_STRING_FIELD_PARENT_CHILD.put("bizTransactionList", "type");
-    BARE_STRING_FIELD_PARENT_CHILD.put("persistentDisposition", "set");
-    BARE_STRING_FIELD_PARENT_CHILD.put("persistentDisposition", "unset");
+    BARE_STRING_FIELD_PARENT_CHILD.put(PERSISTENT_DISPOSITION, "set");
+    BARE_STRING_FIELD_PARENT_CHILD.put(PERSISTENT_DISPOSITION, "unset");
     BARE_STRING_FIELD_PARENT_CHILD.put("sourceList", "type");
     BARE_STRING_FIELD_PARENT_CHILD.put("destinationList", "type");
     BARE_STRING_FIELD_PARENT_CHILD.put("errorDeclaration", "reason");

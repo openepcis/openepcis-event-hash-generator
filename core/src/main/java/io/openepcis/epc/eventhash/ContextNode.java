@@ -178,9 +178,7 @@ public class ContextNode {
       } else {
 
         // Add the values for direct name and value based on the field
-        preHashBuilder
-            .append(epcisFieldFormatter(getName(), getValue(), findParent(this)))
-            .append("\n");
+        preHashBuilder.append(epcisFieldFormatter(getName(), getValue(), findParent(this)));
       }
 
       return preHashBuilder.toString();
@@ -197,7 +195,13 @@ public class ContextNode {
       for (ContextNode node : children) {
         final String s = node.epcisFieldsPreHashBuilder();
         if (!s.isEmpty()) {
-          sb.append(s).append("\n");
+          sb.append(
+              node.getName() != null
+                      && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(node.getName())
+                      && !(node.getParent().getName() != null
+                          && node.getParent().getName().equals("sensorReport"))
+                  ? s
+                  : s + "\n");
         }
       }
       return sb.toString();
@@ -208,8 +212,10 @@ public class ContextNode {
   private String fieldName(final ContextNode node) {
     // For ILMD fields make call to userExtensions formatter and for all other fields make call to
     // normal field formatter.
+    String fieldName = "";
+
     if (Boolean.TRUE.equals(isIlmdPath(node))) {
-      return userExtensionsFormatter(node.getName(), node.getValue()) + "\n";
+      fieldName = userExtensionsFormatter(node.getName(), node.getValue());
     } else if (node.getName() != null
         && TemplateNodeMap.isEpcisField(node)
         && ConstantEventHashInfo.DUPLICATE_ENTRY_CHECK.stream().noneMatch(node.getName()::equals)
@@ -223,16 +229,22 @@ public class ContextNode {
       // If the name does not contain null values & part of EPCIS standard fields then append to
       // pre-hash string. Additional condition has been added to avoid the addition of sensorReport
       // twice to the pre-hash string.
-      return node.getName() + "\n";
+      fieldName = node.getName();
     } else if (node.getName() != null
         && TemplateNodeMap.isEpcisField(node)
         && node.getChildren() != null
         && !node.getChildren().isEmpty()
         && node.getChildren().get(0).getName() == null
         && ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getName()::equals)) {
-      return node.getName() + "\n";
+      fieldName = node.getName();
     }
-    return "";
+
+    return node.getName() != null
+                && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(node.getName())
+            || node.getName() == null
+            || (fieldName != null && fieldName.isEmpty())
+        ? fieldName
+        : fieldName + "\n";
   }
 
   // Private function to store the path of the elements including the parents. Added to find the
@@ -291,7 +303,7 @@ public class ContextNode {
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
           && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())
           && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)) {
-        sb.append(userExtensionsFormatter(getName(), getValue())).append("\n");
+        sb.append(userExtensionsFormatter(getName(), getValue()));
       }
 
       // Sort the children elements within the complex user extensions.
@@ -300,7 +312,11 @@ public class ContextNode {
       for (ContextNode node : children) {
         final String childExtension = node.userExtensionsPreHashBuilder();
         if (!childExtension.isEmpty()) {
-          sb.append(childExtension).append("\n");
+          sb.append(
+              node.getName() != null
+                      && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(node.getName())
+                  ? childExtension
+                  : childExtension + "\n");
         }
       }
       return sb.toString();
@@ -361,7 +377,7 @@ public class ContextNode {
     } else if (ConstantEventHashInfo.EPCIS_EVENT_TYPES.stream().anyMatch(value::equals)) {
       // If the value matches any of the event type then replace the type with eventType to match
       // pre-hash string requirement
-      return "eventType=" + value;
+      return "eventType=" + value + "\n";
     } else if (value.equals("")) {
       // If the field value has Null or empty values then return only the name. Used for sensor
       // information in XML document.

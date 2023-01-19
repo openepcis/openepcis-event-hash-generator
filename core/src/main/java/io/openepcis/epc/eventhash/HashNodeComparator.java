@@ -57,6 +57,12 @@ public class HashNodeComparator implements Comparator<ContextNode> {
         if (!TemplateNodeMap.isEpcisField(o1) && !TemplateNodeMap.isEpcisField(o2)) {
           // For user extensions consider the namespace and then sort
           return sortUserExtensions(o1, o2);
+        } else if (o1.getName() != null
+            && o2.getName() != null
+            && o1.getName().equals(o2.getName())
+            && o1.getChildren() != null
+            && o2.getChildren() != null) {
+          return findChildren(o1.getChildren()).compareTo(findChildren(o2.getChildren()));
         } else if (o1.getName() != null && o2.getName() != null) {
           // For dedicated epcis fields sort based on the name
           return o1.getName().compareTo(o2.getName());

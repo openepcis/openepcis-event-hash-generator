@@ -178,7 +178,7 @@ public class ContextNode {
       } else {
 
         // Add the values for direct name and value based on the field
-        preHashBuilder.append(epcisFieldFormatter(getName(), getValue(), findParent(this)));
+        preHashBuilder.append(epcisFieldFormatter(getName(), getValue(), this));
       }
 
       return preHashBuilder.toString();
@@ -199,7 +199,7 @@ public class ContextNode {
               node.getName() != null
                       && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(node.getName())
                       && !(node.getParent().getName() != null
-                          && node.getParent().getName().equals("sensorReport"))
+                          && node.getParent().getName().equals(ConstantEventHashInfo.SENSOR_REPORT))
                   ? s
                   : s + "\n");
         }
@@ -326,7 +326,7 @@ public class ContextNode {
   // Event value formatter method to format the EPCIS event fields as per the event hash requirement
   // like to add substring or convert sub string.
   private String epcisFieldFormatter(
-      final String name, final String value, final String parentFieldName) {
+      final String name, final String value, final ContextNode currentNode) {
     // If the field matches to ignore field then do not include them within the event pre hash. Ex:
     // recordTime
     if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(name::startsWith)) {
@@ -342,10 +342,39 @@ public class ContextNode {
       } else {
         return "epc=" + value;
       }
+    } else if (value.startsWith(ConstantEventHashInfo.INSTANCE_IDENTIFIER_URN_FORMAT)) {
+      // If element value is in URN format then change it to WebURI format
+      return name + "=" + ConverterUtil.toURI(value);
     } else if (ConstantEventHashInfo.CLASS_IDENTIFIER_URN_FORMAT.stream()
         .anyMatch(value::startsWith)) {
       // If quantity element class identifiers are in URN format then change it to WebURI format
       return name + "=" + ConverterUtil.toURIForClassLevelIdentifier(value);
+    } else if (ConstantEventHashInfo.SHORTNAME_FIELDS.stream().anyMatch(name::equals)) {
+      // For sensor related fields replace the short names with corresponding identifier keys and
+      // gs1 domain
+      return name + "=" + ConverterUtil.shortNameReplacer(value);
+    } else if ((name.equals("type") || name.equals("exception"))
+        && (currentNode != null
+            && currentNode.getParent() != null
+            && currentNode.getParent().getName() != null
+            && currentNode.getParent().getName().equals(ConstantEventHashInfo.SENSOR_REPORT))
+        && !(value.startsWith("https://gs1.org/voc/"))) {
+      // For sensorReport type/exception field add the gs1 domain
+      return name
+          + "="
+          + "https://gs1.org/voc/"
+          + (value.contains(":") ? value.substring(value.indexOf(":") + 1) : value);
+    } else if ((name.equals("component"))
+        && (currentNode != null
+            && currentNode.getParent() != null
+            && currentNode.getParent().getName() != null
+            && currentNode.getParent().getName().equals(ConstantEventHashInfo.SENSOR_REPORT))
+        && !(value.startsWith("https://ref.gs1.org/cbv/Comp-"))) {
+      // For sensorReport component field add the gs1 domain
+      return name
+          + "="
+          + "https://ref.gs1.org/cbv/Comp-"
+          + (value.contains(":") ? value.substring(value.indexOf(":") + 1) : value);
     } else if (ConstantEventHashInfo.EVENT_TIME.contains(name)) {
       // For all the date time information within the event convert the information to UTC time
       return name + "=" + ConstantEventHashInfo.DATE_FORMATTER.format(Instant.parse(value));
@@ -353,12 +382,15 @@ public class ContextNode {
       // If the field is of bizStep, disposition, bizTransaction/source type then convert the URN to
       // WebURI vocabulary.
       return name + "=" + ConverterUtil.toWebURIVocabulary(value);
-    } else if (ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD.containsKey(parentFieldName)
-        && ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD.get(parentFieldName).stream()
+    } else if (ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD.containsKey(
+            findParent(currentNode))
+        && ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD
+            .get(findParent(currentNode))
+            .stream()
             .anyMatch(name::equals)) {
       // If the field such as bizStep, disposition, bizTransactionList, sourceList, etc. contain the
       // bareString values then convert them to WebURI
-      return name + "=" + ConverterUtil.toCbvVocabulary(value, parentFieldName, "WebURI");
+      return name + "=" + ConverterUtil.toCbvVocabulary(value, findParent(currentNode), "WebURI");
     } else if (name.startsWith(ConstantEventHashInfo.CORRECTIVE_LIST)) {
       // For Error Declaration Corrective IDs add the prefix correctiveEventID for every element in
       // the List

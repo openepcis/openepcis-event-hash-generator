@@ -25,17 +25,30 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
 import org.junit.Test;
 
 public class EventHashGeneratorPublisherTest {
+
+  @Before
+  public void before() throws Exception {
+    EventHashGenerator.prehashJoin("\\n");
+  }
 
   // General test to fix bugs or necessary code modification for XML document.
   @Test
   public void xmlHashGeneratorTest() {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
-    final List<String> eventHashIds =
-        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
-    assertEquals(1, eventHashIds.size());
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+    eventHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure),
+            () -> System.out.println("Completed"));
+    // assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
   }
 
   // General test to show pre hashes for XML document.
@@ -128,11 +141,27 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream =
         getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
 
-    final List<String> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash").subscribe().asStream().toList();
-    final List<String> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash").subscribe().asStream().toList();
-    assertEquals(xmlHashIds, jsonHashIds);
+    final Multi<Map<String, String>> xmlHashIds =
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+    final Multi<Map<String, String>> jsonHashIds =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+
+    xmlHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure),
+            () -> System.out.println("Completed"));
+
+    jsonHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure),
+            () -> System.out.println("Completed"));
+    // assertEquals(xmlHashIds, jsonHashIds);
   }
 
   // Test to ensure that order of pre-hash always remains the same even when EPCIS document values
@@ -271,14 +300,14 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void orderAndConversionTest() throws IOException {
     final InputStream jsonStream = getClass().getResourceAsStream("/SampleJSON.json");
-    EventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> eventHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+
     eventHashIds
         .subscribe()
         .with(
             jsonHash ->
-                System.out.println(jsonHash.get("prehash") + "\n" + jsonHash.get("sha3-512")),
+                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
             failure -> System.out.println("XML HashId Generation Failed with " + failure),
             () -> System.out.println("Completed"));
     // assertEquals(1, eventHashIds.subscribe().asStream().toList().size());

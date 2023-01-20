@@ -132,10 +132,10 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
   // EPCIS field tag needs to be added to differentiate the different types of User-Extensions.
   public static boolean addExtensionWrapperTag(final ContextNode node) {
     if (node.getName() != null && isEpcisField(node)) {
+      final AtomicReference<Integer> found = new AtomicReference<>(0);
       // Special handling for SensorElementList & SensorElement tag, so it can be added once if the
       // SensorElements have the UserExtensions present within them.
       if (ConstantEventHashInfo.USER_EXTENSION_WRAPPER.stream().anyMatch(node.getName()::equals)) {
-        final AtomicReference<Integer> found = new AtomicReference<>(0);
         node.getChildren()
             .forEach(
                 sensorChild -> {
@@ -143,19 +143,23 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
                     found.set(found.get() + 1);
                   }
                 });
-        return found.get() > 0;
       } else {
         // For all other fields except sensorElementList & SensorElement
-        final AtomicReference<Integer> found = new AtomicReference<>(0);
         node.getChildren()
             .forEach(
                 element -> {
-                  if (element.getName() != null && !isEpcisField(element)) {
+                  if (!element.getChildren().isEmpty()) {
+                    if (addExtensionWrapperTag(element)) {
+                      found.set(found.get() + 1);
+                    }
+                  } else if (element.getChildren().isEmpty()
+                      && element.getName() != null
+                      && !isEpcisField(element)) {
                     found.set(found.get() + 1);
                   }
                 });
-        return found.get() > 0;
       }
+      return found.get() > 0;
     }
     return false;
   }

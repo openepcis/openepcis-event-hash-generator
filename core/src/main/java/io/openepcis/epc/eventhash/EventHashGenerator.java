@@ -127,7 +127,7 @@ public class EventHashGenerator {
       final ObjectNode item, final Map<String, String> contextHeader) {
     if (item.get("@context") != null) {
       final Iterator<JsonNode> contextElements = item.get("@context").elements();
-
+      contextHeader.put("cbvmda", "urn:epcglobal:cbv:mda");
       while (contextElements.hasNext()) {
         final Iterator<Map.Entry<String, JsonNode>> contextFields = contextElements.next().fields();
         while (contextFields.hasNext()) {

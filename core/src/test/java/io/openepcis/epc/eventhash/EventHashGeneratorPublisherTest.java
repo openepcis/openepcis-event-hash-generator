@@ -31,9 +31,7 @@ import org.junit.Test;
 public class EventHashGeneratorPublisherTest {
 
   @Before
-  public void before() throws Exception {
-    EventHashGenerator.prehashJoin("\\n");
-  }
+  public void before() throws Exception {}
 
   // General test to fix bugs or necessary code modification for XML document.
   @Test
@@ -303,13 +301,29 @@ public class EventHashGeneratorPublisherTest {
     final Multi<Map<String, String>> eventHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
+    EventHashGenerator.prehashJoin("\\n");
     eventHashIds
         .subscribe()
         .with(
             jsonHash ->
                 System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
-            failure -> System.out.println("XML HashId Generation Failed with " + failure),
-            () -> System.out.println("Completed"));
+            failure -> System.out.println("XML HashId Generation Failed with " + failure));
+    // assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
+  }
+
+  @Test
+  public void orderAndConversionXMLTest() throws IOException {
+    final InputStream xmlStream = getClass().getResourceAsStream("/SampleFile.xml");
+    final Multi<Map<String, String>> eventHashIds =
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+
+    EventHashGenerator.prehashJoin("\\n");
+    eventHashIds
+        .subscribe()
+        .with(
+            jsonHash ->
+                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
+            failure -> System.out.println("XML HashId Generation Failed with " + failure));
     // assertEquals(1, eventHashIds.subscribe().asStream().toList().size());
   }
 }

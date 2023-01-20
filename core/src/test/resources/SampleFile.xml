@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cbvmda="urn:epcglobal:cbv:mda:" schemaVersion="2.0" creationDate="2019-10-07T15:00:00.000+01:00">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent xmlns:ns0="urn:epcglobal:epcis-query:xsd:2">
+                <eventTime>2020-05-07T15:00:00Z</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:sensor_reporting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorReport type="gs1:Temperature" exception="ERROR_CONDITION" uriValue="https://example.com/ErrorCode-A827" />
+                        <sensorReport type="gs1:AbsoluteHumidity" exception="ALARM_CONDITION" booleanValue="true" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

@@ -19,6 +19,7 @@ import static java.util.Map.entry;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -34,6 +35,9 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 public class ConstantEventHashInfo {
   // Constant information required for reading, sorting, modification and conversion of the JSON/XML
   // EPCIS event field information.
+  protected static final String GS1_DOMAIN = "https://gs1.org/voc/";
+
+  protected static final String GS1_COMPONENT_DOMAIN = "https://ref.gs1.org/cbv/Comp-";
   protected static final List<String> EPC_LISTS =
       List.of("epcList", "inputEPCList", "childEPCs", "outputEPCList");
   protected static final List<String> EVENT_TIME =
@@ -68,7 +72,8 @@ public class ConstantEventHashInfo {
           "urn:epcglobal:cbv:er:");
   protected static final MultiValuedMap<String, String> BARE_STRING_FIELD_PARENT_CHILD =
       new ArrayListValuedHashMap<>();
-  protected static final List<String> IGNORE_FIELDS = List.of("recordTime", "eventID", CONTEXT);
+  protected static final List<String> IGNORE_FIELDS =
+      List.of("recordTime", "eventID", CONTEXT, "rdfs:comment");
   protected static final DateTimeFormatter DATE_FORMATTER =
       new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
@@ -118,10 +123,14 @@ public class ConstantEventHashInfo {
           "type",
           PERSISTENT_DISPOSITION,
           "bizTransaction",
-          "ilmd");
+          "ilmd",
+          CORRECTIVE_LIST);
 
   protected static final List<String> SHORTNAME_FIELDS =
       List.of(
+          "epc",
+          "epcClass",
+          "id",
           "deviceID",
           "deviceMetadata",
           "rawData",
@@ -132,6 +141,8 @@ public class ConstantEventHashInfo {
           "coordinateReferenceSystem",
           "uriValue");
 
+  protected static final Map<String, String> SENSOR_REPORT_FORMAT = new HashMap<>();
+
   static {
     BARE_STRING_FIELD_PARENT_CHILD.put("bizStep", "bizStep");
     BARE_STRING_FIELD_PARENT_CHILD.put("disposition", "disposition");
@@ -141,5 +152,9 @@ public class ConstantEventHashInfo {
     BARE_STRING_FIELD_PARENT_CHILD.put("sourceList", "type");
     BARE_STRING_FIELD_PARENT_CHILD.put("destinationList", "type");
     BARE_STRING_FIELD_PARENT_CHILD.put("errorDeclaration", "reason");
+
+    SENSOR_REPORT_FORMAT.put("type", GS1_DOMAIN);
+    SENSOR_REPORT_FORMAT.put("exception", GS1_DOMAIN + "SensorAlertType-");
+    SENSOR_REPORT_FORMAT.put("component", GS1_COMPONENT_DOMAIN);
   }
 }

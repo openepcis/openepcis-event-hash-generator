@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -32,6 +33,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class ContextNode {
   protected String name;
   protected String value;
@@ -137,8 +139,8 @@ public class ContextNode {
     this.namespaces = namespaces;
   }
 
-  private void sort() {
-    final HashNodeComparator comparator = new HashNodeComparator(this);
+  private void sort(final Boolean standardFieldSort) {
+    final HashNodeComparator comparator = new HashNodeComparator(this, standardFieldSort);
 
     // If childrens have values then sort them according to EPCIS standard
     if (!children.isEmpty()) {
@@ -174,7 +176,7 @@ public class ContextNode {
       // For ILMD fields make call to userExtensions formatter and for all other fields make call to
       // normal field formatter.
       if (Boolean.TRUE.equals(isIlmdPath(this))) {
-        preHashBuilder.append(userExtensionsFormatter(name, value)).append("\n");
+        preHashBuilder.append(userExtensionsFormatter(name, value, namespaces)).append("\n");
       } else {
 
         // Add the values for direct name and value based on the field
@@ -189,7 +191,7 @@ public class ContextNode {
       sb.append(fieldName(this));
 
       // If child values are present then sort them according to event hash requirement
-      this.sort();
+      this.sort(true);
 
       // After sorting the child values loop through each of them and add values to pre-hash string
       for (ContextNode node : children) {
@@ -215,17 +217,18 @@ public class ContextNode {
     String fieldName = "";
 
     if (Boolean.TRUE.equals(isIlmdPath(node))) {
-      fieldName = userExtensionsFormatter(node.getName(), node.getValue());
+      fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
     } else if (node.getName() != null
         && TemplateNodeMap.isEpcisField(node)
         && ConstantEventHashInfo.DUPLICATE_ENTRY_CHECK.stream().noneMatch(node.getName()::equals)
         && node.getChildren() != null
         && !node.getChildren().isEmpty()
         && node.getChildren().get(0).getName() != null
-        && !node.getChildren()
-            .get(0)
-            .getName()
-            .equalsIgnoreCase(ConstantEventHashInfo.SENSOR_REPORT)) {
+        && (node.getName().equals(ConstantEventHashInfo.SENSOR_ELEMENT)
+            || !node.getChildren()
+                .get(0)
+                .getName()
+                .equalsIgnoreCase(ConstantEventHashInfo.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
       // pre-hash string. Additional condition has been added to avoid the addition of sensorReport
       // twice to the pre-hash string.
@@ -249,7 +252,7 @@ public class ContextNode {
 
   // Private function to store the path of the elements including the parents. Added to find the
   // ilmd elements and accordingly add the formatted ILMD elements
-  private Boolean isIlmdPath(final ContextNode node) {
+  protected Boolean isIlmdPath(final ContextNode node) {
     // Special handling for the ILMD fields as it contains User Extensions like elements but should
     // appear before User-Extensions as well known fields of EPCIS standard.
     final Deque<String> path = new ArrayDeque<>();
@@ -292,7 +295,7 @@ public class ContextNode {
         && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)) {
       // Add information related to direct name and value based fields. Then if attributes are
       // present then call the method to format them.
-      return userExtensionsFormatter(name, value) + "\n";
+      return userExtensionsFormatter(name, value, namespaces) + "\n";
     } else {
 
       // Create a string and append the values when the provided value is empty i.e. for complex
@@ -302,12 +305,18 @@ public class ContextNode {
       if (getName() != null
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
           && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())
-          && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)) {
-        sb.append(userExtensionsFormatter(getName(), getValue()));
+          && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)
+          && (getName().equals(ConstantEventHashInfo.SENSOR_ELEMENT)
+              || (children.get(0).getName() != null
+                  && !getChildren()
+                      .get(0)
+                      .getName()
+                      .equalsIgnoreCase(ConstantEventHashInfo.SENSOR_REPORT)))) {
+        sb.append(userExtensionsFormatter(getName(), getValue(), namespaces));
       }
 
       // Sort the children elements within the complex user extensions.
-      this.sort();
+      this.sort(false);
 
       for (ContextNode node : children) {
         final String childExtension = node.userExtensionsPreHashBuilder();
@@ -325,7 +334,7 @@ public class ContextNode {
 
   // Event value formatter method to format the EPCIS event fields as per the event hash requirement
   // like to add substring or convert sub string.
-  private String epcisFieldFormatter(
+  protected String epcisFieldFormatter(
       final String name, final String value, final ContextNode currentNode) {
     // If the field matches to ignore field then do not include them within the event pre hash. Ex:
     // recordTime
@@ -340,41 +349,24 @@ public class ContextNode {
       if (value.startsWith(ConstantEventHashInfo.INSTANCE_IDENTIFIER_URN_FORMAT)) {
         return "epc=" + ConverterUtil.toURI(value);
       } else {
-        return "epc=" + value;
+        return "epc=" + ConverterUtil.shortNameReplacer(value);
       }
-    } else if (value.startsWith(ConstantEventHashInfo.INSTANCE_IDENTIFIER_URN_FORMAT)) {
+    } else if ((value.startsWith(ConstantEventHashInfo.INSTANCE_IDENTIFIER_URN_FORMAT))
+        || (ConstantEventHashInfo.CLASS_IDENTIFIER_URN_FORMAT.stream()
+            .anyMatch(value::startsWith))) {
       // If element value is in URN format then change it to WebURI format
-      return name + "=" + ConverterUtil.toURI(value);
-    } else if (ConstantEventHashInfo.CLASS_IDENTIFIER_URN_FORMAT.stream()
-        .anyMatch(value::startsWith)) {
-      // If quantity element class identifiers are in URN format then change it to WebURI format
-      return name + "=" + ConverterUtil.toURIForClassLevelIdentifier(value);
+      return name + "=" + gs1IdentifierFormat(value);
     } else if (ConstantEventHashInfo.SHORTNAME_FIELDS.stream().anyMatch(name::equals)) {
-      // For sensor related fields replace the short names with corresponding identifier keys and
-      // gs1 domain
+      // For instance/class identifier fields or sensor related fields replace the short names with
+      // corresponding identifier keys and/or replace custom gs1 domain
       return name + "=" + ConverterUtil.shortNameReplacer(value);
-    } else if ((name.equals("type") || name.equals("exception"))
+    } else if ((name.equals("type") || name.equals("exception") || name.equals("component"))
         && (currentNode != null
             && currentNode.getParent() != null
             && currentNode.getParent().getName() != null
-            && currentNode.getParent().getName().equals(ConstantEventHashInfo.SENSOR_REPORT))
-        && !(value.startsWith("https://gs1.org/voc/"))) {
+            && currentNode.getParent().getName().equals(ConstantEventHashInfo.SENSOR_REPORT))) {
       // For sensorReport type/exception field add the gs1 domain
-      return name
-          + "="
-          + "https://gs1.org/voc/"
-          + (value.contains(":") ? value.substring(value.indexOf(":") + 1) : value);
-    } else if ((name.equals("component"))
-        && (currentNode != null
-            && currentNode.getParent() != null
-            && currentNode.getParent().getName() != null
-            && currentNode.getParent().getName().equals(ConstantEventHashInfo.SENSOR_REPORT))
-        && !(value.startsWith("https://ref.gs1.org/cbv/Comp-"))) {
-      // For sensorReport component field add the gs1 domain
-      return name
-          + "="
-          + "https://ref.gs1.org/cbv/Comp-"
-          + (value.contains(":") ? value.substring(value.indexOf(":") + 1) : value);
+      return formatSensorField(name, value);
     } else if (ConstantEventHashInfo.EVENT_TIME.contains(name)) {
       // For all the date time information within the event convert the information to UTC time
       return name + "=" + ConstantEventHashInfo.DATE_FORMATTER.format(Instant.parse(value));
@@ -382,8 +374,8 @@ public class ContextNode {
       // If the field is of bizStep, disposition, bizTransaction/source type then convert the URN to
       // WebURI vocabulary.
       return name + "=" + ConverterUtil.toWebURIVocabulary(value);
-    } else if (ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD.containsKey(
-            findParent(currentNode))
+    } else if (currentNode != null
+        && ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD.containsKey(findParent(currentNode))
         && ConstantEventHashInfo.BARE_STRING_FIELD_PARENT_CHILD
             .get(findParent(currentNode))
             .stream()
@@ -414,34 +406,70 @@ public class ContextNode {
       // If the field value has Null or empty values then return only the name. Used for sensor
       // information in XML document.
       return name;
+    } else if (value.matches("^-?\\d+(\\.\\d+)?$")) {
+      // If value contains numbers then format them accordingly 25.0 -> 25, 25.6 -> 25.6 etc.
+      final double interimValue = Double.parseDouble(value);
+      if (interimValue % 1 == 0) {
+        return name + "=" + (int) Math.floor(interimValue);
+      } else {
+        return name + "=" + value;
+      }
+    }
+    return name + "=" + value;
+  }
+
+  // Method to format the values if it matches any of the GS1 identifiers format
+  private String gs1IdentifierFormat(final String value) {
+    if (value.startsWith(ConstantEventHashInfo.INSTANCE_IDENTIFIER_URN_FORMAT)) {
+      // If element value is in URN format then change it to WebURI format
+      return ConverterUtil.toURI(value);
+    } else if (ConstantEventHashInfo.CLASS_IDENTIFIER_URN_FORMAT.stream()
+        .anyMatch(value::startsWith)) {
+      // If quantity element class identifiers are in URN format then change it to WebURI format
+      return ConverterUtil.toURIForClassLevelIdentifier(value);
+    }
+    return ConverterUtil.shortNameReplacer(value);
+  }
+
+  // Method to format sensor element fields such as type, exception
+  private String formatSensorField(final String name, String value) {
+    if (value.startsWith("gs1:")) {
+      value = ConstantEventHashInfo.SENSOR_REPORT_FORMAT.get(name) + value.substring(4);
+    } else if (!value.contains(":")) {
+      value = ConstantEventHashInfo.SENSOR_REPORT_FORMAT.get(name) + value;
     }
     return name + "=" + value;
   }
 
   // Method to find the namespace and return the respective string to calling function. Used during
   // the formatting of User Extensions.
-  private String userExtensionsFormatter(final String name, final String value) {
+  protected String userExtensionsFormatter(
+      final String name, final String value, final Map<String, String> currentNamespaces) {
     // Check if the provided key contains the namespace if so then obtain the namespace else
     // namespace will be blank
     final String nameSpace =
         name != null && name.contains(":")
-            ? namespaces.get(name.substring(0, name.indexOf(":")))
+            ? currentNamespaces.get(name.substring(0, name.indexOf(":")))
             : null;
 
     // Based on namespace and value return the respective formatted User Extensions string
     if (nameSpace != null && value != null && !value.equals("")) {
-      return "{" + nameSpace + "}" + name.substring(name.indexOf(":") + 1) + "=" + value;
+      return "{"
+          + nameSpace
+          + "}"
+          + name.substring(name.indexOf(":") + 1)
+          + "="
+          + gs1IdentifierFormat(value);
     } else if (nameSpace != null) {
       return "{" + nameSpace + "}" + name.substring(name.indexOf(":") + 1);
     } else if (value != null && !value.equals("")) {
-      return name + "=" + value;
+      return name + "=" + gs1IdentifierFormat(value);
     } else {
       return name;
     }
   }
 
   // Get the parent and their subsequent children (test purpose only)
-  @Override
   public String toString() {
     return name
         + ":"

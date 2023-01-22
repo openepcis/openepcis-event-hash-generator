@@ -36,13 +36,11 @@ public class ConstantEventHashInfo {
   // Constant information required for reading, sorting, modification and conversion of the JSON/XML
   // EPCIS event field information.
   protected static final String GS1_DOMAIN = "https://gs1.org/voc/";
-
   protected static final String GS1_COMPONENT_DOMAIN = "https://ref.gs1.org/cbv/Comp-";
   protected static final List<String> EPC_LISTS =
       List.of("epcList", "inputEPCList", "childEPCs", "outputEPCList");
   protected static final List<String> EVENT_TIME =
-      List.of("eventTime", "declarationTime", "time", "startTime", "endTime");
-  protected static final String CORRECTIVE_LIST = "correctiveEventIDs";
+      List.of("eventTime", "time", "startTime", "endTime");
   protected static final String QUANTITY_ELEMENT = "quantityElement";
   protected static final String SENSOR_ELEMENT = "sensorElement";
   protected static final String SENSOR_REPORT = "sensorReport";
@@ -73,7 +71,16 @@ public class ConstantEventHashInfo {
   protected static final MultiValuedMap<String, String> BARE_STRING_FIELD_PARENT_CHILD =
       new ArrayListValuedHashMap<>();
   protected static final List<String> IGNORE_FIELDS =
-      List.of("recordTime", "eventID", CONTEXT, "rdfs:comment");
+      List.of(
+          "errorDeclaration",
+          "declarationTime",
+          "reason",
+          "correctiveEventIDs",
+          "correctiveEventID",
+          "recordTime",
+          "eventID",
+          CONTEXT,
+          "rdfs:comment");
   protected static final DateTimeFormatter DATE_FORMATTER =
       new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
@@ -123,8 +130,7 @@ public class ConstantEventHashInfo {
           "type",
           PERSISTENT_DISPOSITION,
           "bizTransaction",
-          "ilmd",
-          CORRECTIVE_LIST);
+          "ilmd");
 
   protected static final List<String> SHORTNAME_FIELDS =
       List.of(

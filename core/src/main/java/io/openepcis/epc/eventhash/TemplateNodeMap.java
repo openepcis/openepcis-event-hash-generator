@@ -181,16 +181,6 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
 
     put("certificationInfo", new LinkedHashMap<>());
 
-    final LinkedHashMap<String, Object> errorCorrectiveId = new LinkedHashMap<>();
-    errorCorrectiveId.put("correctiveEventID", new LinkedHashMap<>());
-
-    final LinkedHashMap<String, Object> errorDeclaration = new LinkedHashMap<>();
-    errorDeclaration.put("declarationTime", new LinkedHashMap<>());
-    errorDeclaration.put("reason", new LinkedHashMap<>());
-    errorDeclaration.put("correctiveEventIDs", errorCorrectiveId);
-
-    put("errorDeclaration", errorDeclaration);
-
     final LinkedHashMap<String, Object> instanceIdentifier = new LinkedHashMap<>();
     instanceIdentifier.put("epc", new LinkedHashMap<>());
 
@@ -276,6 +266,7 @@ public class TemplateNodeMap extends LinkedHashMap<String, Object> {
     sensorReport.put("deviceMetadata", new LinkedHashMap<>());
     sensorReport.put("rawData", new LinkedHashMap<>());
     sensorReport.put("dataProcessingMethod", new LinkedHashMap<>());
+    sensorReport.put("bizRules", new LinkedHashMap<>());
     sensorReport.put("time", new LinkedHashMap<>());
     sensorReport.put("microorganism", new LinkedHashMap<>());
     sensorReport.put("chemicalSubstance", new LinkedHashMap<>());

@@ -126,9 +126,9 @@ public class ContextNode {
         // children by calling Constructor 3. Eg: epcList, childEPCs, etc.
         final ArrayNode arrayNode = (ArrayNode) n.getValue();
         children.add(new ContextNode(this, n.getKey(), arrayNode));
-      } else {
+      } else if (!n.getKey().equals("errorDeclaration")) {
         // For all other fields which may have complex structure, add the field values from it to
-        // children by calling Constructor 2. Eg: errorDeclaration, readPoint, etc.
+        // children by calling Constructor 2. Eg: readPoint, etc. but skip errorDeclaration
         children.add(new ContextNode(this, n.getKey(), n.getValue().fields()));
       }
     }
@@ -180,7 +180,7 @@ public class ContextNode {
       } else {
 
         // Add the values for direct name and value based on the field
-        preHashBuilder.append(epcisFieldFormatter(getName(), getValue(), this));
+        preHashBuilder.append(epcisFieldFormatter(getName(), getValue(), this)).append("\n");
       }
 
       return preHashBuilder.toString();
@@ -383,10 +383,6 @@ public class ContextNode {
       // If the field such as bizStep, disposition, bizTransactionList, sourceList, etc. contain the
       // bareString values then convert them to WebURI
       return name + "=" + ConverterUtil.toCbvVocabulary(value, findParent(currentNode), "WebURI");
-    } else if (name.startsWith(ConstantEventHashInfo.CORRECTIVE_LIST)) {
-      // For Error Declaration Corrective IDs add the prefix correctiveEventID for every element in
-      // the List
-      return "correctiveEventID=" + value;
     } else if (ConstantEventHashInfo.SOURCE_DESTINATION_URN_FORMAT.stream()
         .anyMatch(value::startsWith)) {
       // If the field is of Source/Destination SGLN type then convert the value from URN to WebURI.

@@ -43,11 +43,16 @@ public class SaxHandler extends DefaultHandler {
     // Put every XML tag within the stack at the beginning of the XML tag.
     path.push(qName);
 
+    // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
+    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
+      return;
+    }
+
     // Reset attributes for every element
     currentAttributes = new HashMap<>();
 
     // Get the path from Deque as / separated values.
-    final String p = path();
+    final String p = getXMLPath();
 
     // If the XML tag contains the Namespaces or attributes then add to respective Namespaces Map or
     // Attributes Map.
@@ -88,44 +93,54 @@ public class SaxHandler extends DefaultHandler {
 
   @Override
   public void characters(char[] ch, int start, int length) {
+    // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
+    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
+      return;
+    }
+
     currentValue.append(ch, start, length);
   }
 
   @Override
   public void endElement(final String uri, final String localName, final String qName) {
+    if (!ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
+      // Do not store the values for the fields which needs to be ignored such as EPCISDocument,
+      // EPCISBody, etc.
+      if (rootNode != null && !ConstantEventHashInfo.XML_IGNORE_FIELDS.contains(qName)) {
+        // Call the method to write the appropriate values. Splitting the method to avoid the
+        // cognitive complexity.
+        xmlParser(qName);
+      }
 
-    // Do not store the values for the fields which needs to be ignored such as EPCISDocument,
-    // EPCISBody, etc.
-    if (rootNode != null && !ConstantEventHashInfo.XML_IGNORE_FIELDS.contains(qName)) {
-      // Call the method to write the appropriate values. Splitting the method to avoid the
-      // cognitive complexity.
-      xmlParser(qName);
+      // At the end of the every event in the document same the rootNode with the rootNodes and
+      // assign
+      // the rootNode with null for subsequent event.
+      if (ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
+        // After reading each XML event and converting it to ContextNode store the information in
+        // rootNodes.
+        emitter.emit(rootNode);
+
+        // After creating the pre-hash string and generating Hash-ID discard the rootNode
+        // information
+        // for subsequent event.
+        rootNode = null;
+      }
+
+      // At the end of the XML element tag reset the value for next element.
+      currentValue.setLength(0);
+
+      // After completing the particular element reading, remove that element from the stack.
+      path.pop();
+    } else if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
+      path.pop();
     }
-
-    // At the end of the every event in the document same the rootNode with the rootNodes and assign
-    // the rootNode with null for subsequent event.
-    if (ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
-      // After reading each XML event and converting it to ContextNode store the information in
-      // rootNodes.
-      emitter.emit(rootNode);
-
-      // After creating the pre-hash string and generating Hash-ID discard the rootNode information
-      // for subsequent event.
-      rootNode = null;
-    }
-
-    // At the end of the XML element tag reset the value for next element.
-    currentValue.setLength(0);
-
-    // After completing the particular element reading, remove that element from the stack.
-    path.pop();
   }
 
   // Private method called by endElement to write the values. Splitting the method to avoid the
   // cognitive complexity.
   private void xmlParser(final String qName) {
     // Get the path from Deque as / separated values.
-    final String p = path();
+    final String p = getXMLPath();
 
     // Store the value of the current xml tag if available.
     final String value =
@@ -164,7 +179,7 @@ public class SaxHandler extends DefaultHandler {
     emitter.complete();
   }
 
-  private String path() {
+  private String getXMLPath() {
     return String.join("/", this.path);
   }
 }

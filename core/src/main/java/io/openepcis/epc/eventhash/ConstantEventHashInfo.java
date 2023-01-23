@@ -122,7 +122,6 @@ public class ConstantEventHashInfo {
           "bizTransactionList",
           "sourceList",
           "destinationList",
-          "errorDeclaration",
           SENSOR_ELEMENT_LIST,
           SENSOR_ELEMENT,
           "sensorMetadata",
@@ -157,7 +156,6 @@ public class ConstantEventHashInfo {
     BARE_STRING_FIELD_PARENT_CHILD.put(PERSISTENT_DISPOSITION, "unset");
     BARE_STRING_FIELD_PARENT_CHILD.put("sourceList", "type");
     BARE_STRING_FIELD_PARENT_CHILD.put("destinationList", "type");
-    BARE_STRING_FIELD_PARENT_CHILD.put("errorDeclaration", "reason");
 
     SENSOR_REPORT_FORMAT.put("type", GS1_DOMAIN);
     SENSOR_REPORT_FORMAT.put("exception", GS1_DOMAIN + "SensorAlertType-");

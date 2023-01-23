@@ -44,66 +44,64 @@ public class SaxHandler extends DefaultHandler {
     path.push(qName);
 
     // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
-    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
-      return;
-    }
+    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getXMLPath()::contains)) {
+      // Reset attributes for every element
+      currentAttributes = new HashMap<>();
 
-    // Reset attributes for every element
-    currentAttributes = new HashMap<>();
+      // Get the path from Deque as / separated values.
+      final String p = getXMLPath();
 
-    // Get the path from Deque as / separated values.
-    final String p = getXMLPath();
-
-    // If the XML tag contains the Namespaces or attributes then add to respective Namespaces Map or
-    // Attributes Map.
-    if (attributes.getLength() > 0) {
-      // Loop over every attribute and add them to respective Map.
-      for (int att = 0; att < attributes.getLength(); att++) {
-        // If the attributes contain the : then consider them as namespaces otherwise as the fields
-        // such as type, source, etc. of the EPCIS event
-        if (attributes.getQName(att).contains(":")
-            && attributes.getQName(att).startsWith("xmlns:")) {
-          contextHeader.put(
-              attributes.getQName(att).substring(attributes.getQName(att).indexOf(":") + 1),
-              attributes.getValue(att));
-        } else {
-          currentAttributes.put(attributes.getQName(att), attributes.getValue(att).trim());
+      // If the XML tag contains the Namespaces or attributes then add to respective Namespaces Map
+      // or
+      // Attributes Map.
+      if (attributes.getLength() > 0) {
+        // Loop over every attribute and add them to respective Map.
+        for (int att = 0; att < attributes.getLength(); att++) {
+          // If the attributes contain the : then consider them as namespaces otherwise as the
+          // fields
+          // such as type, source, etc. of the EPCIS event
+          if (attributes.getQName(att).contains(":")
+              && attributes.getQName(att).startsWith("xmlns:")) {
+            contextHeader.put(
+                attributes.getQName(att).substring(attributes.getQName(att).indexOf(":") + 1),
+                attributes.getValue(att));
+          } else {
+            currentAttributes.put(attributes.getQName(att), attributes.getValue(att).trim());
+          }
         }
       }
-    }
 
-    // If EPCIS event type is found then create a new rootNode to store and create fresh pre-hash
-    // string.
-    if (rootNode == null && ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
-      rootNode = new ContextNode(contextHeader);
-      currentNode = rootNode;
-      rootNode.children.add(new ContextNode(rootNode, "type", qName));
-    } else if (currentNode != null
-        && ConstantEventHashInfo.WHY_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)) {
-      ContextNode n = new ContextNode(currentNode, null, (String) null);
-      currentNode.children.add(n);
-      currentNode = n;
-    } else if (currentNode != null
-        && ConstantEventHashInfo.WHAT_DIMENSION_XML_PATH.stream().noneMatch(p::startsWith)) {
-      ContextNode n = new ContextNode(currentNode, qName, (String) null);
-      currentNode.children.add(n);
-      currentNode = n;
+      // If EPCIS event type is found then create a new rootNode to store and create fresh pre-hash
+      // string.
+      if (rootNode == null && ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
+        rootNode = new ContextNode(contextHeader);
+        currentNode = rootNode;
+        rootNode.children.add(new ContextNode(rootNode, "type", qName));
+      } else if (currentNode != null
+          && ConstantEventHashInfo.WHY_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)) {
+        ContextNode n = new ContextNode(currentNode, null, (String) null);
+        currentNode.children.add(n);
+        currentNode = n;
+      } else if (currentNode != null
+          && ConstantEventHashInfo.WHAT_DIMENSION_XML_PATH.stream().noneMatch(p::startsWith)) {
+        ContextNode n = new ContextNode(currentNode, qName, (String) null);
+        currentNode.children.add(n);
+        currentNode = n;
+      }
     }
   }
 
   @Override
   public void characters(char[] ch, int start, int length) {
     // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
-    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
-      return;
+    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getXMLPath()::contains)) {
+      currentValue.append(ch, start, length);
     }
-
-    currentValue.append(ch, start, length);
   }
 
   @Override
   public void endElement(final String uri, final String localName, final String qName) {
-    if (!ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
+    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getXMLPath()::contains)) {
       // Do not store the values for the fields which needs to be ignored such as EPCISDocument,
       // EPCISBody, etc.
       if (rootNode != null && !ConstantEventHashInfo.XML_IGNORE_FIELDS.contains(qName)) {

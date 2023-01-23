@@ -37,8 +37,7 @@ public class EventHashGenerator {
 
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
 
-  private static final ThreadLocal<String> prehashJoin =
-      ThreadLocal.withInitial(() -> new String());
+  private static final ThreadLocal<String> prehashJoin = ThreadLocal.withInitial(() -> "");
 
   static {
     try {
@@ -51,7 +50,6 @@ public class EventHashGenerator {
   private EventHashGenerator() {}
 
   public static void prehashJoin(final String s) {
-    // EventHashGenerator.prehashJoin.remove();
     EventHashGenerator.prehashJoin.set(s.replace("\\n", "\n").replace("\\r", "\r"));
   }
 
@@ -63,7 +61,7 @@ public class EventHashGenerator {
    * @param hashAlgorithm Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
   public static Multi<String> fromJson(
       final InputStream jsonStream,
@@ -71,7 +69,7 @@ public class EventHashGenerator {
       final String hashAlgorithm)
       throws IOException {
     return EventHashGenerator.internalFromJson(
-        String.class, jsonStream, contextHeader, new String[] {hashAlgorithm});
+        String.class, jsonStream, contextHeader, hashAlgorithm);
   }
 
   /**
@@ -81,11 +79,11 @@ public class EventHashGenerator {
    * @param hashAlgorithm Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
   public static Multi<String> fromJson(final InputStream jsonStream, final String hashAlgorithm)
       throws IOException {
-    return fromJson(jsonStream, new HashMap<String, String>(), hashAlgorithm);
+    return fromJson(jsonStream, new HashMap<>(), hashAlgorithm);
   }
 
   /**
@@ -97,7 +95,7 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string map where key is hash algorithm and value is hash, representing each EPCIS
    *     event from InputStream
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
   public static Multi<Map<String, String>> fromJson(
       final InputStream jsonStream,
@@ -116,11 +114,11 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string map where key is hash algorithm and value is hash, representing each EPCIS
    *     event from InputStream
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
   public static Multi<Map<String, String>> fromJson(
       final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
-    return fromJson(jsonStream, new HashMap<String, String>(), hashAlgorithms);
+    return fromJson(jsonStream, new HashMap<>(), hashAlgorithms);
   }
 
   private static void addToContextHeader(
@@ -148,7 +146,7 @@ public class EventHashGenerator {
    */
   public static Multi<String> fromPublisher(
       final Publisher<ObjectNode> publisher, final String hashAlgorithm) {
-    return fromPublisher(publisher, new HashMap<String, String>(), hashAlgorithm);
+    return fromPublisher(publisher, new HashMap<>(), hashAlgorithm);
   }
 
   /**
@@ -164,8 +162,7 @@ public class EventHashGenerator {
       final Publisher<ObjectNode> publisher,
       final Map<String, String> contextHeader,
       final String hashAlgorithm) {
-    return internalFromPublisher(
-        String.class, publisher, contextHeader, new String[] {hashAlgorithm});
+    return internalFromPublisher(String.class, publisher, contextHeader, hashAlgorithm);
   }
 
   /**
@@ -194,7 +191,7 @@ public class EventHashGenerator {
    */
   public static Multi<Map<String, String>> fromPublisher(
       final Publisher<ObjectNode> publisher, final String... hashAlgorithms) {
-    return fromPublisher(publisher, new HashMap<String, String>(), hashAlgorithms);
+    return fromPublisher(publisher, new HashMap<>(), hashAlgorithms);
   }
 
   /**
@@ -206,7 +203,7 @@ public class EventHashGenerator {
    * @return hash string representation for each EPCIS event
    */
   public static String fromObjectNode(final ObjectNode objectNode, final String hashAlgorithm) {
-    return fromObjectNode(objectNode, new HashMap<String, String>(), hashAlgorithm);
+    return fromObjectNode(objectNode, new HashMap<>(), hashAlgorithm);
   }
 
   /**
@@ -248,7 +245,7 @@ public class EventHashGenerator {
       final String preHashString = contextNode.toShortenedString();
 
       // Call the method generateHashId in HashIdGenerator to
-      return (T) generate(cls, preHashString, hashAlgorithms);
+      return generate(cls, preHashString, hashAlgorithms);
     }
     if (cls.isAssignableFrom(String.class)) {
       return (T) "";
@@ -262,17 +259,16 @@ public class EventHashGenerator {
       final Publisher<ObjectNode> publisher,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
-    return (Multi<T>)
-        Multi.createFrom()
-            .publisher(publisher)
-            .map(item -> (T) internalFromObjectNode(cls, item, contextHeader, hashAlgorithms))
-            .filter(
-                m -> {
-                  if (cls.isAssignableFrom(String.class)) {
-                    return !((String) m).isEmpty();
-                  }
-                  return !((Map) m).isEmpty();
-                });
+    return Multi.createFrom()
+        .publisher(publisher)
+        .map(item -> (T) internalFromObjectNode(cls, item, contextHeader, hashAlgorithms))
+        .filter(
+            m -> {
+              if (cls.isAssignableFrom(String.class)) {
+                return !((String) m).isEmpty();
+              }
+              return !((Map) m).isEmpty();
+            });
   }
 
   private static <T> Multi<T> internalFromJson(

@@ -264,7 +264,7 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlStream = getClass().getResourceAsStream("/UserExtensionsComplexOrder.xml");
     final InputStream jsonStream =
         getClass().getResourceAsStream("/UserExtensionsComplexOrder.json");
-
+    EventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> xmlEventHash =
         EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     final Multi<Map<String, String>> jsonEventHash =

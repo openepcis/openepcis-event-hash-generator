@@ -2,82 +2,69 @@
   "@context": [
     "https://gs1.github.io/EPCIS/epcis-context.jsonld",
     {
-      "example": "http://ns.example.com/epcis/"
+      "rail": "urn:gs1:epcisapp:rail:"
     }
   ],
-  "id": "https://id.example.org/document1",
   "type": "EPCISDocument",
-  "creationDate": "2020-01-15T07:47:21.677+00:00",
   "schemaVersion": "2.0",
+  "creationDate": "2020-07-03T09:00:00.0Z",
   "epcisBody": {
     "eventList": [
       {
-        "type": "TransformationEvent",
-        "eventTime": "2020-01-14T00:00:00+01:00",
-        "eventTimeZoneOffset": "+01:00",
-        "eventID": "urn:uuid:374d95fc-9457-4a51-bd6a-0bba133845a8",
-        "inputEPCList": [
-          "urn:epc:id:sgtin:4012345.011111.987"
-        ],
-        "outputEPCList": [
-          "urn:epc:id:sgtin:4012345.033333.AGHFG"
-        ],
-        "inputQuantityList": [
+        "type": "TransactionEvent",
+        "eventTime": "2014-12-12T10:00:00.000Z",
+        "eventTimeZoneOffset": "+02:00",
+        "bizTransactionList": [
           {
-            "epcClass": "urn:epc:class:lgtin:4012345.022222.87545GHGH",
-            "quantity": 500,
-            "uom": "KGM"
+            "type": "urn:gs1:epcisapp:rail:btt:passage",
+            "bizTransaction": "http://transaction.examplerail.com/passage/xyz12345"
           }
         ],
-        "outputQuantityList": [
-          {
-            "epcClass": "urn:epc:idpat:sgtin:4012345.044444.*",
-            "quantity": 452,
-            "uom": "KGM"
-          }
+        "epcList": [
+          "urn:epc:id:giai:952005385.w2"
         ],
-        "bizStep": "commissioning",
+        "action": "ADD",
+        "bizStep": "transporting",
+        "disposition": "in_transit",
         "readPoint": {
-          "id": "urn:epc:id:sgln:0614141.07346.1234"
+          "id": "urn:epc:id:sgln:952005385.011.ts4711"
         },
-        "errorDeclaration": {
-          "declarationTime": "2020-01-15T00:00:00+01:00",
-          "reason": "incorrect_data",
-          "example:vendorExtension": "Test1",
-          "correctiveEventIDs": [
-            "urn:uuid:404d95fc-9457-4a51-bd6a-0bba133845a8"
-          ]
-        }
-      },
-      {
-        "type": "TransformationEvent",
-        "eventTime": "2021-01-28T00:00:00+01:00",
-        "eventTimeZoneOffset": "+01:00",
-        "eventID": "urn:uuid:404d95fc-9457-4a51-bd6a-0bba133845a8",
-        "inputEPCList": [
-          "urn:epc:id:sgtin:4012345.011111.987"
-        ],
-        "outputEPCList": [
-          "urn:epc:id:sgtin:4012345.033333.AGHFG"
-        ],
-        "inputQuantityList": [
+        "bizLocation": {
+          "id": "urn:epc:id:sgln:952005385.011.scA"
+        },
+        "sourceList": [
           {
-            "epcClass": "urn:epc:class:lgtin:4012345.022222.87545GHGH",
-            "quantity": 500,
-            "uom": "KGM"
+            "type": "location",
+            "source": "urn:epc:id:sgln:952005385.481.0"
           }
         ],
-        "outputQuantityList": [
+        "destinationList": [
           {
-            "epcClass": "urn:epc:idpat:sgtin:4012345.044444.*",
-            "quantity": 500,
-            "uom": "KGM"
+            "type": "location",
+            "destination": "urn:epc:id:sgln:952005385.011.0"
           }
         ],
-        "bizStep": "commissioning",
-        "readPoint": {
-          "id": "urn:epc:id:sgln:0614141.07346.1234"
-        }
+        "rail:trainVehicleCount": "3",
+        "rail:vehicle": [
+          {
+            "rail:vehicleUniquelyIdentified": "true",
+            "rail:vehicleAxleCount": "4",
+            "rail:vehiclePosition": "1",
+            "rail:vehicleMasterGIAI": "urn:epc:id:giai:952005385.vehicle2"
+          },
+          {
+            "rail:vehicleUniquelyIdentified": "false",
+            "rail:vehicleAxleCount": "4",
+            "rail:vehiclePosition": "2"
+          },
+          {
+            "rail:vehicleUniquelyIdentified": true,
+            "rail:vehicleAxleCount": "4",
+            "rail:vehiclePosition": "3",
+            "rail:vehicleMasterGIAI": "urn:epc:id:giai:735005385.vehicle1"
+          }
+        ],
+        "rail:trainAxleCount": "12"
       }
     ]
   }

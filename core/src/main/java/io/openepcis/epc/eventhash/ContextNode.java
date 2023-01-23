@@ -240,11 +240,17 @@ public class ContextNode {
         && node.getChildren().get(0).getName() == null
         && ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getName()::equals)) {
       fieldName = node.getName();
+    } else if (node.getName() != null
+        && !TemplateNodeMap.isEpcisField(node)
+        && node.getValue() == null
+        && node.getChildren() != null
+        && !node.getChildren().isEmpty()) {
+      fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
     }
 
-    return node.getName() != null
-                && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(node.getName())
-            || node.getName() == null
+    return (node.getName() != null
+                && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(node.getName()))
+            || (node.getName() == null)
             || (fieldName != null && fieldName.isEmpty())
         ? fieldName
         : fieldName + "\n";
@@ -404,12 +410,7 @@ public class ContextNode {
       return name;
     } else if (value.matches("^-?\\d+(\\.\\d+)?$")) {
       // If value contains numbers then format them accordingly 25.0 -> 25, 25.6 -> 25.6 etc.
-      final double interimValue = Double.parseDouble(value);
-      if (interimValue % 1 == 0) {
-        return name + "=" + (int) Math.floor(interimValue);
-      } else {
-        return name + "=" + value;
-      }
+      return name + "=" + gs1IdentifierFormat(value);
     }
     return name + "=" + value;
   }
@@ -423,6 +424,14 @@ public class ContextNode {
         .anyMatch(value::startsWith)) {
       // If quantity element class identifiers are in URN format then change it to WebURI format
       return ConverterUtil.toURIForClassLevelIdentifier(value);
+    } else if (value.matches("^-?\\d+(\\.\\d+)?$")) {
+      // If value contains numbers then format them accordingly 25.0 -> 25, 25.6 -> 25.6 etc.
+      final double interimValue = Double.parseDouble(value);
+      if (interimValue % 1 == 0) {
+        return (int) Math.floor(interimValue) + "";
+      } else {
+        return value;
+      }
     }
     return ConverterUtil.shortNameReplacer(value);
   }

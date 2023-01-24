@@ -24,10 +24,9 @@ import java.util.List;
  * from Comparator the information of the nodes are placed accordingly in pre-hash string.
  */
 public class HashNodeComparator implements Comparator<ContextNode> {
-  private final List<String> sortMap;
-  private ContextNode contextNode = new ContextNode();
-
-  private Boolean standardFieldSort;
+  private List<String> sortMap;
+  private final ContextNode contextNode = new ContextNode();
+  private final Boolean standardFieldSort;
 
   HashNodeComparator(final ContextNode jsonNode, final Boolean standardFieldSort) {
     this.sortMap = TemplateNodeMap.findSortList(jsonNode);
@@ -67,18 +66,20 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             && o1.getName().equals(o2.getName())
             && o1.getChildren() != null
             && o2.getChildren() != null) {
-          return findChildren(o1.getChildren()).compareTo(findChildren(o2.getChildren()));
+          return findChildren(o1).compareTo(findChildren(o2));
         } else if (o1.getName() != null && o2.getName() != null) {
           // For dedicated epcis fields sort based on the name
           return o1.getName().compareTo(o2.getName());
         }
+      } else if (result == 0 && o1Index == 1 && o2Index == 1) {
+        return findChildren(o1).compareTo(findChildren(o2));
       } else if (result == 0) {
         // If the outer event fields are equal then sort the inner elements of the fields' ex:
         // errorDeclaration. If the inner fields have the value then compare them and return.
         if (o1.getValue() != null && o2.getValue() != null) {
           return o1.getValue().compareTo(o2.getValue());
         } else if (o1.getChildren() != null && o2.getChildren() != null) {
-          return findChildren(o1.getChildren()).compareTo(findChildren(o2.getChildren()));
+          return findChildren(o1).compareTo(findChildren(o2));
         }
       } else if (o1Index == -1) {
         return 1;
@@ -88,7 +89,7 @@ public class HashNodeComparator implements Comparator<ContextNode> {
         return result;
       }
     } else if (o1.getChildren() != null && o2.getChildren() != null) {
-      return findChildren(o1.getChildren()).compareTo(findChildren(o2.getChildren()));
+      return findChildren(o1).compareTo(findChildren(o2));
     }
     return 0;
   }
@@ -124,9 +125,19 @@ public class HashNodeComparator implements Comparator<ContextNode> {
   }
 
   // For nested hashnode values loop over its children and get values.
-  private String findChildren(ArrayList<ContextNode> children) {
+  private String findChildren(final ContextNode node) {
+
+    // Sort the children elements as per standard before building single string for sorting from
+    // children elements
+    this.sortMap = TemplateNodeMap.findSortList(node);
+    final HashNodeComparator comparator = new HashNodeComparator(node, standardFieldSort);
+    if (!node.getChildren().isEmpty()) {
+      node.getChildren().sort(comparator);
+    }
+
     final StringBuilder childrenString = new StringBuilder();
     final StringBuilder extensionString = new StringBuilder();
+    final ArrayList<ContextNode> children = node.getChildren();
 
     if (children != null) {
       children.forEach(
@@ -136,25 +147,25 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             if (child != null
                 && child.getValue() == null
                 && TemplateNodeMap.isEpcisField(child)
-                && standardFieldSort) {
-              childrenString.append(findChildren(child.getChildren()));
+                && Boolean.TRUE.equals(standardFieldSort)) {
+              childrenString.append(findChildren(child));
             } else if (child != null
                 && child.getValue() != null
                 && TemplateNodeMap.isEpcisField(child)
-                && standardFieldSort) {
+                && Boolean.TRUE.equals(standardFieldSort)) {
               // For the identifiers convert them to URI format before sort
               childrenString.append(
                   contextNode.epcisFieldFormatter(child.getName(), child.getValue(), child));
             } else if (child != null
                 && child.getValue() == null
                 && !TemplateNodeMap.isEpcisField(child)
-                && !standardFieldSort) {
+                && Boolean.FALSE.equals(standardFieldSort)) {
               // For extension append to extension string only the extension elements
-              extensionString.append(findChildren(child.getChildren()));
+              extensionString.append(findChildren(child));
             } else if (child != null
                 && child.getValue() != null
                 && !TemplateNodeMap.isEpcisField(child)
-                && !standardFieldSort) {
+                && Boolean.FALSE.equals(standardFieldSort)) {
               // For extension append to extension string only the extension values formatted
               extensionString.append(
                   contextNode.userExtensionsFormatter(
@@ -162,7 +173,8 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             }
           });
     }
-
-    return standardFieldSort ? childrenString.toString() : extensionString.toString();
+    return Boolean.TRUE.equals(standardFieldSort)
+        ? childrenString.toString()
+        : extensionString.toString();
   }
 }

@@ -67,6 +67,21 @@ public class ContextNode {
     this.namespaces = parent.namespaces;
   }
 
+  public ContextNode(final ContextNode parent, final ArrayNode node) {
+    this.parent = parent;
+    this.namespaces = parent.namespaces;
+    final Iterator<JsonNode> iter = node.elements();
+
+    while (iter.hasNext()) {
+      var n = iter.next();
+
+      if (n.isObject()) {
+        // For extensions include the name
+        children.add(new ContextNode(this, n.fields()));
+      }
+    }
+  }
+
   // Constructor 4: To store the complex field which has elements within Array such as epcList,
   // childEPCs.
   public ContextNode(final ContextNode parent, final String name, final ArrayNode node) {
@@ -97,10 +112,13 @@ public class ContextNode {
         // corresponding string.
         children.add(
             new ContextNode(this, ConstantEventHashInfo.LIST_OF_OBJECTS.get(name), n.fields()));
-      } else if (n.isObject()) {
+      } else if (n.isObject() && ConstantEventHashInfo.EXCLUDE_LINE_BREAK.contains(name)) {
         // Omit storing the key twice during array of objects iteration and also do not add any
         // additional string.
         children.add(new ContextNode(this, n.fields()));
+      } else if (n.isObject()) {
+        // For extensions include the name
+        children.add(new ContextNode(this, name, n.fields()));
       } else {
         // If the array contains again fields then get the fields and add it.
         children.add(new ContextNode(this, name, n.fields()));
@@ -240,12 +258,6 @@ public class ContextNode {
         && node.getChildren().get(0).getName() == null
         && ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getName()::equals)) {
       fieldName = node.getName();
-    } else if (node.getName() != null
-        && !TemplateNodeMap.isEpcisField(node)
-        && node.getValue() == null
-        && node.getChildren() != null
-        && !node.getChildren().isEmpty()) {
-      fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
     }
 
     return (node.getName() != null
@@ -314,6 +326,7 @@ public class ContextNode {
           && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)
           && (getName().equals(ConstantEventHashInfo.SENSOR_ELEMENT)
               || (children.get(0).getName() != null
+                  && !getName().equals(getChildren().get(0).getName())
                   && !getChildren()
                       .get(0)
                       .getName()

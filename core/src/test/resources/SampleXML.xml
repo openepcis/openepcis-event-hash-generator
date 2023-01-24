@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cbvmda="urn:epcglobal:cbv:mda:" schemaVersion="2.0" creationDate="2005-07-11T11:30:47.0Z">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent xmlns:ns0="urn:epcglobal:epcis-query:xsd:2" xmlns:example="http://ns.example.com/epcis/">
+                <eventTime>2019-10-07T15:00:00+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <eventID>ni:///sha-256;6aca25c45463182fe3a1ebf60a6b81a165f061b58f4f3c202eb423234386b72e?ver=CBV2.0</eventID>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <quantityList>
+                    <quantityElement>
+                        <epcClass>urn:epc:class:lgtin:4023333.002000.2019-10-07</epcClass>
+                        <quantity>150.0</quantity>
+                        <uom>KGM</uom>
+                    </quantityElement>
+                </quantityList>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-01T14:00:00Z" endTime="2019-04-02T13:59:59.999Z" example:someFurtherMetaData="someText" />
+                        <sensorReport type="gs1:Temperature" minValue="12.4" maxValue="13.8" meanValue="13.2" sDev="0.41" percRank="50.0" percValue="12.7" uom="CEL" example:cv="123" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                        <example:furtherSensorData>
+                            <example:measure1>123.5</example:measure1>
+                        </example:furtherSensorData>
+                        <example:furtherSensorData>
+                            <example:measure2>0.987</example:measure2>
+                        </example:furtherSensorData>
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

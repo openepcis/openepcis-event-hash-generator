@@ -2,69 +2,69 @@
   "@context": [
     "https://gs1.github.io/EPCIS/epcis-context.jsonld",
     {
-      "rail": "urn:gs1:epcisapp:rail:"
+      "example": "http://ns.example.com/epcis/"
     }
   ],
+  "id": "https://id.example.org/document1",
   "type": "EPCISDocument",
   "schemaVersion": "2.0",
-  "creationDate": "2020-07-03T09:00:00.0Z",
+  "creationDate": "2005-07-11T11:30:47.0Z",
   "epcisBody": {
     "eventList": [
       {
-        "type": "TransactionEvent",
-        "eventTime": "2014-12-12T10:00:00.000Z",
-        "eventTimeZoneOffset": "+02:00",
-        "bizTransactionList": [
-          {
-            "type": "urn:gs1:epcisapp:rail:btt:passage",
-            "bizTransaction": "http://transaction.examplerail.com/passage/xyz12345"
-          }
-        ],
+        "eventID": "ni:///sha-256;6aca25c45463182fe3a1ebf60a6b81a165f061b58f4f3c202eb423234386b72e?ver=CBV2.0",
+        "type": "ObjectEvent",
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
         "epcList": [
-          "urn:epc:id:giai:952005385.w2"
+          "urn:epc:id:sgtin:4012345.011111.9876"
         ],
-        "action": "ADD",
-        "bizStep": "transporting",
-        "disposition": "in_transit",
+        "eventTime": "2019-10-07T15:00:00.000+01:00",
+        "eventTimeZoneOffset": "+01:00",
         "readPoint": {
-          "id": "urn:epc:id:sgln:952005385.011.ts4711"
+          "id": "urn:epc:id:sgln:4012345.00005.0"
         },
-        "bizLocation": {
-          "id": "urn:epc:id:sgln:952005385.011.scA"
-        },
-        "sourceList": [
+        "quantityList": [
           {
-            "type": "location",
-            "source": "urn:epc:id:sgln:952005385.481.0"
+            "epcClass": "urn:epc:class:lgtin:4023333.002000.2019-10-07",
+            "quantity": 150,
+            "uom": "KGM"
           }
         ],
-        "destinationList": [
+        "sensorElementList": [
           {
-            "type": "location",
-            "destination": "urn:epc:id:sgln:952005385.011.0"
+            "sensorMetadata": {
+              "startTime": "2019-04-01T15:00:00.000+01:00",
+              "endTime": "2019-04-02T14:59:59.999+01:00",
+              "example:someFurtherMetaData": "someText"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "minValue": 12.4,
+                "maxValue": 13.8,
+                "meanValue": 13.2,
+                "sDev": 0.41,
+                "uom": "CEL",
+                "percRank": 50,
+                "percValue": 12.7,
+                "example:cv": "123"
+              },
+              {
+                "type": "example:someSensorProperty",
+                "stringValue": "someSensorOutput"
+              }
+            ],
+            "example:furtherSensorData": [
+              {
+                "example:measure1": "123.5"
+              },
+              {
+                "example:measure2": "0.987"
+              }
+            ]
           }
-        ],
-        "rail:trainVehicleCount": "3",
-        "rail:vehicle": [
-          {
-            "rail:vehicleUniquelyIdentified": "true",
-            "rail:vehicleAxleCount": "4",
-            "rail:vehiclePosition": "1",
-            "rail:vehicleMasterGIAI": "urn:epc:id:giai:952005385.vehicle2"
-          },
-          {
-            "rail:vehicleUniquelyIdentified": "false",
-            "rail:vehicleAxleCount": "4",
-            "rail:vehiclePosition": "2"
-          },
-          {
-            "rail:vehicleUniquelyIdentified": true,
-            "rail:vehicleAxleCount": "4",
-            "rail:vehiclePosition": "3",
-            "rail:vehicleMasterGIAI": "urn:epc:id:giai:735005385.vehicle1"
-          }
-        ],
-        "rail:trainAxleCount": "12"
+        ]
       }
     ]
   }

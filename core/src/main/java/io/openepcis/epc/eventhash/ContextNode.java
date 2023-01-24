@@ -441,7 +441,10 @@ public class ContextNode {
       // If value contains numbers then format them accordingly 25.0 -> 25, 25.6 -> 25.6 etc.
       final double interimValue = Double.parseDouble(value);
       if (interimValue % 1 == 0) {
-        return (int) Math.floor(interimValue) + "";
+        // If the value contains decimal 25.0 then return 25 if not then return same 25.2 to 25.2
+        return Double.toString(interimValue).endsWith(".0")
+            ? (int) Math.floor(interimValue) + ""
+            : value;
       } else {
         return value;
       }

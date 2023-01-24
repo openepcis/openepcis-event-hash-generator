@@ -162,6 +162,8 @@ public class SaxHandler extends DefaultHandler {
                 new ContextNode(currentNode, attribute.getKey(), attribute.getValue()));
           }
           currentNode.children.add(new ContextNode(currentNode, qName, value));
+        } else if (value != null) {
+          currentNode.children.add(new ContextNode(currentNode, qName, value));
         }
         currentNode = currentNode.parent;
       } else if (currentNode != null) {

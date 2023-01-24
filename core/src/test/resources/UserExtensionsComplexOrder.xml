@@ -32,9 +32,14 @@
                     <rail:vehicleAxleCount>4</rail:vehicleAxleCount>
                     <rail:vehiclePosition>1</rail:vehiclePosition>
                     <rail:vehicleMasterGIAI>urn:epc:id:giai:952005385.vehicle2</rail:vehicleMasterGIAI>
+                </rail:vehicle>
+                <rail:vehicle>
                     <rail:vehicleUniquelyIdentified>false</rail:vehicleUniquelyIdentified>
                     <rail:vehicleAxleCount>4</rail:vehicleAxleCount>
                     <rail:vehiclePosition>2</rail:vehiclePosition>
+                </rail:vehicle>
+                <rail:vehicle>
+                    <rail:vehicleUniquelyIdentified>true</rail:vehicleUniquelyIdentified>
                     <rail:vehicleAxleCount>4</rail:vehicleAxleCount>
                     <rail:vehiclePosition>3</rail:vehiclePosition>
                     <rail:vehicleMasterGIAI>urn:epc:id:giai:735005385.vehicle1</rail:vehicleMasterGIAI>

@@ -67,6 +67,11 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             && o1.getChildren() != null
             && o2.getChildren() != null) {
           return findChildren(o1).compareTo(findChildren(o2));
+        } else if (o1.getName() != null
+            && o2.getName() != null
+            && o1.getChildren() != null
+            && o2.getChildren() != null) {
+          return findChildren(o1).compareTo(findChildren(o2));
         } else if (o1.getName() != null && o2.getName() != null) {
           // For dedicated epcis fields sort based on the name
           return o1.getName().compareTo(o2.getName());
@@ -173,6 +178,7 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             }
           });
     }
+
     return Boolean.TRUE.equals(standardFieldSort)
         ? childrenString.toString()
         : extensionString.toString();

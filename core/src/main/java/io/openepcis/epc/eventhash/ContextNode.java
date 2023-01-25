@@ -325,7 +325,8 @@ public class ContextNode {
           && !ConstantEventHashInfo.IGNORE_FIELDS.contains(getName())
           && !findParent(this).equalsIgnoreCase(ConstantEventHashInfo.CONTEXT)
           && (getName().equals(ConstantEventHashInfo.SENSOR_ELEMENT)
-              || (children.get(0).getName() != null
+              || (!children.isEmpty()
+                  && children.get(0).getName() != null
                   && !getName().equals(getChildren().get(0).getName())
                   && !getChildren()
                       .get(0)

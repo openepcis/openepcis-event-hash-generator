@@ -25,13 +25,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
 import org.junit.Test;
 
 public class EventHashGeneratorPublisherTest {
-
-  @Before
-  public void before() throws Exception {}
 
   // General test to fix bugs or necessary code modification for XML document.
   @Test
@@ -105,7 +101,6 @@ public class EventHashGeneratorPublisherTest {
         EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonHashIds =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-    ;
 
     assertEquals(
         xmlHashIds.subscribe().asStream().toList(), jsonHashIds.subscribe().asStream().toList());
@@ -325,7 +320,7 @@ public class EventHashGeneratorPublisherTest {
   }
 
   @Test
-  public void fullCombinationOrderPersistentDispositionTest() throws IOException {
+  public void persistentDispositionTest() throws IOException {
     final InputStream xmlStream =
         getClass().getResourceAsStream("/PersistentDisposition-example.xml");
     final InputStream jsonStream =
@@ -342,64 +337,65 @@ public class EventHashGeneratorPublisherTest {
   }
 
   @Test
-  public void orderAndConversionTogetherTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/sampleXML.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/sampleJSON.json");
+  public void curieStringTest() throws IOException {
+    final InputStream xmlStream = getClass().getResourceAsStream("/CurieString.xml");
+    final InputStream jsonStream = getClass().getResourceAsStream("/CurieString.json");
 
     final Multi<Map<String, String>> xmlEventHash =
         EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
-    EventHashGenerator.prehashJoin("\\n");
-
-    xmlEventHash
-        .subscribe()
-        .with(
-            jsonHash ->
-                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash") + "\n"),
-            failure -> System.out.println("JSON HashId Generation Failed with " + failure));
-
-    System.out.println("\n \n");
-
-    jsonEventHash
-        .subscribe()
-        .with(
-            jsonHash ->
-                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash") + "\n"),
-            failure -> System.out.println("XML HashId Generation Failed with " + failure));
+    assertEquals(
+        xmlEventHash.subscribe().asStream().toList(),
+        jsonEventHash.subscribe().asStream().toList());
   }
 
   @Test
-  public void orderAndConversionXMLTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/SampleXML.xml");
+  public void sensorDataTest() throws IOException {
+    final InputStream xmlStream = getClass().getResourceAsStream("/SensorDataExample.xml");
+    final InputStream jsonStream = getClass().getResourceAsStream("/SensorDataExample.json");
+
     final Multi<Map<String, String>> xmlEventHash =
         EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
-    EventHashGenerator.prehashJoin("\\n");
-    xmlEventHash
-        .subscribe()
-        .with(
-            jsonHash ->
-                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
-            failure -> System.out.println("XML HashId Generation Failed with " + failure));
+    final Multi<Map<String, String>> jsonEventHash =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
-    System.out.println("\n \n");
+    assertEquals(
+        xmlEventHash.subscribe().asStream().toList(),
+        jsonEventHash.subscribe().asStream().toList());
   }
 
   @Test
-  public void orderAndConversionJSONTest() throws IOException {
+  public void errorDeclarationTest() throws IOException {
+    final InputStream xmlStream =
+        getClass().getResourceAsStream("/ErrorDeclarationAndCorrectiveEvent.xml");
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/aggregation_event_all_possible_fields.json");
+        getClass().getResourceAsStream("/ErrorDeclarationAndCorrectiveEvent.json");
+
+    final Multi<Map<String, String>> xmlEventHash =
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
         EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-    EventHashGenerator.prehashJoin("\\n");
-    jsonEventHash
-        .subscribe()
-        .with(
-            jsonHash ->
-                System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash")),
-            failure -> System.out.println("JSON HashId Generation Failed with " + failure));
 
-    System.out.println("\n \n");
+    assertEquals(
+        xmlEventHash.subscribe().asStream().toList(),
+        jsonEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void orderAndConversionTogetherTest() throws IOException {
+    final InputStream xmlStream = getClass().getResourceAsStream("/SampleXML.xml");
+    final InputStream jsonStream = getClass().getResourceAsStream("/SampleJSON.json");
+    EventHashGenerator.prehashJoin("\\n");
+
+    final Multi<Map<String, String>> xmlEventHash =
+        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+    final Multi<Map<String, String>> jsonEventHash =
+        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+
+    assertEquals(
+        xmlEventHash.subscribe().asStream().toList(),
+        jsonEventHash.subscribe().asStream().toList());
   }
 }

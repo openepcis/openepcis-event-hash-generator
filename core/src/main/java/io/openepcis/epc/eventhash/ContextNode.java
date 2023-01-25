@@ -67,21 +67,6 @@ public class ContextNode {
     this.namespaces = parent.namespaces;
   }
 
-  public ContextNode(final ContextNode parent, final ArrayNode node) {
-    this.parent = parent;
-    this.namespaces = parent.namespaces;
-    final Iterator<JsonNode> iter = node.elements();
-
-    while (iter.hasNext()) {
-      var n = iter.next();
-
-      if (n.isObject()) {
-        // For extensions include the name
-        children.add(new ContextNode(this, n.fields()));
-      }
-    }
-  }
-
   // Constructor 4: To store the complex field which has elements within Array such as epcList,
   // childEPCs.
   public ContextNode(final ContextNode parent, final String name, final ArrayNode node) {
@@ -152,7 +137,7 @@ public class ContextNode {
     }
   }
 
-  // Constructor 7: To store the namespaces during the reading of EPCIS XML document.
+  // Constructor 6: To store the namespaces during the reading of EPCIS XML document.
   public ContextNode(final Map<String, String> namespaces) {
     this.namespaces = namespaces;
   }

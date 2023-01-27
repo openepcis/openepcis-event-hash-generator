@@ -15,12 +15,15 @@
  */
 package io.openepcis.epc.eventhash;
 
+import io.openepcis.epc.eventhash.constant.ConstantEPCISInfo;
+import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.smallrye.mutiny.subscription.MultiEmitter;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -44,12 +47,10 @@ public class SaxHandler extends DefaultHandler {
     path.push(qName);
 
     // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
-    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getXMLPath()::contains)) {
+    if (ConstantEventHashInfo.EXCLUDE_FIELDS_IN_PREHASH.stream()
+        .noneMatch(getXMLPath()::contains)) {
       // Reset attributes for every element
       currentAttributes = new HashMap<>();
-
-      // Get the path from Deque as / separated values.
-      final String p = getXMLPath();
 
       // If the XML tag contains the Namespaces or attributes then add to respective Namespaces Map
       // or
@@ -60,8 +61,7 @@ public class SaxHandler extends DefaultHandler {
           // If the attributes contain the : then consider them as namespaces otherwise as the
           // fields
           // such as type, source, etc. of the EPCIS event
-          if (attributes.getQName(att).contains(":")
-              && attributes.getQName(att).startsWith("xmlns:")) {
+          if (attributes.getQName(att).startsWith("xmlns:")) {
             contextHeader.put(
                 attributes.getQName(att).substring(attributes.getQName(att).indexOf(":") + 1),
                 attributes.getValue(att));
@@ -71,40 +71,49 @@ public class SaxHandler extends DefaultHandler {
         }
       }
 
-      // If EPCIS event type is found then create a new rootNode to store and create fresh pre-hash
-      // string.
-      if (rootNode == null && ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
-        rootNode = new ContextNode(contextHeader);
-        currentNode = rootNode;
-        rootNode.children.add(new ContextNode(rootNode, "type", qName));
-      } else if (currentNode != null
-          && ConstantEventHashInfo.WHY_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)) {
-        ContextNode n = new ContextNode(currentNode, null, (String) null);
-        currentNode.children.add(n);
-        currentNode = n;
-      } else if (currentNode != null
-          && ConstantEventHashInfo.WHAT_DIMENSION_XML_PATH.stream().noneMatch(p::startsWith)) {
-        ContextNode n = new ContextNode(currentNode, qName, (String) null);
-        currentNode.children.add(n);
-        currentNode = n;
-      }
+      // After reading the data populate the information in ContextNode
+      rootNodePopulater(qName);
+    }
+  }
+
+  private void rootNodePopulater(final String qName) {
+    // If EPCIS eventType is found then create a new rootNode to store and create fresh pre-hash
+    // string.
+    if (rootNode == null && ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
+      rootNode = new ContextNode(contextHeader);
+      currentNode = rootNode;
+      rootNode.children.add(new ContextNode(rootNode, ConstantEPCISInfo.TYPE, qName));
+    } else if (currentNode != null
+        && ConstantEventHashInfo.WHY_DIMENSION_XML_PATH.stream()
+            .anyMatch(getXMLPath()::startsWith)) {
+      ContextNode n = new ContextNode(currentNode, null, (String) null);
+      currentNode.children.add(n);
+      currentNode = n;
+    } else if (currentNode != null
+        && ConstantEventHashInfo.WHAT_DIMENSION_XML_PATH.stream()
+            .noneMatch(getXMLPath()::startsWith)) {
+      ContextNode n = new ContextNode(currentNode, qName, (String) null);
+      currentNode.children.add(n);
+      currentNode = n;
     }
   }
 
   @Override
   public void characters(char[] ch, int start, int length) {
     // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
-    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getXMLPath()::contains)) {
+    if (ConstantEventHashInfo.EXCLUDE_FIELDS_IN_PREHASH.stream()
+        .noneMatch(getXMLPath()::contains)) {
       currentValue.append(ch, start, length);
     }
   }
 
   @Override
   public void endElement(final String uri, final String localName, final String qName) {
-    if (ConstantEventHashInfo.IGNORE_FIELDS.stream().noneMatch(getXMLPath()::contains)) {
+    if (ConstantEventHashInfo.EXCLUDE_FIELDS_IN_PREHASH.stream()
+        .noneMatch(getXMLPath()::contains)) {
       // Do not store the values for the fields which needs to be ignored such as EPCISDocument,
       // EPCISBody, etc.
-      if (rootNode != null && !ConstantEventHashInfo.XML_IGNORE_FIELDS.contains(qName)) {
+      if (rootNode != null && !ConstantEventHashInfo.EXCLUDE_XML_FIELDS.contains(qName)) {
         // Call the method to write the appropriate values. Splitting the method to avoid the
         // cognitive complexity.
         xmlParser(qName);
@@ -129,7 +138,8 @@ public class SaxHandler extends DefaultHandler {
 
       // After completing the particular element reading, remove that element from the stack.
       path.pop();
-    } else if (ConstantEventHashInfo.IGNORE_FIELDS.stream().anyMatch(getXMLPath()::contains)) {
+    } else if (ConstantEventHashInfo.EXCLUDE_FIELDS_IN_PREHASH.stream()
+        .anyMatch(getXMLPath()::contains)) {
       path.pop();
     }
   }
@@ -141,8 +151,7 @@ public class SaxHandler extends DefaultHandler {
     final String p = getXMLPath();
 
     // Store the value of the current xml tag if available.
-    final String value =
-        !currentValue.toString().trim().equals("") ? currentValue.toString().trim() : null;
+    final String value = !StringUtils.isBlank(currentValue) ? currentValue.toString().trim() : null;
 
     // For complex fields add the values to its children
     if (ConstantEventHashInfo.WHAT_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)) {
@@ -180,6 +189,6 @@ public class SaxHandler extends DefaultHandler {
   }
 
   private String getXMLPath() {
-    return String.join("/", this.path);
+    return String.join(ConstantEPCISInfo.PATH_DELIMITER, this.path);
   }
 }

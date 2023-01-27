@@ -25,9 +25,17 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
 import org.junit.Test;
 
 public class EventHashGeneratorPublisherTest {
+
+  private EventHashGenerator eventHashGenerator;
+
+  @Before
+  public void before() throws Exception {
+    eventHashGenerator = new EventHashGenerator();
+  }
 
   // General test to fix bugs or necessary code modification for XML document.
   @Test
@@ -35,7 +43,7 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
 
     final Multi<Map<String, String>> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
 
     assertEquals(1, xmlHashIds.subscribe().asStream().toList().size());
   }
@@ -46,7 +54,7 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
 
     final Multi<Map<String, String>> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
 
     assertEquals(1, xmlHashIds.subscribe().asStream().toList().size());
   }
@@ -57,7 +65,7 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
 
     final Multi<Map<String, String>> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-256");
 
     assertEquals(1, jsonHashIds.subscribe().asStream().toList().size());
   }
@@ -68,7 +76,7 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
 
     final Multi<Map<String, String>> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
 
     assertEquals(1, jsonHashIds.subscribe().asStream().toList().size());
   }
@@ -81,9 +89,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/SingleEvent.json");
 
     final Multi<Map<String, String>> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlHashIds.subscribe().asStream().toList(), jsonHashIds.subscribe().asStream().toList());
@@ -98,9 +106,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/WithErrorDeclaration.json");
 
     final Multi<Map<String, String>> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlHashIds.subscribe().asStream().toList(), jsonHashIds.subscribe().asStream().toList());
@@ -117,9 +125,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
 
     final List<String> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -135,9 +143,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
 
     final Multi<Map<String, String>> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlHashIds.subscribe().asStream().toList(), jsonHashIds.subscribe().asStream().toList());
@@ -152,9 +160,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.json");
 
     final List<String> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -167,9 +175,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/withUserExtensions.json");
 
     final List<String> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -183,9 +191,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/withUserExtensionsHavingEventID.json");
 
     final List<String> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+        eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -197,9 +205,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/EventCombination.json");
 
     final List<String> xmlHashIds =
-        EventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList();
+        eventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList();
     final List<String> jsonHashIds =
-        EventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList();
+        eventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList();
 
     assertEquals(xmlHashIds, jsonHashIds);
   }
@@ -214,10 +222,10 @@ public class EventHashGeneratorPublisherTest {
 
     assertThrows(
         RuntimeException.class,
-        () -> EventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList());
+        () -> eventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList());
     assertThrows(
         RuntimeException.class,
-        () -> EventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList());
+        () -> eventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList());
   }
 
   // Test to ensure new element's exception, coordinateReferenceSystem and certificateInfo are
@@ -228,9 +236,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlStream = getClass().getResourceAsStream("/withNewElements.xml");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -245,9 +253,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/UserExtensionsOrder.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -259,11 +267,11 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlStream = getClass().getResourceAsStream("/UserExtensionsComplexOrder.xml");
     final InputStream jsonStream =
         getClass().getResourceAsStream("/UserExtensionsComplexOrder.json");
-    EventHashGenerator.prehashJoin("\\n");
+    eventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -276,9 +284,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/bizTransactionOrder.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -293,9 +301,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/aggregation_event_all_possible_fields.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -310,9 +318,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/transaction_event_all_possible_fields.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -327,9 +335,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/PersistentDisposition-example.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -342,9 +350,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/CurieString.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -357,9 +365,9 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/SensorDataExample.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -374,9 +382,9 @@ public class EventHashGeneratorPublisherTest {
         getClass().getResourceAsStream("/ErrorDeclarationAndCorrectiveEvent.json");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
@@ -387,12 +395,11 @@ public class EventHashGeneratorPublisherTest {
   public void orderAndConversionTogetherTest() throws IOException {
     final InputStream xmlStream = getClass().getResourceAsStream("/SampleXML.xml");
     final InputStream jsonStream = getClass().getResourceAsStream("/SampleJSON.json");
-    EventHashGenerator.prehashJoin("\\n");
 
     final Multi<Map<String, String>> xmlEventHash =
-        EventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash =
-        EventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
 
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),

@@ -29,6 +29,9 @@ public class ParallelExecutionTests {
 
   // Test to display the Pre-Hash String for XML events
   public static class ParallelExecutionXmlTests {
+
+    private EventHashGenerator eventHashGenerator = new EventHashGenerator();
+
     @Test
     public void displayXmlPreHashTest() {
       // For event in XML format display the pre-hash string
@@ -37,7 +40,7 @@ public class ParallelExecutionTests {
       final String[] hashParameters = {"prehash", "sha3-512"};
 
       final Multi<Map<String, String>> xmlHashIds =
-          EventHashGenerator.fromXml(xmlStream, hashParameters);
+          eventHashGenerator.fromXml(xmlStream, hashParameters);
 
       // Confirm there are 3 hashids and prehash in the results.
       assertEquals(3, xmlHashIds.subscribe().asStream().toList().size());
@@ -56,14 +59,17 @@ public class ParallelExecutionTests {
   public static class ParallelExecutionJsonTests {
     @Test
     public void displayJsonPreHashTest() throws IOException {
+
+      EventHashGenerator eventHashGenerator = new EventHashGenerator();
+
       // For event JSON in format display the pre-hash string
       final InputStream jsonStream = getClass().getResourceAsStream("/PreHashEvent.json");
 
       final String[] hashParameters = {"prehash", "sha3-384"};
 
-      EventHashGenerator.prehashJoin("\\n");
+      eventHashGenerator.prehashJoin("\\n");
       final Multi<Map<String, String>> jsonHashIds =
-          EventHashGenerator.fromJson(jsonStream, hashParameters);
+          eventHashGenerator.fromJson(jsonStream, hashParameters);
 
       // Confirm there are 2 hashids and pre-hash in the results.
       assertEquals(2, jsonHashIds.subscribe().asStream().toList().size());

@@ -61,18 +61,10 @@ public class HashNodeComparator implements Comparator<ContextNode> {
             || (contextNode.isIlmdPath(o1) && contextNode.isIlmdPath(o2))) {
           // For user extensions consider the namespace and then sort
           return sortUserExtensions(o1, o2);
-        } else if (o1.getName() != null
-            && o2.getName() != null
-            && o1.getName().equals(o2.getName())
-            && o1.getChildren() != null
-            && o2.getChildren() != null) {
+        } else if (o1.getChildren() != null && o2.getChildren() != null) {
+          // If children is present then sort based on children elements
           return findChildren(o1).compareTo(findChildren(o2));
-        } else if (o1.getName() != null
-            && o2.getName() != null
-            && o1.getChildren() != null
-            && o2.getChildren() != null) {
-          return findChildren(o1).compareTo(findChildren(o2));
-        } else if (o1.getName() != null && o2.getName() != null) {
+        } else {
           // For dedicated epcis fields sort based on the name
           return o1.getName().compareTo(o2.getName());
         }
@@ -145,42 +137,44 @@ public class HashNodeComparator implements Comparator<ContextNode> {
     final ArrayList<ContextNode> children = node.getChildren();
 
     if (children != null) {
-      children.forEach(
-          child -> {
-            // Sort only based on dedicated epcis field and ignore the extension values present in
-            // children
-            if (child != null
-                && child.getValue() == null
-                && TemplateNodeMap.isEpcisField(child)
-                && Boolean.TRUE.equals(standardFieldSort)) {
-              childrenString.append(findChildren(child));
-            } else if (child != null
-                && child.getValue() != null
-                && TemplateNodeMap.isEpcisField(child)
-                && Boolean.TRUE.equals(standardFieldSort)) {
-              // For the identifiers convert them to URI format before sort
-              childrenString.append(
-                  contextNode.epcisFieldFormatter(child.getName(), child.getValue(), child));
-            } else if (child != null
-                && child.getValue() == null
-                && !TemplateNodeMap.isEpcisField(child)
-                && Boolean.FALSE.equals(standardFieldSort)) {
-              // For extension append to extension string only the extension elements
-              extensionString.append(findChildren(child));
-            } else if (child != null
-                && child.getValue() != null
-                && !TemplateNodeMap.isEpcisField(child)
-                && Boolean.FALSE.equals(standardFieldSort)) {
-              // For extension append to extension string only the extension values formatted
-              extensionString.append(
-                  contextNode.userExtensionsFormatter(
-                      child.getName(), child.getValue(), child.getNamespaces()));
-            }
-          });
+      for (ContextNode child : children) {
+        if (child != null) {
+          appendChildValue(child, childrenString, extensionString);
+        }
+      }
     }
 
     return Boolean.TRUE.equals(standardFieldSort)
         ? childrenString.toString()
         : extensionString.toString();
+  }
+
+  // Method to append the values to children
+  private void appendChildValue(
+      final ContextNode child,
+      final StringBuilder childrenString,
+      final StringBuilder extensionString) {
+    // Sort only standard epcis field and ignore the extension values present in children
+    if (TemplateNodeMap.isEpcisField(child) && Boolean.TRUE.equals(standardFieldSort)) {
+      if (child.getValue() != null) {
+        // If value is present then append after formatting
+        childrenString.append(
+            contextNode.epcisFieldFormatter(child.getName(), child.getValue(), child));
+      } else {
+        // If value not present then iterate again
+        childrenString.append(findChildren(child));
+      }
+    } else if (Boolean.FALSE.equals(standardFieldSort)) {
+      // For extension append to extension string only the extension elements
+      if (child.getValue() != null) {
+        // If value is present then append after user-extension formatting
+        extensionString.append(
+            contextNode.userExtensionsFormatter(
+                child.getName(), child.getValue(), child.getNamespaces()));
+      } else {
+        // If value not present then iterate again
+        extensionString.append(findChildren(child));
+      }
+    }
   }
 }

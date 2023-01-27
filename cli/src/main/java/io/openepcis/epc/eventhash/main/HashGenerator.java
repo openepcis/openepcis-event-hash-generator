@@ -38,6 +38,7 @@ public class HashGenerator {
   private static final String PREHASH = "prehash";
   private static final String PREHASHES_SUFFIX = ".prehashes";
   private static final String HASHES_SUFFIX = ".hashes";
+  private static final EventHashGenerator eventHashGenerator = new EventHashGenerator();
 
   static {
 
@@ -69,7 +70,7 @@ public class HashGenerator {
     // format.
     options.addOption(
         "p",
-        "prehash",
+        PREHASH,
         false,
         "If given, also output the prehash string to stdout. Output to a .prehashes file, if combined with -b.");
 
@@ -86,8 +87,10 @@ public class HashGenerator {
         "j",
         "join",
         true,
-        "String used to join the pre hash string.\n"
-            + "Defaults to empty string as specified.\nValues like \"\\n\" might be useful for debugging.");
+        """
+                    String used to join the pre hash string.
+                    Defaults to empty string as specified.
+                    Values like "\\n" might be useful for debugging.""");
 
     // ***Parsing Stage***
     // Create a parser
@@ -128,7 +131,7 @@ public class HashGenerator {
 
     if (cmd.hasOption("j")) {
       final String preHashJoin = cmd.getOptionValue("j");
-      EventHashGenerator.prehashJoin(preHashJoin);
+      eventHashGenerator.prehashJoin(preHashJoin);
     }
 
     // check if read from stdin is requested
@@ -142,10 +145,8 @@ public class HashGenerator {
     } else {
       // ***Interrogation Stage***
       for (final String path : cmd.getArgs()) {
-        if (!cmd.hasOption("e")) {
-          if (path.toLowerCase().endsWith(".xml")) {
-            type = TYPE_XML;
-          }
+        if (!cmd.hasOption("e") && path.toLowerCase().endsWith(".xml")) {
+          type = TYPE_XML;
         }
         // Check if the path contains the http/https if so then make remote request call
         if (path.matches("^(https?)://.*$")) {
@@ -249,13 +250,10 @@ public class HashGenerator {
       final String[] hashAlgorithms,
       Consumer<? super Map<String, String>> consumer) {
     try {
-      switch (type.toLowerCase()) {
-        case TYPE_XML -> {
-          xmlDocumentHashIdGenerator(inputStream, hashAlgorithms, consumer);
-        }
-        default -> {
-          jsonDocumentHashIdGenerator(inputStream, hashAlgorithms, consumer);
-        }
+      if (TYPE_XML.equals(type.toLowerCase())) {
+        xmlDocumentHashIdGenerator(inputStream, hashAlgorithms, consumer);
+      } else {
+        jsonDocumentHashIdGenerator(inputStream, hashAlgorithms, consumer);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -267,7 +265,8 @@ public class HashGenerator {
       final InputStream xmlStream,
       final String[] hashAlgorithms,
       Consumer<? super Map<String, String>> consumer) {
-    EventHashGenerator.fromXml(xmlStream, hashAlgorithms)
+    eventHashGenerator
+        .fromXml(xmlStream, hashAlgorithms)
         .subscribe()
         .with(consumer, HashGenerator::fail);
   }
@@ -278,7 +277,8 @@ public class HashGenerator {
       final String[] hashAlgorithms,
       Consumer<? super Map<String, String>> consumer)
       throws IOException {
-    EventHashGenerator.fromJson(jsonStream, hashAlgorithms)
+    eventHashGenerator
+        .fromJson(jsonStream, hashAlgorithms)
         .subscribe()
         .with(consumer, HashGenerator::fail);
   }

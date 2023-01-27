@@ -40,7 +40,7 @@ import org.reactivestreams.Publisher;
 public class EventHashGenerator {
 
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
-  private static final StringBuilder prehashJoin = new StringBuilder();
+  private String prehashJoin = "";
 
   static {
     try {
@@ -51,7 +51,7 @@ public class EventHashGenerator {
   }
 
   public void prehashJoin(final String s) {
-    prehashJoin.append(s.replace("\\n", "\n").replace("\\r", "\r"));
+    prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
   }
 
   /**
@@ -293,7 +293,7 @@ public class EventHashGenerator {
       final Map<String, String> map = new HashMap<>();
       for (final String hashAlgorithm : hashAlgorithms) {
         if (hashAlgorithm.equalsIgnoreCase("prehash")) {
-          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin.toString()));
+          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin));
         } else {
           map.put(
               hashAlgorithm,

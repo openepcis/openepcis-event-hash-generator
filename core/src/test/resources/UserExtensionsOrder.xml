@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cbvmda="urn:epcglobal:cbv:mda:" schemaVersion="2.0" creationDate="2005-07-11T11:30:47.0Z">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent xmlns:ns0="urn:epcglobal:epcis-query:xsd:2" xmlns:example="http://ns.example.com/epcis/" xmlns:sdo="https://schema.org/" xmlns:abc="https://ns.abc.de/epcis/" xmlns:test="http://example.test.com/" xmlns:fgh="https://ns.fgh.co.uk/epcis/">
+                <eventTime>2005-04-04T20:33:31.116-06:00</eventTime>
+                <eventTimeZoneOffset>-06:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>https://id.gs1.org/01/70614141123451/21/2018</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:receiving</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:0012345.11111.400</id>
+                </readPoint>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:0012345.11111.0</id>
+                </bizLocation>
+                <abc:z-integer>1</abc:z-integer>
+                <fgh:a-date>2023-10-09</fgh:a-date>
+                <sdo:one>Order of Standards</sdo:one>
+                <sdo:nsn>4712</sdo:nsn>
+                <example:myField>Example of a vendor/user extension</example:myField>
+                <test:volume>100</test:volume>
+                <abc:a-integer>2</abc:a-integer>
+                <sdo:two>4711</sdo:two>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

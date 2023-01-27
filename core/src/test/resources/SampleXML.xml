@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cbv="https://ref.gs1.org/cbv/" xmlns:ext1="https://ns.ext.de/epcis/" schemaVersion="2.0" creationDate="2005-07-11T11:30:47.0Z">
+    <EPCISBody>
+        <EventList>
+            <AggregationEvent xmlns:ns0="urn:epcglobal:epcis-query:xsd:2" xmlns:example="http://ns.example.com/epcis/">
+                <eventTime>2019-10-07T15:30:00+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <eventID>ni:///sha-256;18454584ed96fbb533e4a69b01eefd1bff3edd1e80ef8598957111f4477a0a64?ver=CBV2.0</eventID>
+                <parentID>urn:epc:id:sscc:4012345.0111111111</parentID>
+                <action>ADD</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:packing</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00025.0</id>
+                </readPoint>
+                <childQuantityList>
+                    <quantityElement>
+                        <epcClass>urn:epc:class:lgtin:4012345.011111.1234</epcClass>
+                        <quantity>52.0</quantity>
+                        <uom>KGM</uom>
+                    </quantityElement>
+                </childQuantityList>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata time="2019-07-19T13:00:00Z" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999" dataProcessingMethod="https://example.com/253/4012345000054987" bizRules="https://example.org/253/4012345000054987" />
+                        <sensorReport type="gs1:AbsoluteHumidity" value="12.1" uom="A93" />
+                        <sensorReport type="gs1:AmountOfSubstancePerUnitVolume" chemicalSubstance="https://identifiers.org/inchikey:CZMRCDWAGMRECN-UGDNZRGBSA-N" value="0.18" uom="C35" />
+                        <sensorReport type="gs1:AmountOfSubstancePerUnitVolume" microorganism="https://www.ncbi.nlm.nih.gov/taxonomy/1126011" value="0.05" uom="C35" />
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-01T14:00:00Z" endTime="2019-04-02T13:59:59.999Z" example:someFurtherMetaData="someText" />
+                        <sensorReport type="gs1:Temperature" minValue="12.4" maxValue="13.8" meanValue="13.2" sDev="0.41" percRank="50.0" percValue="12.7" uom="CEL" example:cv="123" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                        <example:furtherSensorData>
+                            <example:measure1>123.5</example:measure1>
+                        </example:furtherSensorData>
+                        <example:furtherSensorData>
+                            <example:measure2>0.987</example:measure2>
+                        </example:furtherSensorData>
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorReport type="gs1:Temperature" time="2019-07-19T13:00:00Z" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999" dataProcessingMethod="https://example.com/253/4012345000054987" uom="CEL" bizRules="https://example.org/253/4012345000054987" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                    </sensorElement>
+                </sensorElementList>
+            </AggregationEvent>
+            <ObjectEvent>
+                <eventTime>2023-01-11T12:00:00+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <certificationInfo>https://accreditation-council.example.org/certificate/ABC12345</certificationInfo>
+                <epcList>
+                    <epc>https://id.gs1.de/01/04012345999990/21/XYZ-1234</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>cbv:BizStep-receiving</bizStep>
+                <disposition>cbv:Disp-in_progress</disposition>
+                <readPoint>
+                    <id>https://id.gs1.de/414/4012345000115</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata ext1:someFurtherMetadata="metadataText" time="2023-01-11T11:05:00Z" bizRules="https://id.example.com/253/4012345000054987"/>
+                        <sensorReport exception="gs1:ALARM_CONDITION" coordinateReferenceSystem="http://www.opengis.net/def/crs/EPSG/0/27700" ext1:someFurtherReportData="reportText" type="gs1:Dimensionless"/>
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

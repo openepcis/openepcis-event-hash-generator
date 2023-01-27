@@ -1,0 +1,349 @@
+<epcis:EPCISDocument schemaVersion="2.0" creationDate="2019-10-07T15:00:00.000+01:00" xmlns:epcis="urn:epcglobal:epcis:xsd:2"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gs1="https://gs1.org/voc/" xmlns:cbv="https://ref.gs1.org/cbv/"
+                     xmlns:cbvmda="urn:epcglobal:cbv:mda" xmlns:example="https://ns.example.com/epcis" xmlns:example1="https://ns.example1.com/epcis" xmlns:example2="https://ns.example2.com/epcis" xmlns:example3="https://ns.example3.com/epcis" xmlns:example4="https://ns.example4.com/epcis">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent>
+                <eventTime>2019-04-02T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata time="2019-04-02T14:05:00.000+01:00" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999"/>
+                        <sensorReport type="gs1:Temperature" value="26.0" uom="CEL"/>
+                        <sensorReport type="gs1:AbsoluteHumidity" value="12.1" uom="A93"/>
+                        <sensorReport type="gs1:Speed" value="160.0" uom="KMH"/>
+                        <sensorReport type="gs1:Illuminance" value="800.0" uom="LUX"/>
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorMetadata time="2019-04-02T14:35:00.000+01:00" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999"/>
+                        <sensorReport type="gs1:Temperature" value="26.1" uom="CEL"/>
+                        <sensorReport type="gs1:AbsoluteHumidity" value="12.2" uom="A93"/>
+                        <sensorReport type="gs1:Speed" value="161.0" uom="KMH"/>
+                        <sensorReport type="gs1:Illuminance" value="801.0" uom="LUX"/>
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorMetadata time="2019-04-02T14:55:00.000+01:00" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999"/>
+                        <sensorReport type="gs1:Temperature" value="26.2" uom="CEL"/>
+                        <sensorReport type="gs1:AbsoluteHumidity" value="12.2" uom="A93"/>
+                        <sensorReport type="gs1:Speed" value="162.0" uom="KMH"/>
+                        <sensorReport type="gs1:Illuminance" value="802.0" uom="LUX"/>
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2019-04-02T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-02T13:55:01.000+01:00" endTime="2019-04-02T14:55:00.000+01:00" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999" bizRules="https://example.com/253/4012345000054987" />
+                        <sensorReport type="gs1:Temperature" minValue="26.0" maxValue="26.2" uom="CEL" meanValue="26.1" sDev="0.1" />
+                        <sensorReport type="gs1:AbsoluteHumidity" minValue="12.1" maxValue="12.2" uom="A93" />
+                        <sensorReport type="gs1:Speed" minValue="160.0" maxValue="162.0" uom="KMH" />
+                        <sensorReport type="gs1:Illuminance" minValue="800.0" maxValue="802.0" uom="LUX" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2019-04-02T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList/>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-01T15:00:00.000+01:00" endTime="2019-04-02T14:59:59.999+01:00" />
+                        <sensorReport type="gs1:Temperature" minValue="12.4" maxValue="13.8" uom="CEL" />
+                        <sensorReport type="gs1:AbsoluteHumidity" minValue="69.2" maxValue="72.5" uom="A93" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2019-04-02T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList/>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <quantityList>
+                    <quantityElement>
+                        <epcClass>urn:epc:class:lgtin:4023333.002000.2019-10-07</epcClass>
+                        <quantity>150</quantity>
+                        <uom>KGM</uom>
+                    </quantityElement>
+                </quantityList>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata time="2019-04-02T14:55:00.000+01:00" />
+                        <sensorReport type="gs1:Temperature" value="26.0" uom="CEL" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999" />
+                        <sensorReport type="gs1:AbsoluteHumidity" value="12.1" uom="A93" deviceID="urn:epc:id:giai:4000001.222" deviceMetadata="https://id.gs1.org/8004/4000001222" rawData="https://example.org/8004/401234599999" />
+                        <sensorReport type="gs1:Speed" value="160" uom="KMH" deviceID="urn:epc:id:giai:4000001.333" deviceMetadata="https://id.gs1.org/8004/4000001333" rawData="https://example.org/8004/401234599999" />
+                        <sensorReport type="gs1:Illuminance" value="800" uom="LUX" deviceID="urn:epc:id:giai:4000001.444" deviceMetadata="https://id.gs1.org/8004/4000001444" rawData="https://example.org/8004/401234599999" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2019-04-02T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" />
+                        <sensorReport time="2019-04-02T14:05:00.000+01:00" type="gs1:Temperature" value="26.0" uom="CEL" />
+                        <sensorReport time="2019-04-02T14:15:00.000+01:00" type="gs1:Temperature" value="26.1" uom="CEL" />
+                        <sensorReport time="2019-04-02T14:25:00.000+01:00" type="gs1:Temperature" value="26.2" uom="CEL" />
+                        <sensorReport time="2019-04-02T14:35:00.000+01:00" type="gs1:Temperature" value="26.3" uom="CEL" />
+                        <sensorReport time="2019-04-02T14:45:00.000+01:00" type="gs1:Temperature" value="26.4" uom="CEL" />
+                        <sensorReport time="2019-04-02T14:55:00.000+01:00" type="gs1:Temperature" value="26.5" uom="CEL" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2019-10-07T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList/>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-01T15:00:00.000+01:00" endTime="2019-04-02T14:59:59.999+01:00" example:someFurtherMetaData="someText" />
+                        <sensorReport type="gs1:Temperature" minValue="12.4" maxValue="13.8" meanValue="13.2" sDev="0.41" uom="CEL" percRank="50" percValue="12.7" example:cv="123" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                        <example:furtherSensorData>
+                            <example:measure1>123.5</example:measure1>
+                            <example:measure2>0.987</example:measure2>
+                        </example:furtherSensorData>
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2019-10-07T16:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata time="2019-07-19T14:00:00.000+01:00" />
+                        <sensorReport type="gs1:Temperature" value="26.0" uom="CEL" deviceID="urn:epc:id:giai:4000001.111" />
+                        <sensorReport type="example:Abc" stringValue="111100001111000011110000" deviceID="urn:epc:id:giai:4000001.112" />
+                        <sensorReport type="example:Def" booleanValue="true" deviceID="urn:epc:id:giai:4000001.113" />
+                        <sensorReport type="example:Ghi" stringValue="SomeString" deviceID="urn:epc:id:giai:4000001.114" />
+                        <sensorReport type="example:Jkl" hexBinaryValue="f0f0f0" deviceID="urn:epc:id:giai:4000001.115" />
+                        <sensorReport type="example:Mno" uriValue="https://example.org/example/someSectorSpecificValue" deviceID="urn:epc:id:giai:4000001.116" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <AggregationEvent>
+                <eventTime>2019-10-07T15:30:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <parentID>urn:epc:id:sscc:4012345.0111111111</parentID>
+                <childEPCs/>
+                <action>ADD</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:packing</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00025.0</id>
+                </readPoint>
+                <childQuantityList>
+                    <quantityElement>
+                        <epcClass>urn:epc:class:lgtin:4012345.011111.1234</epcClass>
+                        <quantity>52</quantity>
+                        <uom>KGM</uom>
+                    </quantityElement>
+                </childQuantityList>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata time="2019-07-19T14:00:00.000+01:00" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999" dataProcessingMethod="https://example.com/253/4012345000054987" bizRules="https://example.org/253/4012345000054987" />
+                        <sensorReport type="gs1:AbsoluteHumidity" value="12.1" uom="A93" />
+                        <sensorReport type="gs1:Molar_concentration" chemicalSubstance="https://identifiers.org/inchikey:CZMRCDWAGMRECN-UGDNZRGBSA-N" value="0.18" uom="C35" />
+                        <sensorReport type="gs1:Molar_concentration" microorganism="https://www.ncbi.nlm.nih.gov/taxonomy/1126011" value="0.05" uom="C35" />
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-01T15:00:00.000+01:00" endTime="2019-04-02T14:59:59.999+01:00" example:someFurtherMetaData="someText" />
+                        <sensorReport type="gs1:Temperature" minValue="12.4" maxValue="13.8" meanValue="13.2" sDev="0.41" uom="CEL" percRank="50" percValue="12.7" example:cv="123" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                        <example:furtherSensorData>
+                            <example:measure1>123.5</example:measure1>
+                            <example:measure2>0.987</example:measure2>
+                        </example:furtherSensorData>
+                    </sensorElement>
+                    <sensorElement>
+                        <sensorReport type="gs1:Temperature" uom="CEL" time="2019-07-19T14:00:00.000+01:00" deviceID="urn:epc:id:giai:4000001.111" deviceMetadata="https://id.gs1.org/8004/4000001111" rawData="https://example.org/8004/401234599999" dataProcessingMethod="https://example.com/253/4012345000054987" bizRules="https://example.org/253/4012345000054987" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                    </sensorElement>
+                </sensorElementList>
+            </AggregationEvent>
+            <ObjectEvent>
+                <eventTime>2020-05-07T16:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.011111.9876</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:sensor_reporting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorReport exception="gs1:ERROR_CONDITION" uriValue="https://example.com/ErrorCode-A827" />
+                        <sensorReport exception="gs1:ALARM_CONDITION" booleanValue="true" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <ObjectEvent>
+                <eventTime>2020-05-08T15:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:4012345.022222.1234</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:sensor_reporting</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00005.0</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorReport type="gs1:Speed" value="4.5" component="example:x" uom="MTS" />
+                        <sensorReport type="gs1:Speed" value="12.8" component="example:y" uom="MTS" />
+                        <sensorReport type="gs1:Speed" value="0" component="example:z" uom="MTS" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+            <TransactionEvent>
+                <eventTime>2020-07-03T00:05:00-06:00</eventTime>
+                <eventTimeZoneOffset>-06:00</eventTimeZoneOffset>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:po">urn:epcglobal:cbv:bt:4012345123456:RE100099</bizTransaction>
+                </bizTransactionList>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:0614141.107340.1</epc>
+                    <epc>urn:epc:id:sgtin:0614141.107340.2</epc>
+                </epcList>
+                <action>ADD</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:needs_replacement</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4012345.00000.5</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorReport type="gs1:EffectiveDoseRate" value="0.005" uom="P71" />
+                    </sensorElement>
+                </sensorElementList>
+            </TransactionEvent>
+            <TransformationEvent>
+                <eventTime>2020-09-29T14:00:00.000+02:00</eventTime>
+                <eventTimeZoneOffset>+02:00</eventTimeZoneOffset>
+                <errorDeclaration>
+                    <declarationTime>2020-09-29T15:00:00.000+02:00</declarationTime>
+                    <example:issuer>Employee 123</example:issuer>
+                    <example3:errorCodes>
+                        <example3:value1>34</example3:value1>
+                        <example3:value44>66</example3:value44>
+                    </example3:errorCodes>
+                    <example:field example:furtherData="abcd1234"/>
+                </errorDeclaration>
+                <inputQuantityList>
+                    <quantityElement>
+                        <epcClass>urn:epc:class:lgtin:4023333.055555.ABC123</epcClass>
+                        <quantity>25.0</quantity>
+                        <uom>KGM</uom>
+                    </quantityElement>
+                </inputQuantityList>
+                <outputEPCList>
+                    <epc>urn:epc:id:sgtin:4012345.012345.987</epc>
+                    <epc>urn:epc:id:sgtin:4012345.012345.988</epc>
+                </outputEPCList>
+                <bizStep>urn:epcglobal:cbv:bizstep:commissioning</bizStep>
+                <readPoint>
+                    <id>urn:epc:id:sgln:4023333.00000.0</id>
+                    <example:gs1ES>(414)4023333000000</example:gs1ES>
+                </readPoint>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:4023333.00001.12</id>
+                    <example:gs1ES>(414)4023333000017 (254)12</example:gs1ES>
+                </bizLocation>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorMetadata startTime="2019-04-01T15:00:00.000+01:00" endTime="2019-04-02T14:59:59.999+01:00" example:someFurtherMetaData="someText" />
+                        <sensorReport type="gs1:Temperature" minValue="12.4" maxValue="13.8" meanValue="13.2" sDev="0.41" uom="CEL" percRank="50" percValue="12.7" example:cv="123" />
+                        <sensorReport type="example:someSensorProperty" stringValue="someSensorOutput" />
+                        <example:furtherSensorData>
+                            <example:measure1>123.5</example:measure1>
+                            <example:measure2>0.987</example:measure2>
+                        </example:furtherSensorData>
+                        <example:someUserField>abc123</example:someUserField>
+                    </sensorElement>
+                </sensorElementList>
+                <ilmd>
+                    <cbvmda:lotNumber>LOTABC</cbvmda:lotNumber>
+                    <example:grading>A</example:grading>
+                    <example2:userMasterData>
+                        <example2:sizeCode>B-2</example2:sizeCode>
+                    </example2:userMasterData>
+                </ilmd>
+                <example:internalData>
+                    <example:machine>urn:epc:id:giai:4012345.ABC</example:machine>
+                    <example:procedure>A-1</example:procedure>
+                </example:internalData>
+                <example2:furtherData example2:assemblyLine="2" example2:workingShift="1" />
+                <example4:otherThings>some text</example4:otherThings>
+            </TransformationEvent>
+            <ObjectEvent>
+                <eventTime>2021-05-27T11:00:00.000+01:00</eventTime>
+                <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+                <epcList>
+                    <epc>https://id.example.com/8003/040123450007718765</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>https://ref.gs1.org/cbv/Bizstep-sensor_reporting</bizStep>
+                <readPoint>
+                    <id>https://id.example.com/414/4012345000054</id>
+                </readPoint>
+                <sensorElementList>
+                    <sensorElement>
+                        <sensorReport type="gs1:Angle" component="cbv:Comp-latitude" value="42.698334" uom="DD" coordinateReferenceSystem="http://www.opengis.net/def/crs/OGC/1.3/CRS84" />
+                        <sensorReport type="gs1:Angle" component="cbv:Comp-longitude" value="23.319941" uom="DD" coordinateReferenceSystem="http://www.opengis.net/def/crs/OGC/1.3/CRS84" />
+                    </sensorElement>
+                </sensorElementList>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

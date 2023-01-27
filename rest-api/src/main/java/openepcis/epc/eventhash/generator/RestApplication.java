@@ -1,6 +1,10 @@
 package openepcis.epc.eventhash.generator;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.openepcis.epc.eventhash.EventHashGenerator;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -20,7 +24,15 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
 public class RestApplication extends Application {
 
   @Produces
+  @RequestScoped
+  public EventHashGenerator createEventHashGenerator() {
+    return new EventHashGenerator();
+  }
+
+  @Produces
   public JsonFactory createJsonFactory() {
-    return new JsonFactory();
+    final ObjectMapper objectMapper =
+        new ObjectMapper().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    return new JsonFactory().setCodec(objectMapper);
   }
 }

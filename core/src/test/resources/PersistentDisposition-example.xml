@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<epcis:EPCISDocument xmlns:epcis="urn:epcglobal:epcis:xsd:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cbvmda="urn:epcglobal:cbv:mda:" schemaVersion="2.0" creationDate="2020-06-28T13:41:00.000Z">
+    <EPCISBody>
+        <EventList>
+            <ObjectEvent xmlns:ns0="urn:epcglobal:epcis-query:xsd:2" xmlns:example="http://ns.example.com/epcis/">
+                <eventTime>2020-06-08T18:11:16Z</eventTime>
+                <eventTimeZoneOffset>+02:00</eventTimeZoneOffset>
+                <eventID>ni:///sha-256;dae7b481207bb87f1d981c5f169b8138368ae152a41b002eaf36eca1f67d56f5?ver=CBV2.0</eventID>
+                <epcList>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001001</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001002</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001003</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001004</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001005</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001006</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001007</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001008</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001009</epc>
+                    <epc>urn:epc:id:sgtin:9520001.012346.10000001010</epc>
+                </epcList>
+                <action>OBSERVE</action>
+                <bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+                <disposition>urn:epcglobal:cbv:disp:in_progress</disposition>
+                <readPoint>
+                    <id>urn:epc:id:sgln:9529999.99999.0</id>
+                </readPoint>
+                <bizLocation>
+                    <id>urn:epc:id:sgln:9529999.99999.0</id>
+                </bizLocation>
+                <bizTransactionList>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:inv">urn:epcglobal:cbv:bt:9520011111116:A123</bizTransaction>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:po">urn:epcglobal:cbv:bt:9529999999991:XYZ567</bizTransaction>
+                    <bizTransaction type="urn:epcglobal:cbv:btt:desadv">urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6</bizTransaction>
+                </bizTransactionList>
+                <sourceList>
+                    <source type="urn:epcglobal:cbv:sdt:owning_party">urn:epc:id:pgln:9520001.11111</source>
+                </sourceList>
+                <destinationList>
+                    <destination type="urn:epcglobal:cbv:sdt:owning_party">urn:epc:id:pgln:9520999.99999</destination>
+                </destinationList>
+                <persistentDisposition>
+                    <set>urn:epcglobal:cbv:disp:completeness_verified</set>
+                    <unset>urn:epcglobal:cbv:disp:completeness_inferred</unset>
+                </persistentDisposition>
+            </ObjectEvent>
+        </EventList>
+    </EPCISBody>
+</epcis:EPCISDocument>

@@ -24,10 +24,13 @@ import java.util.List;
  * from Comparator the information of the nodes are placed accordingly in pre-hash string.
  */
 public class HashNodeComparator implements Comparator<ContextNode> {
-  private final List<String> sortMap;
+  private List<String> sortMap;
+  private final ContextNode contextNode = new ContextNode();
+  private final Boolean standardFieldSort;
 
-  HashNodeComparator(final ContextNode jsonNode) {
+  HashNodeComparator(final ContextNode jsonNode, final Boolean standardFieldSort) {
     this.sortMap = TemplateNodeMap.findSortList(jsonNode);
+    this.standardFieldSort = standardFieldSort;
   }
 
   @Override
@@ -54,20 +57,26 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       // then sort them based on the name.
       if (result == 0 && o1Index == -1 && o2Index == -1) {
         // Check if the element is of user extension
-        if (!TemplateNodeMap.isEpcisField(o1) && !TemplateNodeMap.isEpcisField(o2)) {
+        if ((!TemplateNodeMap.isEpcisField(o1) && !TemplateNodeMap.isEpcisField(o2))
+            || (contextNode.isIlmdPath(o1) && contextNode.isIlmdPath(o2))) {
           // For user extensions consider the namespace and then sort
           return sortUserExtensions(o1, o2);
-        } else if (o1.getName() != null && o2.getName() != null) {
+        } else if (o1.getChildren() != null && o2.getChildren() != null) {
+          // If children is present then sort based on children elements
+          return findChildren(o1).compareTo(findChildren(o2));
+        } else {
           // For dedicated epcis fields sort based on the name
           return o1.getName().compareTo(o2.getName());
         }
+      } else if (result == 0 && o1Index == 1 && o2Index == 1) {
+        return findChildren(o1).compareTo(findChildren(o2));
       } else if (result == 0) {
         // If the outer event fields are equal then sort the inner elements of the fields' ex:
         // errorDeclaration. If the inner fields have the value then compare them and return.
         if (o1.getValue() != null && o2.getValue() != null) {
           return o1.getValue().compareTo(o2.getValue());
         } else if (o1.getChildren() != null && o2.getChildren() != null) {
-          return findChildren(o1.getChildren()).compareTo(findChildren(o2.getChildren()));
+          return findChildren(o1).compareTo(findChildren(o2));
         }
       } else if (o1Index == -1) {
         return 1;
@@ -76,6 +85,8 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       } else {
         return result;
       }
+    } else if (o1.getChildren() != null && o2.getChildren() != null) {
+      return findChildren(o1).compareTo(findChildren(o2));
     }
     return 0;
   }
@@ -111,20 +122,59 @@ public class HashNodeComparator implements Comparator<ContextNode> {
   }
 
   // For nested hashnode values loop over its children and get values.
-  private String findChildren(ArrayList<ContextNode> children) {
-    final StringBuilder childrenString = new StringBuilder();
+  private String findChildren(final ContextNode node) {
 
-    if (children != null) {
-      children.forEach(
-          child -> {
-            if (child != null && child.getValue() == null) {
-              childrenString.append(findChildren(child.getChildren()));
-            } else if (child != null && child.getValue() != null) {
-              childrenString.append(child.getValue());
-            }
-          });
+    // Sort the children elements as per standard before building single string for sorting from
+    // children elements
+    this.sortMap = TemplateNodeMap.findSortList(node);
+    final HashNodeComparator comparator = new HashNodeComparator(node, standardFieldSort);
+    if (!node.getChildren().isEmpty()) {
+      node.getChildren().sort(comparator);
     }
 
-    return childrenString.toString();
+    final StringBuilder childrenString = new StringBuilder();
+    final StringBuilder extensionString = new StringBuilder();
+    final ArrayList<ContextNode> children = node.getChildren();
+
+    if (children != null) {
+      for (ContextNode child : children) {
+        if (child != null) {
+          appendChildValue(child, childrenString, extensionString);
+        }
+      }
+    }
+
+    return Boolean.TRUE.equals(standardFieldSort)
+        ? childrenString.toString()
+        : extensionString.toString();
+  }
+
+  // Method to append the values to children
+  private void appendChildValue(
+      final ContextNode child,
+      final StringBuilder childrenString,
+      final StringBuilder extensionString) {
+    // Sort only standard epcis field and ignore the extension values present in children
+    if (TemplateNodeMap.isEpcisField(child) && Boolean.TRUE.equals(standardFieldSort)) {
+      if (child.getValue() != null) {
+        // If value is present then append after formatting
+        childrenString.append(
+            contextNode.epcisFieldFormatter(child.getName(), child.getValue(), child));
+      } else {
+        // If value not present then iterate again
+        childrenString.append(findChildren(child));
+      }
+    } else if (Boolean.FALSE.equals(standardFieldSort)) {
+      // For extension append to extension string only the extension elements
+      if (child.getValue() != null) {
+        // If value is present then append after user-extension formatting
+        extensionString.append(
+            contextNode.userExtensionsFormatter(
+                child.getName(), child.getValue(), child.getNamespaces()));
+      } else {
+        // If value not present then iterate again
+        extensionString.append(findChildren(child));
+      }
+    }
   }
 }

@@ -15,30 +15,32 @@
  */
 package io.openepcis.epc.eventhash;
 
+import static io.openepcis.epc.eventhash.constant.ConstantEPCISInfo.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.openepcis.epc.eventhash.exception.EventHashException;
 import io.openepcis.epc.eventhash.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.subscription.MultiEmitter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 
 @Slf4j
+@NoArgsConstructor
 public class EventHashGenerator {
 
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
-
-  private static final ThreadLocal<String> prehashJoin =
-      ThreadLocal.withInitial(() -> new String());
+  private String prehashJoin = "";
 
   static {
     try {
@@ -48,11 +50,8 @@ public class EventHashGenerator {
     }
   }
 
-  private EventHashGenerator() {}
-
-  public static void prehashJoin(final String s) {
-    // EventHashGenerator.prehashJoin.remove();
-    EventHashGenerator.prehashJoin.set(s.replace("\\n", "\n").replace("\\r", "\r"));
+  public void prehashJoin(final String s) {
+    prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
   }
 
   /**
@@ -63,15 +62,14 @@ public class EventHashGenerator {
    * @param hashAlgorithm Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
-  public static Multi<String> fromJson(
+  public Multi<String> fromJson(
       final InputStream jsonStream,
       final Map<String, String> contextHeader,
       final String hashAlgorithm)
       throws IOException {
-    return EventHashGenerator.internalFromJson(
-        String.class, jsonStream, contextHeader, new String[] {hashAlgorithm});
+    return internalFromJson(String.class, jsonStream, contextHeader, hashAlgorithm);
   }
 
   /**
@@ -81,11 +79,11 @@ public class EventHashGenerator {
    * @param hashAlgorithm Type of Hash Algorithm to run: sha-1, sha-224, sha-256, sha-384, sha-512,
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
-  public static Multi<String> fromJson(final InputStream jsonStream, final String hashAlgorithm)
+  public Multi<String> fromJson(final InputStream jsonStream, final String hashAlgorithm)
       throws IOException {
-    return fromJson(jsonStream, new HashMap<String, String>(), hashAlgorithm);
+    return fromJson(jsonStream, new HashMap<>(), hashAlgorithm);
   }
 
   /**
@@ -97,15 +95,14 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string map where key is hash algorithm and value is hash, representing each EPCIS
    *     event from InputStream
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
-  public static Multi<Map<String, String>> fromJson(
+  public Multi<Map<String, String>> fromJson(
       final InputStream jsonStream,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms)
       throws IOException {
-    return EventHashGenerator.internalFromJson(
-        Map.class, jsonStream, contextHeader, hashAlgorithms);
+    return internalFromJson(Map.class, jsonStream, contextHeader, hashAlgorithms);
   }
 
   /**
@@ -116,18 +113,17 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string map where key is hash algorithm and value is hash, representing each EPCIS
    *     event from InputStream
-   * @throws IOException
+   * @throws IOException reading of JSON file may throw exception
    */
-  public static Multi<Map<String, String>> fromJson(
+  public Multi<Map<String, String>> fromJson(
       final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
-    return fromJson(jsonStream, new HashMap<String, String>(), hashAlgorithms);
+    return fromJson(jsonStream, new HashMap<>(), hashAlgorithms);
   }
 
-  private static void addToContextHeader(
-      final ObjectNode item, final Map<String, String> contextHeader) {
-    if (item.get("@context") != null) {
-      final Iterator<JsonNode> contextElements = item.get("@context").elements();
-
+  private void addToContextHeader(final ObjectNode item, final Map<String, String> contextHeader) {
+    if (item.get(CONTEXT) != null) {
+      final Iterator<JsonNode> contextElements = item.get(CONTEXT).elements();
+      contextHeader.put(CBV_MDA, CBV_MDA_URL);
       while (contextElements.hasNext()) {
         final Iterator<Map.Entry<String, JsonNode>> contextFields = contextElements.next().fields();
         while (contextFields.hasNext()) {
@@ -146,9 +142,9 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
    */
-  public static Multi<String> fromPublisher(
+  public Multi<String> fromPublisher(
       final Publisher<ObjectNode> publisher, final String hashAlgorithm) {
-    return fromPublisher(publisher, new HashMap<String, String>(), hashAlgorithm);
+    return fromPublisher(publisher, new HashMap<>(), hashAlgorithm);
   }
 
   /**
@@ -160,12 +156,11 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
    */
-  public static Multi<String> fromPublisher(
+  public Multi<String> fromPublisher(
       final Publisher<ObjectNode> publisher,
       final Map<String, String> contextHeader,
       final String hashAlgorithm) {
-    return internalFromPublisher(
-        String.class, publisher, contextHeader, new String[] {hashAlgorithm});
+    return internalFromPublisher(String.class, publisher, contextHeader, hashAlgorithm);
   }
 
   /**
@@ -177,7 +172,7 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return mapped hash string representation for each EPCIS event
    */
-  public static Multi<Map<String, String>> fromPublisher(
+  public Multi<Map<String, String>> fromPublisher(
       final Publisher<ObjectNode> publisher,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
@@ -192,9 +187,9 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return mapped hash string representation for each EPCIS event
    */
-  public static Multi<Map<String, String>> fromPublisher(
+  public Multi<Map<String, String>> fromPublisher(
       final Publisher<ObjectNode> publisher, final String... hashAlgorithms) {
-    return fromPublisher(publisher, new HashMap<String, String>(), hashAlgorithms);
+    return fromPublisher(publisher, new HashMap<>(), hashAlgorithms);
   }
 
   /**
@@ -205,8 +200,8 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
    */
-  public static String fromObjectNode(final ObjectNode objectNode, final String hashAlgorithm) {
-    return fromObjectNode(objectNode, new HashMap<String, String>(), hashAlgorithm);
+  public String fromObjectNode(final ObjectNode objectNode, final String hashAlgorithm) {
+    return fromObjectNode(objectNode, new HashMap<>(), hashAlgorithm);
   }
 
   /**
@@ -218,7 +213,7 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return hash string representation for each EPCIS event
    */
-  public static String fromObjectNode(
+  public String fromObjectNode(
       final ObjectNode objectNode,
       final Map<String, String> contextHeader,
       final String hashAlgorithm) {
@@ -232,24 +227,25 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using "prehash" return pre-hash strings
    * @return mapped hash string representation for each EPCIS event
    */
-  public static Multi<Map<String, String>> fromObjectNode(
+  public Multi<Map<String, String>> fromObjectNode(
       final ObjectNode objectNode, final String... hashAlgorithms) {
     return internalFromObjectNode(Map.class, objectNode, new HashMap<>(), hashAlgorithms);
   }
 
-  private static <T> T internalFromObjectNode(
+  private <T> T internalFromObjectNode(
       final Class<? super T> cls,
       final ObjectNode objectNode,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
     addToContextHeader(objectNode, contextHeader);
-    if (!objectNode.get("type").asText().equalsIgnoreCase("EPCISDocument")) {
+    if (!objectNode.get(TYPE).asText().equalsIgnoreCase(EPCIS_DOCUMENT)) {
       final ContextNode contextNode = new ContextNode(objectNode.fields(), contextHeader);
       final String preHashString = contextNode.toShortenedString();
 
       // Call the method generateHashId in HashIdGenerator to
-      return (T) generate(cls, preHashString, hashAlgorithms);
+      return generate(cls, preHashString, hashAlgorithms);
     }
+
     if (cls.isAssignableFrom(String.class)) {
       return (T) "";
     } else {
@@ -257,25 +253,24 @@ public class EventHashGenerator {
     }
   }
 
-  private static <T> Multi<T> internalFromPublisher(
+  private <T> Multi<T> internalFromPublisher(
       final Class<? super T> cls,
       final Publisher<ObjectNode> publisher,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
-    return (Multi<T>)
-        Multi.createFrom()
-            .publisher(publisher)
-            .map(item -> (T) internalFromObjectNode(cls, item, contextHeader, hashAlgorithms))
-            .filter(
-                m -> {
-                  if (cls.isAssignableFrom(String.class)) {
-                    return !((String) m).isEmpty();
-                  }
-                  return !((Map) m).isEmpty();
-                });
+    return Multi.createFrom()
+        .publisher(publisher)
+        .map(item -> (T) internalFromObjectNode(cls, item, contextHeader, hashAlgorithms))
+        .filter(
+            m -> {
+              if (cls.isAssignableFrom(String.class)) {
+                return !((String) m).isEmpty();
+              }
+              return !((Map) m).isEmpty();
+            });
   }
 
-  private static <T> Multi<T> internalFromJson(
+  private <T> Multi<T> internalFromJson(
       final Class<? super T> cls,
       final InputStream jsonStream,
       final Map<String, String> contextHeader,
@@ -285,20 +280,20 @@ public class EventHashGenerator {
     return internalFromPublisher(cls, publisher, contextHeader, hashAlgorithms);
   }
 
-  protected static <T> T generate(
+  protected <T> T generate(
       final Class<? super T> cls, final String s, final String[] hashAlgorithms)
       throws RuntimeException {
     try {
       if (cls.isAssignableFrom(String.class)) {
         if (hashAlgorithms.length != 1) {
-          throw new RuntimeException("only one single algorithm allowed for type String");
+          throw new EventHashException("only one single algorithm allowed for type String");
         }
         return (T) HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithms[0]);
       }
       final Map<String, String> map = new HashMap<>();
       for (final String hashAlgorithm : hashAlgorithms) {
         if (hashAlgorithm.equalsIgnoreCase("prehash")) {
-          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin.get()));
+          map.put(hashAlgorithm, s.replaceAll("[\n\r]+", prehashJoin));
         } else {
           map.put(
               hashAlgorithm,
@@ -306,12 +301,13 @@ public class EventHashGenerator {
         }
       }
       return (T) map;
-    } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException(e);
+    } catch (Exception e) {
+      throw new EventHashException(
+          "Exception occurred during event hash generation : " + e.getMessage() + e);
     }
   }
 
-  private static <T> Multi<T> internalFromXml(
+  private <T> Multi<T> internalFromXml(
       final Class<? super T> cls, final InputStream xmlStream, final String... hashAlgorithms) {
     final SaxHandler saxHandler = new SaxHandler();
     final Consumer<MultiEmitter<? super ContextNode>> consumer =
@@ -347,8 +343,8 @@ public class EventHashGenerator {
    *     sha3-224, sha3-256, sha3-384, sha3-512, md2, md5. using pre return pre-hash strings
    * @return hash string representation for each EPCIS event
    */
-  public static Multi<String> fromXml(final InputStream xmlStream, final String hashAlgorithm) {
-    return EventHashGenerator.internalFromXml(String.class, xmlStream, hashAlgorithm);
+  public Multi<String> fromXml(final InputStream xmlStream, final String hashAlgorithm) {
+    return internalFromXml(String.class, xmlStream, hashAlgorithm);
   }
 
   /**
@@ -361,8 +357,8 @@ public class EventHashGenerator {
    * @return mapped hash string map where key is hash algorithm and value is hash, representing each
    *     EPCIS event from InputStream
    */
-  public static Multi<Map<String, String>> fromXml(
+  public Multi<Map<String, String>> fromXml(
       final InputStream xmlStream, final String... hashAlgorithms) {
-    return EventHashGenerator.internalFromXml(Map.class, xmlStream, hashAlgorithms);
+    return internalFromXml(Map.class, xmlStream, hashAlgorithms);
   }
 }

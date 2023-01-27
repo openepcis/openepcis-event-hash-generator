@@ -88,8 +88,11 @@ For a detailed description, check out the [command line client documentation](cl
 #### command-line utility :
 [openepcis-event-hash-generator-cli](cli)
 
-#### RESTful service
+#### JARX-RS RESTful service bindings
 [openepcis-event-hash-generator-rest-api](rest-api)
+
+#### Quarkus REST Application with OpenAPI support
+[openepcis-event-hash-generator-quarkus-app](quarkus-app)
 
 ### References:
 For more information on Event Hash Generation, ordering of elements, or canonicalization, please refer to the detailed Documentation by Ralph Tröger: https://github.com/RalphTro/epcis-event-hash-generator.

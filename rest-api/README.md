@@ -34,7 +34,7 @@ https://tools.openepcis.io/q/swagger-ui/#/Hash%20Id%20Generator%20Resource/post_
 
 Please refer to the below GIF that describes the steps for Hash id generation using RestAPI:
 
-![](./src/main/resources/ReadMe.gif)
+![](readme-rest-swaggerui.gif)
 
 ### References:
 1. For more information on the Event Hash Generator, please refer to following GitHub repository: https://github.com/openepcis/openepcis-event-hash-generator.

@@ -1,0 +1,144 @@
+package io.openecpis.epc.eventhash.azure;
+
+import io.openepcis.epc.eventhash.EventHashGenerator;
+import io.openepcis.model.epcis.EPCISDocument;
+import io.openepcis.model.rest.ProblemResponseBody;
+import io.smallrye.mutiny.Multi;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBodySchema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+@Tag(
+    name = "Hash-Id Generator",
+    description = "Generate Hash-Ids for EPCIS XML/JSON document/events.")
+@WebServlet(name = "EPCSISDocumentHashIdServlet", urlPatterns = "/api/documentHashIdGenerator")
+@Path("/api/documentHashIdGenerator")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class EPCSISDocumentHashIdServlet extends AbstractHashIdServlet {
+
+  @Override
+  @POST
+  @Operation(summary = "Generate Hash-Ids for EPCIS document in XML/JSON format.")
+  @RequestBody(
+      description = "EPCIS Document",
+      required = true,
+      content = {
+        @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = SchemaType.OBJECT))
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "OK: HashID generated successfully.",
+            content =
+                @Content(
+                    example =
+                        """
+                                                    [
+                                                     "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
+                                                     "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
+                                                    ]
+                                                     """,
+                    schema = @Schema(type = SchemaType.ARRAY, implementation = String.class))),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request: Input EPCIS document contain missing/invalid information.",
+            content = @Content(schema = @Schema(implementation = ProblemResponseBody.class))),
+        @APIResponse(
+            responseCode = "401",
+            description =
+                "Unauthorized: Unable to generate Hash-ID as request contain missing/invalid authorization.",
+            content = @Content(schema = @Schema(implementation = ProblemResponseBody.class))),
+        @APIResponse(
+            responseCode = "404",
+            description =
+                "Not Found: Unable to generate Hash-ID as the requested resource not found.",
+            content = @Content(schema = @Schema(implementation = ProblemResponseBody.class))),
+        @APIResponse(
+            responseCode = "406",
+            description =
+                "Not Acceptable: Unable to generate Hash-ID as server cannot find content confirming request.",
+            content = @Content(schema = @Schema(implementation = ProblemResponseBody.class))),
+        @APIResponse(
+            responseCode = "500",
+            description =
+                "Internal Server Error: Unable to generate Hash-ID document as server encountered problem.",
+            content = @Content(schema = @Schema(implementation = ProblemResponseBody.class)))
+      })
+  @RequestBodySchema(EPCISDocument.class)
+  @Parameter(
+      name = "prehash",
+      in = ParameterIn.QUERY,
+      description = "Display " + "Pre-Hash String",
+      schema =
+          @Schema(
+              description = "empty defaults to false",
+              enumeration = {"true", "false"}))
+  @Parameter(
+      name = "beautifyPreHash",
+      in = ParameterIn.QUERY,
+      description = "Beautify Pre-Hash String",
+      schema =
+          @Schema(
+              description = "empty defaults to false",
+              enumeration = {"true", "false"}))
+  @Parameter(
+      name = "hashAlgorithm",
+      in = ParameterIn.QUERY,
+      description = "Hash Algorithm Type : sha-256, sha3-512, etc.",
+      schema =
+          @Schema(
+              defaultValue = "sha-256",
+              description = "empty defaults to sha-256",
+              enumeration = {
+                "sha-1",
+                "sha-224",
+                "sha-256",
+                "sha-384",
+                "sha-512",
+                "sha3-224",
+                "sha3-256",
+                "sha3-384",
+                "sha3-512",
+                "md2",
+                "md5"
+              }))
+  protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+
+    final Boolean prehash = Boolean.valueOf(req.getParameter("prehash"));
+    final Boolean beautifyPreHash = Boolean.valueOf(req.getParameter("beautifyPreHash"));
+    final List<String> hashAlgorithms =
+        req.getParameter("hashAlgorithm") != null
+            ? List.of(req.getParameterValues("hashAlgorithm"))
+            : List.of("sha-256");
+    final String contentType = req.getContentType();
+
+    final List<String> hashParameters = getHashParameters(prehash, beautifyPreHash, hashAlgorithms);
+    Multi<Map<String, String>> result =
+        req.getContentType().equals("application/xml")
+            ? EventHashGenerator.fromXml(
+                req.getInputStream(), hashParameters.toArray(String[]::new))
+            : EventHashGenerator.fromJson(
+                req.getInputStream(), hashParameters.toArray(String[]::new));
+    writeResult(resp, result);
+  }
+}

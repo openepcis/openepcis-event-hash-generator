@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.openepcis</groupId>
-        <artifactId>openepcis-bom</artifactId>
+        <artifactId>openepcis-event-hash-generator-build</artifactId>
         <version>0.9.2-SNAPSHOT</version>
     </parent>
 
@@ -64,21 +64,18 @@
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-event-hash-generator</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- OpenEPCIS dependency for returning the ProblemResponseBody and data-->
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-model-rest</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-model-epcis</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -215,12 +212,4 @@
             </properties>
         </profile>
     </profiles>
-
-    <repositories>
-        <repository>
-            <id>sonatype-staging</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
-
 </project>

@@ -1,0 +1,1181 @@
+{
+  "@context": [
+    "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"
+  ],
+  "id": "https://id.example.org/document1",
+  "type": "EPCISDocument",
+  "schemaVersion": "2.0",
+  "creationDate": "2023-01-25T10:00:00+03:00",
+  "epcisBody": {
+    "eventList": [
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:15:17+03:00",
+        "recordTime": "2023-01-25T10:15:17+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/410977"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/410977"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/413430"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310023/10/1203359230001722726",
+            "quantity": 10.3,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:07:48+03:00",
+        "recordTime": "2023-01-25T10:07:48+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/410977"
+        },
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/413430"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310023/10/1203359230001722726",
+            "quantity": 10.3,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR06BLG686"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:15:17+03:00",
+        "recordTime": "2023-01-25T10:15:17+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/410977"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/410977"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/413430"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001500443",
+            "quantity": 45.303,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:07:48+03:00",
+        "recordTime": "2023-01-25T10:07:48+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/410977"
+        },
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/413430"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001500443",
+            "quantity": 45.303,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR06BLG686"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:15:17+03:00",
+        "recordTime": "2023-01-25T10:15:17+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/410977"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/410977"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/413430"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310016/10/1073359230001682997",
+            "quantity": 6.489,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:07:48+03:00",
+        "recordTime": "2023-01-25T10:07:48+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/410977"
+        },
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/413430"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310016/10/1073359230001682997",
+            "quantity": 6.489,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR06BLG686"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:23:25+03:00",
+        "recordTime": "2023-01-25T10:23:25+03:00",
+        "action": "OBSERVE",
+        "bizStep": "arriving",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/355979"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/350029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/355979"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310016/10/1073359230001790866",
+            "quantity": 743.44,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR07APY01"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:23:25+03:00",
+        "recordTime": "2023-01-25T10:23:25+03:00",
+        "action": "OBSERVE",
+        "bizStep": "arriving",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/355979"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/350029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/355979"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001802720",
+            "quantity": 674.44,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR07APY01"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:32:55+03:00",
+        "recordTime": "2023-01-25T10:32:55+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "available",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/355979"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/355979"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/357040"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073319230001549766",
+            "quantity": 67.0,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:32:55+03:00",
+        "recordTime": "2023-01-25T10:32:55+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "available",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/355979"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/355979"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/357040"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073319230001549766",
+            "quantity": 67.0,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR15EZ051"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:41:32+03:00",
+        "recordTime": "2023-01-25T10:41:32+03:00",
+        "action": "OBSERVE",
+        "bizStep": "arriving",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/482328"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/480029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/482328"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073319230001725424",
+            "quantity": 680.88,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR07GDK69"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:41:32+03:00",
+        "recordTime": "2023-01-25T10:41:32+03:00",
+        "action": "OBSERVE",
+        "bizStep": "arriving",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/482328"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/480029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/482328"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001783637",
+            "quantity": 654.44,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR07GDK69"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:41:38+03:00",
+        "recordTime": "2023-01-25T10:41:38+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340977"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/340977"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/346595"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310023/10/1203359230001722726",
+            "quantity": 10.3,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:38:44+03:00",
+        "recordTime": "2023-01-25T10:38:44+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340977"
+        },
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/346595"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310023/10/1203359230001722726",
+            "quantity": 10.3,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR34BLH99"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:41:38+03:00",
+        "recordTime": "2023-01-25T10:41:38+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340977"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/340977"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/346595"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310016/10/1073359230001682997",
+            "quantity": 12.978,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:38:44+03:00",
+        "recordTime": "2023-01-25T10:38:44+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "active",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340977"
+        },
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/346595"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310016/10/1073359230001682997",
+            "quantity": 12.978,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR34BLH99"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:42:50+03:00",
+        "recordTime": "2023-01-25T10:42:50+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "available",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340029"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/340029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/343141"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001790864",
+            "quantity": 1128.76,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:34:20+03:00",
+        "recordTime": "2023-01-25T10:34:20+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "available",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340029"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/340029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/343141"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001790864",
+            "quantity": 1128.76,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR07GYC49"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:42:50+03:00",
+        "recordTime": "2023-01-25T10:42:50+03:00",
+        "action": "ADD",
+        "bizStep": "repackaging",
+        "disposition": "available",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340029"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/340029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/343141"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001802720",
+            "quantity": 1128.76,
+            "uom": "KGM"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:34:20+03:00",
+        "recordTime": "2023-01-25T10:34:20+03:00",
+        "action": "OBSERVE",
+        "bizStep": "departing",
+        "disposition": "available",
+        "bizLocation": {
+          "id": "https://id.gs1.org/414/4251218300147/254/340029"
+        },
+        "sourceList": [
+          {
+            "type": "location",
+            "source": "https://id.gs1.org/414/4251218300147/254/340029"
+          }
+        ],
+        "destinationList": [
+          {
+            "type": "location",
+            "destination": "https://id.gs1.org/414/4251218300147/254/343141"
+          }
+        ],
+        "quantityList": [
+          {
+            "epcClass": "https://id.gs1.org/01/04251218310009/10/1073359230001802720",
+            "quantity": 1128.76,
+            "uom": "KGM"
+          }
+        ],
+        "bizTransactionList": [
+          {
+            "type": "pedigree",
+            "bizTransaction": "https://id.gs1.org/8004/42512183.TRUCK.TR07GYC49"
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:07:48+03:00",
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "https://id.gs1.org/8004/42512183.TRUCK.TR-06-BLG-686"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.873211,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.395607,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872814,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.39595,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872364,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.396544,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.87225,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397095,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.87225,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397654,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872295,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397902,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872295,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397898,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872135,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397829,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872128,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397425,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872162,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397278,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 6.8,
+                "uom": "CEL",
+                "time": "2023-01-25T10:04:06+03:00",
+                "deviceID": "https://id.gs1.org/8004/42512183.SENSOR.TR-06-BLG-686:1"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 6.3,
+                "uom": "CEL",
+                "time": "2023-01-25T10:02:20+03:00",
+                "deviceID": "https://id.gs1.org/8004/42512183.SENSOR.TR-06-BLG-686:2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:38:44+03:00",
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "https://id.gs1.org/8004/42512183.TRUCK.TR-34-BLH-99"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.873573,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.394655,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.873573,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.394655,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.873573,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.394655,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.873539,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.394911,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.873268,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.395216,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872936,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.395632,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872478,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.396103,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872135,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.3967,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872051,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397182,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872028,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397573,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872108,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397778,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872124,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397972,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872124,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397984,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872002,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.398184,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 40.872028,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 29.397749,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTimeZoneOffset": "+03:00",
+        "eventTime": "2023-01-25T10:34:20+03:00",
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "https://id.gs1.org/8004/42512183.TRUCK.TR-07-GYC-49"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 36.908859,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 30.76436,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 36.908859,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 30.76436,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "value": 36.908859,
+                "component": "latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "value": 30.76436,
+                "component": "longitude",
+                "uom": "DD"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

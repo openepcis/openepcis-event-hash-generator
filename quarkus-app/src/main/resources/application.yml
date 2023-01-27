@@ -1,0 +1,12 @@
+quarkus:
+  swagger-ui:
+    always-include: true
+  http:
+    cors: true
+    port: 9000
+
+  container-image:
+    group: openepcis
+    name: event-hash-generator-service
+    additional-tags:
+      - latest

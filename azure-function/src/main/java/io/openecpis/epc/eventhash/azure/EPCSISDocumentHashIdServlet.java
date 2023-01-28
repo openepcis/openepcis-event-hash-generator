@@ -1,6 +1,5 @@
 package io.openecpis.epc.eventhash.azure;
 
-import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.model.epcis.EPCISDocument;
 import io.openepcis.model.rest.ProblemResponseBody;
 import io.smallrye.mutiny.Multi;
@@ -135,9 +134,9 @@ public class EPCSISDocumentHashIdServlet extends AbstractHashIdServlet {
     final List<String> hashParameters = getHashParameters(prehash, beautifyPreHash, hashAlgorithms);
     Multi<Map<String, String>> result =
         req.getContentType().equals("application/xml")
-            ? EventHashGenerator.fromXml(
+            ? eventHashGenerator.fromXml(
                 req.getInputStream(), hashParameters.toArray(String[]::new))
-            : EventHashGenerator.fromJson(
+            : eventHashGenerator.fromJson(
                 req.getInputStream(), hashParameters.toArray(String[]::new));
     writeResult(resp, result);
   }

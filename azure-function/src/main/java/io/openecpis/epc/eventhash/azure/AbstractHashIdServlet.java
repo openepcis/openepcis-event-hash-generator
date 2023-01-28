@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 public abstract class AbstractHashIdServlet extends HttpServlet {
+
+  @Inject EventHashGenerator eventHashGenerator;
 
   protected final List<String> getHashParameters(
       Boolean prehash, Boolean beautifyPreHash, List<String> hashAlgorithms) {
@@ -24,9 +27,9 @@ public abstract class AbstractHashIdServlet extends HttpServlet {
 
       // If user has requested for beautification for prehash string then add beautification.
       if (Boolean.TRUE.equals(beautifyPreHash)) {
-        EventHashGenerator.prehashJoin("\\n");
+        eventHashGenerator.prehashJoin("\\n");
       } else {
-        EventHashGenerator.prehashJoin("");
+        eventHashGenerator.prehashJoin("");
       }
     }
 

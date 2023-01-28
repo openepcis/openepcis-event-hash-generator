@@ -2,7 +2,6 @@ package io.openecpis.epc.eventhash.azure;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.model.epcis.EPCISDocument;
 import io.openepcis.model.epcis.EPCISEvent;
 import io.openepcis.model.rest.ProblemResponseBody;
@@ -14,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
 
-  private final JsonFactory jsonFactory = new JsonFactory();
+  @Inject JsonFactory jsonFactory;
 
   @Override
   @POST
@@ -146,9 +146,9 @@ public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
     final List<String> hashParameters = getHashParameters(prehash, beautifyPreHash, hashAlgorithms);
     Multi<Map<String, String>> result =
         req.getContentType().equals("application/xml")
-            ? EventHashGenerator.fromXml(
+            ? eventHashGenerator.fromXml(
                 req.getInputStream(), hashParameters.toArray(String[]::new))
-            : EventHashGenerator.fromJson(
+            : eventHashGenerator.fromJson(
                 generateJsonDocumentWrapper(req.getInputStream()),
                 hashParameters.toArray(String[]::new));
     writeResult(resp, result);

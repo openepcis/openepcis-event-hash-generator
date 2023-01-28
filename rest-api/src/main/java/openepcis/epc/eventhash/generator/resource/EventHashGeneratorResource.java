@@ -134,7 +134,7 @@ public class EventHashGeneratorResource {
               schema =
                   @Schema(
                       description = "empty defaults to false",
-                      enumeration = {"True", "False"}))
+                      enumeration = {"true", "false"}))
           @DefaultValue("false")
           @QueryParam("prehash")
           Boolean prehash,
@@ -143,7 +143,7 @@ public class EventHashGeneratorResource {
               schema =
                   @Schema(
                       description = "empty defaults to false",
-                      enumeration = {"True", "False"}))
+                      enumeration = {"true", "false"}))
           @DefaultValue("false")
           @QueryParam("beautifyPreHash")
           Boolean beautifyPreHash)
@@ -166,9 +166,11 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
-    return contentType.equals("application/xml")
-        ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
-        : eventHashGenerator.fromJson(inputDocumentStream, hashParameters.toArray(String[]::new));
+    return (contentType.equals("application/xml")
+            ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
+            : eventHashGenerator.fromJson(
+                inputDocumentStream, hashParameters.toArray(String[]::new)))
+        .runSubscriptionOn(executorService);
   }
 
   // API end point for the single/List of EPCIS event in JSON format.
@@ -250,7 +252,7 @@ public class EventHashGeneratorResource {
               schema =
                   @Schema(
                       description = "empty defaults to false",
-                      enumeration = {"True", "False"}))
+                      enumeration = {"true", "false"}))
           @DefaultValue("false")
           @QueryParam("prehash")
           Boolean prehash,
@@ -259,7 +261,7 @@ public class EventHashGeneratorResource {
               schema =
                   @Schema(
                       description = "empty defaults to false",
-                      enumeration = {"True", "False"}))
+                      enumeration = {"true", "false"}))
           @DefaultValue("false")
           @QueryParam("beautifyPreHash")
           Boolean beautifyPreHash)
@@ -282,11 +284,12 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
-    return contentType.equals("application/xml")
-        ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
-        : eventHashGenerator.fromJson(
-            generateJsonDocumentWrapper(inputDocumentStream),
-            hashParameters.toArray(String[]::new));
+    return (contentType.equals("application/xml")
+            ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
+            : eventHashGenerator.fromJson(
+                generateJsonDocumentWrapper(inputDocumentStream),
+                hashParameters.toArray(String[]::new)))
+        .runSubscriptionOn(executorService);
   }
 
   // Add the outer wrapper elements for the JSON eventList when array of EPCIS events is provided.

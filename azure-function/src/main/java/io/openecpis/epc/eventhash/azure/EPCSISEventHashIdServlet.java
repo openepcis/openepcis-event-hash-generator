@@ -34,9 +34,9 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Tag(
-    name = "Hash-Id Generator",
-    description = "Generate Hash-Ids for EPCIS XML/JSON document/events.")
-@WebServlet(name = "EPCSISEventHashIdServlet", urlPatterns = "/api/generate/event-hash/document")
+    name = "Event Hash Generator",
+    description = "Generate event hash for EPCIS XML or JSON/JSON-LD document or event list.")
+@WebServlet(name = "EPCSISEventHashIdServlet", urlPatterns = "/api/generate/event-hash/events")
 @Path("/api/generate/event-hash/events")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

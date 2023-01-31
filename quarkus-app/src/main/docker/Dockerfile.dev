@@ -1,0 +1,18 @@
+FROM openjdk:17-alpine
+
+ENV QUARKUS_LAUNCH_DEVMODE=true \
+    JAVA_ENABLE_DEBUG=true
+
+COPY target/quarkus-app/lib/ /deployments/lib/
+COPY target/quarkus-app/*.jar /deployments/
+COPY target/quarkus-app/app/ /deployments/app/
+COPY target/quarkus-app/quarkus/ /deployments/quarkus/
+
+CMD ["java", "-jar", \
+  "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" \
+  "-Dquarkus.http.host=0.0.0.0", \
+  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
+  "-Dquarkus.package.type=mutable-jar", \
+  "-Dquarkus.live-reload.password=123", \
+  "-Dquarkus-profile=docker", \
+  "/deployments/quarkus-run.jar"]

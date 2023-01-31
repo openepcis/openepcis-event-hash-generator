@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     Copyright 2022 benelog GmbH & Co. KG
@@ -16,10 +16,11 @@
         limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-bom</artifactId>
@@ -29,7 +30,7 @@
     <artifactId>openepcis-event-hash-generator-build</artifactId>
     <packaging>pom</packaging>
     <name>openepcis-event-hash-generator-build</name>
-    <description>openEPCIS EPC GS1 Digital Link Translation Tools</description>
+    <description>OpenEPCIS EPC GS1 Digital Link Translation Tools</description>
     <url>https://github.com/openepcis/openepcis-event-hash-generator</url>
 
     <licenses>
@@ -68,7 +69,65 @@
         <module>core</module>
         <module>cli</module>
         <module>rest-api</module>
+        <module>quarkus-app</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Local Hash Generator project versions -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-event-hash-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- OpenEPCIS model dependencies -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-model-rest</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-model-epcis</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- Eclipse microprofile OpenAPI support -->
+            <dependency>
+                <groupId>org.eclipse.microprofile.openapi</groupId>
+                <artifactId>microprofile-openapi-api</artifactId>
+                <version>2.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.microprofile.context-propagation</groupId>
+                <artifactId>microprofile-context-propagation-api</artifactId>
+                <version>1.2</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.nativeimage</groupId>
+                <artifactId>svm</artifactId>
+                <version>22.3.1</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
 
     <build>
         <plugins>
@@ -82,6 +141,7 @@
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <!-- sonatype snapshots -->
         <repository>
@@ -89,7 +149,5 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
-
-
 
 </project>

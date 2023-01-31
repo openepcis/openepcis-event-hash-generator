@@ -1,0 +1,732 @@
+{
+  "@context": [
+    "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
+    {
+      "example2": "https://ns.example2.com/epcis"
+    },
+    {
+      "example": "https://ns.example.com/epcis"
+    },
+    {
+      "example4": "https://ns.example4.com/epcis"
+    },
+    {
+      "example1": "https://ns.example1.com/epcis"
+    },
+    {
+      "example3": "https://ns.example3.com/epcis"
+    }
+  ],
+  "type": "EPCISDocument",
+  "schemaVersion": "2.0",
+  "creationDate": "2019-10-07T15:00:00.000+01:00",
+  "epcisBody": {
+    "eventList": [
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-04-02T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "urn:epc:id:sgtin:4012345.011111.9876"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "time": "2019-04-02T14:05:00+01:00",
+              "deviceID": "urn:epc:id:giai:4000001.111",
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "rawData": "https://example.org/8004/401234599999"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 26,
+                "uom": "CEL"
+              },
+              {
+                "type": "AbsoluteHumidity",
+                "value": 12.1,
+                "uom": "A93"
+              },
+              {
+                "type": "Speed",
+                "value": 160,
+                "uom": "KMH"
+              },
+              {
+                "type": "Illuminance",
+                "value": 800,
+                "uom": "LUX"
+              }
+            ]
+          },
+          {
+            "sensorMetadata": {
+              "time": "2019-04-02T14:35:00+01:00",
+              "deviceID": "urn:epc:id:giai:4000001.111",
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "rawData": "https://example.org/8004/401234599999"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 26.1,
+                "uom": "CEL"
+              },
+              {
+                "type": "AbsoluteHumidity",
+                "value": 12.2,
+                "uom": "A93"
+              },
+              {
+                "type": "Speed",
+                "value": 161,
+                "uom": "KMH"
+              },
+              {
+                "type": "Illuminance",
+                "value": 801,
+                "uom": "LUX"
+              }
+            ]
+          },
+          {
+            "sensorMetadata": {
+              "time": "2019-04-02T14:55:00+01:00",
+              "deviceID": "urn:epc:id:giai:4000001.111",
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "rawData": "https://example.org/8004/401234599999"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 26.2,
+                "uom": "CEL"
+              },
+              {
+                "type": "AbsoluteHumidity",
+                "value": 12.2,
+                "uom": "A93"
+              },
+              {
+                "type": "Speed",
+                "value": 162,
+                "uom": "KMH"
+              },
+              {
+                "type": "Illuminance",
+                "value": 802,
+                "uom": "LUX"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-04-02T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "urn:epc:id:sgtin:4012345.011111.9876"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "deviceID": "urn:epc:id:giai:4000001.111",
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "rawData": "https://example.org/8004/401234599999",
+              "startTime": "2019-04-02T13:55:01+01:00",
+              "endTime": "2019-04-02T14:55:00+01:00",
+              "bizRules": "https://example.com/253/4012345000054987"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "minValue": 26,
+                "maxValue": 26.2,
+                "meanValue": 26.1,
+                "uom": "CEL",
+                "sDev": 0.1
+              },
+              {
+                "type": "AbsoluteHumidity",
+                "minValue": 12.1,
+                "maxValue": 12.2,
+                "uom": "A93"
+              },
+              {
+                "type": "Speed",
+                "minValue": 160,
+                "maxValue": 162,
+                "uom": "KMH"
+              },
+              {
+                "type": "Illuminance",
+                "minValue": 800,
+                "maxValue": 802,
+                "uom": "LUX"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-04-02T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "startTime": "2019-04-01T15:00:00+01:00",
+              "endTime": "2019-04-02T14:59:59.999+01:00"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "minValue": 12.4,
+                "maxValue": 13.8,
+                "uom": "CEL"
+              },
+              {
+                "type": "AbsoluteHumidity",
+                "minValue": 69.2,
+                "maxValue": 72.5,
+                "uom": "A93"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-04-02T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "quantityList": [
+          {
+            "epcClass": "urn:epc:class:lgtin:4023333.002000.2019-10-07",
+            "quantity": 150,
+            "uom": "KGM"
+          }
+        ],
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "time": "2019-04-02T14:55:00+01:00"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 26,
+                "deviceID": "urn:epc:id:giai:4000001.111",
+                "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+                "rawData": "https://example.org/8004/401234599999",
+                "uom": "CEL"
+              },
+              {
+                "type": "AbsoluteHumidity",
+                "value": 12.1,
+                "deviceID": "urn:epc:id:giai:4000001.222",
+                "deviceMetadata": "https://id.gs1.org/8004/4000001222",
+                "rawData": "https://example.org/8004/401234599999",
+                "uom": "A93"
+              },
+              {
+                "type": "Speed",
+                "value": 160,
+                "deviceID": "urn:epc:id:giai:4000001.333",
+                "deviceMetadata": "https://id.gs1.org/8004/4000001333",
+                "rawData": "https://example.org/8004/401234599999",
+                "uom": "KMH"
+              },
+              {
+                "type": "Illuminance",
+                "value": 800,
+                "deviceID": "urn:epc:id:giai:4000001.444",
+                "deviceMetadata": "https://id.gs1.org/8004/4000001444",
+                "rawData": "https://example.org/8004/401234599999",
+                "uom": "LUX"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-04-02T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "urn:epc:id:sgtin:4012345.011111.9876"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "deviceID": "urn:epc:id:giai:4000001.111",
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "time": "2019-04-02T14:05:00+01:00",
+                "value": 26,
+                "uom": "CEL"
+              },
+              {
+                "type": "Temperature",
+                "time": "2019-04-02T14:15:00+01:00",
+                "value": 26.1,
+                "uom": "CEL"
+              },
+              {
+                "type": "Temperature",
+                "time": "2019-04-02T14:25:00+01:00",
+                "value": 26.2,
+                "uom": "CEL"
+              },
+              {
+                "type": "Temperature",
+                "time": "2019-04-02T14:35:00+01:00",
+                "value": 26.3,
+                "uom": "CEL"
+              },
+              {
+                "type": "Temperature",
+                "time": "2019-04-02T14:45:00+01:00",
+                "value": 26.4,
+                "uom": "CEL"
+              },
+              {
+                "type": "Temperature",
+                "time": "2019-04-02T14:55:00+01:00",
+                "value": 26.5,
+                "uom": "CEL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-10-07T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "startTime": "2019-04-01T15:00:00+01:00",
+              "endTime": "2019-04-02T14:59:59.999+01:00",
+              "example:someFurtherMetaData": "someText"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "minValue": 12.4,
+                "maxValue": 13.8,
+                "meanValue": 13.2,
+                "percRank": 50,
+                "percValue": 12.7,
+                "uom": "CEL",
+                "sDev": 0.41,
+                "example:cv": "123"
+              },
+              {
+                "type": "example:someSensorProperty",
+                "stringValue": "someSensorOutput"
+              }
+            ],
+            "example:furtherSensorData": {
+              "example:measure2": "0.987",
+              "example:measure1": "123.5"
+            }
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2019-10-07T16:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "urn:epc:id:sgtin:4012345.011111.9876"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "time": "2019-07-19T14:00:00+01:00"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "value": 26,
+                "deviceID": "urn:epc:id:giai:4000001.111",
+                "uom": "CEL"
+              },
+              {
+                "type": "example:Abc",
+                "stringValue": "111100001111000011110000",
+                "deviceID": "urn:epc:id:giai:4000001.112"
+              },
+              {
+                "type": "example:Def",
+                "booleanValue": true,
+                "deviceID": "urn:epc:id:giai:4000001.113"
+              },
+              {
+                "type": "example:Ghi",
+                "stringValue": "SomeString",
+                "deviceID": "urn:epc:id:giai:4000001.114"
+              },
+              {
+                "type": "example:Jkl",
+                "hexBinaryValue": "f0f0f0",
+                "deviceID": "urn:epc:id:giai:4000001.115"
+              },
+              {
+                "type": "example:Mno",
+                "uriValue": "https://example.org/example/someSectorSpecificValue",
+                "deviceID": "urn:epc:id:giai:4000001.116"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "AggregationEvent",
+        "eventTime": "2019-10-07T15:30:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "parentID": "urn:epc:id:sscc:4012345.0111111111",
+        "childEPCs": [],
+        "action": "ADD",
+        "bizStep": "packing",
+        "disposition": "in_progress",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00025.0"
+        },
+        "childQuantityList": [
+          {
+            "epcClass": "urn:epc:class:lgtin:4012345.011111.1234",
+            "quantity": 52,
+            "uom": "KGM"
+          }
+        ],
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "time": "2019-07-19T14:00:00+01:00",
+              "deviceID": "urn:epc:id:giai:4000001.111",
+              "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+              "rawData": "https://example.org/8004/401234599999",
+              "dataProcessingMethod": "https://example.com/253/4012345000054987",
+              "bizRules": "https://example.org/253/4012345000054987"
+            },
+            "sensorReport": [
+              {
+                "type": "AbsoluteHumidity",
+                "value": 12.1,
+                "uom": "A93"
+              },
+              {
+                "type": "Molar_concentration",
+                "chemicalSubstance": "https://identifiers.org/inchikey:CZMRCDWAGMRECN-UGDNZRGBSA-N",
+                "value": 0.18,
+                "uom": "C35"
+              },
+              {
+                "type": "Molar_concentration",
+                "microorganism": "https://www.ncbi.nlm.nih.gov/taxonomy/1126011",
+                "value": 0.05,
+                "uom": "C35"
+              }
+            ]
+          },
+          {
+            "sensorMetadata": {
+              "startTime": "2019-04-01T15:00:00+01:00",
+              "endTime": "2019-04-02T14:59:59.999+01:00",
+              "example:someFurtherMetaData": "someText"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "minValue": 12.4,
+                "maxValue": 13.8,
+                "meanValue": 13.2,
+                "percRank": 50,
+                "percValue": 12.7,
+                "uom": "CEL",
+                "sDev": 0.41,
+                "example:cv": "123"
+              },
+              {
+                "type": "example:someSensorProperty",
+                "stringValue": "someSensorOutput"
+              }
+            ],
+            "example:furtherSensorData": {
+              "example:measure2": "0.987",
+              "example:measure1": "123.5"
+            }
+          },
+          {
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "time": "2019-07-19T14:00:00+01:00",
+                "deviceID": "urn:epc:id:giai:4000001.111",
+                "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+                "rawData": "https://example.org/8004/401234599999",
+                "dataProcessingMethod": "https://example.com/253/4012345000054987",
+                "uom": "CEL",
+                "bizRules": "https://example.org/253/4012345000054987"
+              },
+              {
+                "type": "example:someSensorProperty",
+                "stringValue": "someSensorOutput"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2020-05-07T16:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "urn:epc:id:sgtin:4012345.011111.9876"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "sensor_reporting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "exception": "gs1:ERROR_CONDITION",
+                "uriValue": "https://example.com/ErrorCode-A827"
+              },
+              {
+                "exception": "gs1:ALARM_CONDITION",
+                "booleanValue": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2020-05-08T15:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "urn:epc:id:sgtin:4012345.022222.1234"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "sensor_reporting",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00005.0"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "type": "Speed",
+                "value": 4.5,
+                "component": "example:x",
+                "uom": "MTS"
+              },
+              {
+                "type": "Speed",
+                "value": 12.8,
+                "component": "example:y",
+                "uom": "MTS"
+              },
+              {
+                "type": "Speed",
+                "value": 0,
+                "component": "example:z",
+                "uom": "MTS"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TransactionEvent",
+        "eventTime": "2020-07-03T00:05:00-06:00",
+        "eventTimeZoneOffset": "-06:00",
+        "bizTransactionList": [
+          {
+            "type": "po",
+            "bizTransaction": "urn:epcglobal:cbv:bt:4012345123456:RE100099"
+          }
+        ],
+        "epcList": [
+          "urn:epc:id:sgtin:0614141.107340.1",
+          "urn:epc:id:sgtin:0614141.107340.2"
+        ],
+        "action": "ADD",
+        "bizStep": "inspecting",
+        "disposition": "needs_replacement",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4012345.00000.5"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "type": "EffectiveDoseRate",
+                "value": 0.005,
+                "uom": "P71"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TransformationEvent",
+        "eventTime": "2020-09-29T14:00:00+02:00",
+        "eventTimeZoneOffset": "+02:00",
+        "errorDeclaration": {
+          "declarationTime": "2020-09-29T15:00:00Z",
+          "example:issuer": "Employee 123",
+          "example3:errorCodes": {
+            "example3:value1": "34",
+            "example3:value44": "66"
+          }
+        },
+        "inputQuantityList": [
+          {
+            "epcClass": "urn:epc:class:lgtin:4023333.055555.ABC123",
+            "quantity": 25,
+            "uom": "KGM"
+          }
+        ],
+        "outputEPCList": [
+          "urn:epc:id:sgtin:4012345.012345.987",
+          "urn:epc:id:sgtin:4012345.012345.988"
+        ],
+        "bizStep": "commissioning",
+        "readPoint": {
+          "id": "urn:epc:id:sgln:4023333.00000.0",
+          "example:gs1ES": "(414)4023333000000"
+        },
+        "bizLocation": {
+          "id": "urn:epc:id:sgln:4023333.00001.12",
+          "example:gs1ES": "(414)4023333000017 (254)12"
+        },
+        "ilmd": {
+          "example:grading": "A",
+          "example2:userMasterData": {
+            "example2:sizeCode": "B-2"
+          },
+          "cbvmda:lotNumber": "LOTABC"
+        },
+        "sensorElementList": [
+          {
+            "sensorMetadata": {
+              "startTime": "2019-04-01T15:00:00+01:00",
+              "endTime": "2019-04-02T14:59:59.999+01:00",
+              "example:someFurtherMetaData": "someText"
+            },
+            "sensorReport": [
+              {
+                "type": "Temperature",
+                "minValue": 12.4,
+                "maxValue": 13.8,
+                "meanValue": 13.2,
+                "percRank": 50,
+                "percValue": 12.7,
+                "uom": "CEL",
+                "sDev": 0.41,
+                "example:cv": "123"
+              },
+              {
+                "type": "example:someSensorProperty",
+                "stringValue": "someSensorOutput"
+              }
+            ],
+            "example:furtherSensorData": {
+              "example:measure2": "0.987",
+              "example:measure1": "123.5"
+            },
+            "example:someUserField": "abc123"
+          }
+        ],
+        "example4:otherThings": "some text",
+        "example:internalData": {
+          "example:procedure": "A-1",
+          "example:machine": "urn:epc:id:giai:4012345.ABC"
+        }
+      },
+      {
+        "type": "ObjectEvent",
+        "eventTime": "2021-05-27T11:00:00+01:00",
+        "eventTimeZoneOffset": "+01:00",
+        "epcList": [
+          "https://id.example.com/8003/040123450007718765"
+        ],
+        "action": "OBSERVE",
+        "bizStep": "https://ref.gs1.org/cbv/Bizstep-sensor_reporting",
+        "readPoint": {
+          "id": "https://id.example.com/414/4012345000054"
+        },
+        "sensorElementList": [
+          {
+            "sensorReport": [
+              {
+                "type": "Angle",
+                "coordinateReferenceSystem": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                "value": 42.698334,
+                "component": "cbv:Comp-latitude",
+                "uom": "DD"
+              },
+              {
+                "type": "Angle",
+                "coordinateReferenceSystem": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                "value": 23.319941,
+                "component": "cbv:Comp-longitude",
+                "uom": "DD"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

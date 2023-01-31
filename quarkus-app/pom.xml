@@ -63,8 +63,6 @@
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Quarkus Service related dependency-->

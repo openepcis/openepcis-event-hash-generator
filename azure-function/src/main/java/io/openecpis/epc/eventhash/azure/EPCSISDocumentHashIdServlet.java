@@ -27,21 +27,21 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(
     name = "Hash-Id Generator",
     description = "Generate Hash-Ids for EPCIS XML/JSON document/events.")
-@WebServlet(name = "EPCSISDocumentHashIdServlet", urlPatterns = "/api/documentHashIdGenerator")
-@Path("/api/documentHashIdGenerator")
+@WebServlet(name = "EPCSISDocumentHashIdServlet", urlPatterns = "/api/generate/event-hash/document")
+@Path("/api/generate/event-hash/document")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class EPCSISDocumentHashIdServlet extends AbstractHashIdServlet {
 
   @Override
-  @POST
-  @Operation(summary = "Generate Hash-Ids for EPCIS document in XML/JSON format.")
   @RequestBody(
       description = "EPCIS Document",
       required = true,
       content = {
         @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = SchemaType.OBJECT))
       })
+  @POST
+  @Operation(summary = "Generate event hash for EPCIS 2.0 document in XML or JSON/JSON-LD format.")
   @APIResponses(
       value = {
         @APIResponse(
@@ -51,11 +51,11 @@ public class EPCSISDocumentHashIdServlet extends AbstractHashIdServlet {
                 @Content(
                     example =
                         """
-                                                    [
-                                                     "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
-                                                     "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
-                                                    ]
-                                                     """,
+                                            [
+                                             { "sha-256": "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0" },
+                                             { "sha-256": "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0" }
+                                            ]
+                                             """,
                     schema = @Schema(type = SchemaType.ARRAY, implementation = String.class))),
         @APIResponse(
             responseCode = "400",

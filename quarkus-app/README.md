@@ -1,9 +1,9 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# openepcis-event-hash-generator-rest-api
+# openepcis-event-hash-generator-quarkus-app
 
 ### Introduction:
-This RESTful API tool generates the Hash Ids for EPCIS documents in JSON/XML format using the project the openepcis-event-hash-generator (ref: https://github.com/openepcis/openepcis-event-hash-generator). By requiring only a few simple inputs, this utility simplifies it for users to produce Hash Ids for EPCIS documents.
+This RESTful Quarkus application generates the Hash Ids for EPCIS documents in JSON/XML format using the project the openepcis-event-hash-generator (ref: https://github.com/openepcis/openepcis-event-hash-generator). By requiring only a few simple inputs, this utility simplifies it for users to produce Hash Ids for EPCIS documents.
 
 Application Programming Interface, or API for short, is a software bridge that enables the communication between two applications. It enables businesses to provide other users and developers access to the data and functionality of their apps. Representational State Transfer, or REST, is a set of architectural constraints. A REST API, commonly referred to as a RESTful API, is a web API that complies with the restrictions of the REST architectural style and enables communication with RESTful web services.
 

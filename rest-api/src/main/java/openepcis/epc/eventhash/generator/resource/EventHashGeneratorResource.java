@@ -16,8 +16,8 @@
 package openepcis.epc.eventhash.generator.resource;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.epc.eventhash.exception.EventHashException;
@@ -26,6 +26,7 @@ import io.openepcis.model.epcis.EPCISEvent;
 import io.openepcis.model.rest.ProblemResponseBody;
 import io.smallrye.mutiny.Multi;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,21 +52,20 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
     description = "Generate event hash for EPCIS XML or JSON/JSON-LD document or event list.")
 public class EventHashGeneratorResource {
 
-  @Inject ManagedExecutor executorService;
+  @Inject ManagedExecutor managedExecutor;
   @Inject EventHashGenerator eventHashGenerator;
-
-  @Inject JsonFactory jsonfactory;
+  @Inject JsonFactory jsonFactory;
   private static final String SHA_256 = "sha-256";
 
   // Method to convert the input XML/JSON EPCIS Document into Hash Ids based on the event
   // information present in them.
-  @Operation(summary = "Generate event hash for EPCIS 2.0 document in XML or JSON/JSON-LD format.")
-  @POST
   @Path("/generate/event-hash/document")
   @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
   @Produces({MediaType.APPLICATION_JSON})
   @RequestBody(
       description = "Generate event hash for EPCIS 2.0 document in XML or JSON/JSON-LD format.")
+  @POST
+  @Operation(summary = "Generate event hash for EPCIS 2.0 document in XML or JSON/JSON-LD format.")
   @APIResponses(
       value = {
         @APIResponse(
@@ -75,11 +75,11 @@ public class EventHashGeneratorResource {
                 @Content(
                     example =
                         """
-                          [
-                           "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
-                           "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
-                          ]
-                           """,
+                                                    [
+                                                     { "sha-256": "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0" },
+                                                     { "sha-256": "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0" }
+                                                    ]
+                                                     """,
                     schema = @Schema(type = SchemaType.ARRAY, implementation = String.class))),
         @APIResponse(
             responseCode = "400",
@@ -170,13 +170,10 @@ public class EventHashGeneratorResource {
             ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
             : eventHashGenerator.fromJson(
                 inputDocumentStream, hashParameters.toArray(String[]::new)))
-        .runSubscriptionOn(executorService);
+        .runSubscriptionOn(managedExecutor);
   }
 
   // API end point for the single/List of EPCIS event in JSON format.
-  @Operation(
-      summary = "Generate event hash for list of EPCIS 2.0 events in XML or JSON/JSON-LD format.")
-  @POST
   @Path("/generate/event-hash/events")
   @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
   @Produces({MediaType.APPLICATION_JSON})
@@ -184,6 +181,9 @@ public class EventHashGeneratorResource {
       description = "Generate Hash-Ids for EPCIS events in XML/JSON format.",
       content =
           @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = EPCISEvent.class)))
+  @POST
+  @Operation(
+      summary = "Generate event hash for list of EPCIS 2.0 events in XML or JSON/JSON-LD format.")
   @APIResponses(
       value = {
         @APIResponse(
@@ -193,11 +193,11 @@ public class EventHashGeneratorResource {
                 @Content(
                     example =
                         """
-                          [
-                           "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
-                           "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
-                          ]
-                           """,
+                                                    [
+                                                     { "sha-256": "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0" },
+                                                     { "sha-256": "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0" }
+                                                    ]
+                                                     """,
                     schema = @Schema(type = SchemaType.ARRAY, implementation = String.class))),
         @APIResponse(
             responseCode = "400",
@@ -289,48 +289,81 @@ public class EventHashGeneratorResource {
             : eventHashGenerator.fromJson(
                 generateJsonDocumentWrapper(inputDocumentStream),
                 hashParameters.toArray(String[]::new)))
-        .runSubscriptionOn(executorService);
+        .runSubscriptionOn(managedExecutor);
   }
 
   // Add the outer wrapper elements for the JSON eventList when array of EPCIS events is provided.
   private InputStream generateJsonDocumentWrapper(final InputStream inputEventList)
       throws IOException {
-    InputStream convertedDocument;
-
-    try (final PipedOutputStream outTransform = new PipedOutputStream()) {
-      convertedDocument = new PipedInputStream(outTransform);
-      final JsonParser jsonParser = jsonfactory.createParser(inputEventList);
-      final JsonNode node = jsonParser.readValueAsTree();
-
-      executorService.execute(
-          () -> {
-            try (final JsonGenerator jsonGenerator = jsonfactory.createGenerator(outTransform)) {
-              jsonGenerator.writeStartObject();
-              jsonGenerator.writeStringField("type", "EPCISDocument");
-              jsonGenerator.writeStringField("schemaVersion", "2.0");
-              jsonGenerator.writeStringField("creationDate", Instant.now().toString());
-              jsonGenerator.writeObjectFieldStart("epcisBody");
-              jsonGenerator.writeFieldName("eventList");
-              jsonGenerator.writeTree(node);
-              jsonGenerator.writeEndObject();
-              jsonGenerator.writeEndObject();
-              jsonGenerator.flush();
-              jsonParser.close();
-            } catch (Exception ex) {
-              try {
-                outTransform.write(ex.getMessage().getBytes());
-                outTransform.close();
-                jsonParser.close();
-              } catch (Exception e) {
-                throw new EventHashException(
-                    "Exception occurred during the creation of wrapper document for eventList : "
-                        + ex.getMessage()
-                        + ex);
+    final JsonParser jsonParser = jsonFactory.createParser(inputEventList);
+    if (jsonParser.nextToken() != JsonToken.START_ARRAY) {
+      jsonParser.close();
+      throw new IOException("Expecting input as JSON array");
+    }
+    final PipedOutputStream outTransform = new PipedOutputStream();
+    final InputStream convertedDocument = new PipedInputStream(outTransform);
+    managedExecutor.runAsync(
+        () -> {
+          try {
+            final String documentHeader =
+                String.format(
+                    """
+                                {
+                                  "@context": [
+                                    "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"
+                                  ],
+                                  "type": "EPCISDocument",
+                                  "schemaVersion": "2.0",
+                                  "creationDate": "%s",
+                                  "epcisBody": {
+                                    "eventList": [
+                                """,
+                    Instant.now().toString());
+            outTransform.write(documentHeader.getBytes(StandardCharsets.UTF_8));
+            outTransform.flush();
+            int eventIndex = 0;
+            while (jsonParser.nextToken() != null) {
+              if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                final JsonNode node = jsonParser.readValueAsTree();
+                if (eventIndex++ > 0) {
+                  outTransform.write(",\n".getBytes(StandardCharsets.UTF_8));
+                }
+                outTransform.write(node.toPrettyString().getBytes(StandardCharsets.UTF_8));
+                outTransform.flush();
               }
             }
-          });
-    }
-
+            outTransform.write(
+                new String(
+                        """
+                                    ]
+                                  }
+                                }
+                                """)
+                    .getBytes(StandardCharsets.UTF_8));
+            outTransform.flush();
+            outTransform.close();
+          } catch (Exception ex) {
+            try {
+              outTransform.write(
+                  ("Exception occurred during the creation of wrapper document for eventList : "
+                          + ex.getMessage())
+                      .getBytes(StandardCharsets.UTF_8));
+              outTransform.close();
+            } catch (Exception ignore) {
+              // ignored
+            }
+            throw new EventHashException(
+                "Exception occurred during the creation of wrapper document for eventList : "
+                    + ex.getMessage()
+                    + ex);
+          } finally {
+            try {
+              inputEventList.close();
+            } catch (Exception ignore) {
+              // ignored
+            }
+          }
+        });
     return convertedDocument;
   }
 }

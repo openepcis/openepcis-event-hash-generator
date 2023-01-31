@@ -2,13 +2,11 @@ package io.openecpis.epc.eventhash.azure;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import io.openepcis.epc.eventhash.exception.EventHashException;
 import io.openepcis.model.epcis.EPCISDocument;
-import io.openepcis.model.epcis.EPCISEvent;
 import io.openepcis.model.rest.ProblemResponseBody;
 import io.smallrye.mutiny.Multi;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
@@ -23,14 +21,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.commons.io.IOUtils;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBodySchema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -39,21 +36,20 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(
     name = "Hash-Id Generator",
     description = "Generate Hash-Ids for EPCIS XML/JSON document/events.")
-@WebServlet(name = "EPCSISEventHashIdServlet", urlPatterns = "/api/eventHashIdGenerator")
-@Path("/api/eventHashIdGenerator")
+@WebServlet(name = "EPCSISEventHashIdServlet", urlPatterns = "/api/generate/event-hash/document")
+@Path("/api/generate/event-hash/events")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
 
   @Inject JsonFactory jsonFactory;
 
+  @Inject ManagedExecutor managedExecutor;
+
   @Override
   @POST
-  @Operation(summary = "Generate Hash-Ids for EPCISEvents in XML/JSON format.")
-  @RequestBody(
-      description = "Generate Hash-Ids for EPCIS events in XML/JSON format.",
-      content =
-          @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = EPCISEvent.class)))
+  @Operation(
+      summary = "Generate event hash for list of EPCIS 2.0 events in XML or JSON/JSON-LD format.")
   @APIResponses(
       value = {
         @APIResponse(
@@ -63,15 +59,15 @@ public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
                 @Content(
                     example =
                         """
-                                                    [
-                                                     "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
-                                                     "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
-                                                    ]
-                                                     """,
+                                            [
+                                             { "sha-256": "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0" },
+                                             { "sha-256": "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0" }
+                                            ]
+                                             """,
                     schema = @Schema(type = SchemaType.ARRAY, implementation = String.class))),
         @APIResponse(
             responseCode = "400",
-            description = "Bad Request: Input EPCIS document contain missing/invalid information.",
+            description = "Bad Request: Input EPCIS events contain missing/invalid information.",
             content = @Content(schema = @Schema(implementation = ProblemResponseBody.class))),
         @APIResponse(
             responseCode = "401",
@@ -91,7 +87,7 @@ public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
         @APIResponse(
             responseCode = "500",
             description =
-                "Internal Server Error: Unable to generate Hash-ID document as server encountered problem.",
+                "Internal Server Error: Unable to generate Hash-ID as server encountered problem.",
             content = @Content(schema = @Schema(implementation = ProblemResponseBody.class)))
       })
   @RequestBodySchema(EPCISDocument.class)
@@ -157,22 +153,55 @@ public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
   // Add the outer wrapper elements for the JSON eventList when array of EPCIS events is provided.
   private InputStream generateJsonDocumentWrapper(final InputStream inputEventList)
       throws IOException {
-    final StringWriter jsonDocumentWriter = new StringWriter();
-    try (JsonGenerator jsonGenerator = jsonFactory.createGenerator(jsonDocumentWriter)) {
-      jsonFactory.createGenerator(jsonDocumentWriter);
-      jsonGenerator.writeStartObject();
-      jsonGenerator.writeStringField("type", "EPCISDocument");
-      jsonGenerator.writeStringField("schemaVersion", "2.0");
-      jsonGenerator.writeStringField("creationDate", Instant.now().toString());
-      jsonGenerator.writeObjectFieldStart("epcisBody");
-      jsonGenerator.writeFieldName("eventList");
-      jsonGenerator.writeRawValue(IOUtils.toString(inputEventList, StandardCharsets.UTF_8));
-      jsonGenerator.writeEndObject();
-      jsonGenerator.writeEndObject();
-      jsonGenerator.flush();
-    } catch (IOException ex) {
-      throw new IOException();
+    InputStream convertedDocument;
+
+    try (final PipedOutputStream outTransform = new PipedOutputStream()) {
+      convertedDocument = new PipedInputStream(outTransform);
+      managedExecutor.execute(
+          () -> {
+            try (final JsonGenerator jsonGenerator = jsonFactory.createGenerator(outTransform)) {
+              jsonGenerator.writeStartObject();
+              jsonGenerator.writeStringField("type", "EPCISDocument");
+              jsonGenerator.writeStringField("schemaVersion", "2.0");
+              jsonGenerator.writeStringField("creationDate", Instant.now().toString());
+              jsonGenerator.writeObjectFieldStart("epcisBody");
+              jsonGenerator.writeFieldName("eventList");
+              int r;
+              byte[] buffer = new byte[1024];
+              while ((r = inputEventList.read(buffer, 0, buffer.length)) != -1) {
+                jsonGenerator.writeRawValue(new String(buffer, 0, r, StandardCharsets.UTF_8));
+                jsonGenerator.flush();
+              }
+              jsonGenerator.writeEndObject();
+              jsonGenerator.writeEndObject();
+              jsonGenerator.flush();
+            } catch (Exception ex) {
+              try {
+                outTransform.write(
+                    ("Exception occurred during the creation of wrapper document for eventList : "
+                            + ex.getMessage())
+                        .getBytes(StandardCharsets.UTF_8));
+              } catch (Exception ignore) {
+                // ignored
+              }
+              throw new EventHashException(
+                  "Exception occurred during the creation of wrapper document for eventList : "
+                      + ex.getMessage()
+                      + ex);
+            } finally {
+              try {
+                inputEventList.close();
+              } catch (Exception ignore) {
+                // ignored
+              }
+              try {
+                outTransform.close();
+              } catch (Exception ignore) {
+                // ignored
+              }
+            }
+          });
     }
-    return IOUtils.toInputStream(jsonDocumentWriter.toString(), StandardCharsets.UTF_8);
+    return convertedDocument;
   }
 }

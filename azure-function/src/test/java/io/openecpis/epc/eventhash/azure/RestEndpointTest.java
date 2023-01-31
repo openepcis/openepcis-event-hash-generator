@@ -23,7 +23,7 @@ public class RestEndpointTest {
         .contentType("application/json")
         .accept("application/json")
         .body(getClass().getResourceAsStream("/SensorDataExample.json"))
-        .post("/api/documentHashIdGenerator")
+        .post("/api/generate/event-hash/document")
         .then()
         .statusCode(RestResponse.StatusCode.OK);
   }

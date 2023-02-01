@@ -106,6 +106,7 @@
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.platform.version}</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -137,10 +138,6 @@
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

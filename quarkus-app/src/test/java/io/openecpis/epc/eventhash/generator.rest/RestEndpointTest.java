@@ -1,4 +1,4 @@
-package io.openecpis.epc.eventhash.azure;
+package io.openecpis.epc.eventhash.generator.rest;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;

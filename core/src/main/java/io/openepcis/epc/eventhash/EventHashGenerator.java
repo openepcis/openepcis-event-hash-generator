@@ -15,10 +15,9 @@
  */
 package io.openepcis.epc.eventhash;
 
-import static io.openepcis.epc.eventhash.constant.ConstantEPCISInfo.*;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.exception.EventHashException;
 import io.openepcis.epc.eventhash.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
@@ -121,9 +120,9 @@ public class EventHashGenerator {
   }
 
   private void addToContextHeader(final ObjectNode item, final Map<String, String> contextHeader) {
-    if (item.get(CONTEXT) != null) {
-      final Iterator<JsonNode> contextElements = item.get(CONTEXT).elements();
-      contextHeader.put(CBV_MDA, CBV_MDA_URL);
+    if (item.get(EPCIS.CONTEXT) != null) {
+      final Iterator<JsonNode> contextElements = item.get(EPCIS.CONTEXT).elements();
+      contextHeader.put(EPCIS.CBV_MDA, EPCIS.CBV_MDA_URN);
       while (contextElements.hasNext()) {
         final Iterator<Map.Entry<String, JsonNode>> contextFields = contextElements.next().fields();
         while (contextFields.hasNext()) {
@@ -238,7 +237,7 @@ public class EventHashGenerator {
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
     addToContextHeader(objectNode, contextHeader);
-    if (!objectNode.get(TYPE).asText().equalsIgnoreCase(EPCIS_DOCUMENT)) {
+    if (!objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_DOCUMENT)) {
       final ContextNode contextNode = new ContextNode(objectNode.fields(), contextHeader);
       final String preHashString = contextNode.toShortenedString();
 

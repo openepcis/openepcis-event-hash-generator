@@ -20,7 +20,6 @@ import static io.openepcis.epc.eventhash.constant.ConstantEventHashInfo.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.openepcis.constants.EPCIS;
-import io.openepcis.epc.translator.constants.Constants;
 import io.openepcis.epc.translator.util.ConverterUtil;
 import java.time.Instant;
 import java.util.*;
@@ -302,6 +301,7 @@ public class ContextNode {
     } else {
 
       if (getName() != null
+          && !getName().equals(EPCIS.SENSOR_ELEMENT_LIST)
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
           && !EXCLUDE_FIELDS_IN_PREHASH.contains(getName())
           && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
@@ -380,8 +380,7 @@ public class ContextNode {
       // bareString values then convert them to WebURI
       return name
           + "="
-          + ConverterUtil.toCbvVocabulary(
-              value, findParent(currentNode), Constants.WEBURI_FORMATTED);
+          + ConverterUtil.toCbvVocabulary(value, findParent(currentNode), EPCIS.WEBURI);
     } else if (SOURCE_DESTINATION_URN_PREFIX.stream().anyMatch(value::startsWith)) {
       // If the field is of Source/Destination SGLN type then convert the value from URN to WebURI.
       return name + "=" + ConverterUtil.toURI(value);

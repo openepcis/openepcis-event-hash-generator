@@ -15,10 +15,11 @@
  */
 package io.openepcis.epc.eventhash.constant;
 
+import static io.openepcis.constants.EPCIS.GS1_CBV_DOMAIN;
+import static io.openepcis.constants.EPCIS.GS1_VOC_DOMAIN;
 import static java.util.Map.entry;
 
 import io.openepcis.constants.EPCIS;
-import io.openepcis.epc.translator.constants.Constants;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashMap;
@@ -171,8 +172,8 @@ public class ConstantEventHashInfo {
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.SOURCE_LIST, EPCIS.TYPE);
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.DESTINATION_LIST, EPCIS.TYPE);
 
-    SENSOR_REPORT_FORMAT.put(EPCIS.TYPE, Constants.GS1_VOC_DOMAIN);
-    SENSOR_REPORT_FORMAT.put(EPCIS.EXCEPTION, Constants.GS1_VOC_DOMAIN);
-    SENSOR_REPORT_FORMAT.put(EPCIS.COMPONENT, Constants.GS1_CBV_DOMAIN + "Comp-");
+    SENSOR_REPORT_FORMAT.put(EPCIS.TYPE, GS1_VOC_DOMAIN);
+    SENSOR_REPORT_FORMAT.put(EPCIS.EXCEPTION, GS1_VOC_DOMAIN);
+    SENSOR_REPORT_FORMAT.put(EPCIS.COMPONENT, GS1_CBV_DOMAIN + "Comp-");
   }
 }

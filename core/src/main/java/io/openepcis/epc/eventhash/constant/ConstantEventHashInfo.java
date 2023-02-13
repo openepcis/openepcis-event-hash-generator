@@ -15,8 +15,6 @@
  */
 package io.openepcis.epc.eventhash.constant;
 
-import static io.openepcis.constants.EPCIS.GS1_CBV_DOMAIN;
-import static io.openepcis.constants.EPCIS.GS1_VOC_DOMAIN;
 import static java.util.Map.entry;
 
 import io.openepcis.constants.EPCIS;
@@ -92,8 +90,8 @@ public class ConstantEventHashInfo {
   public static final List<String> EXCLUDE_XML_FIELDS =
       List.of(
           EPCIS.EPCIS_DOCUMENT_WITH_NAMESPACE,
-          EPCIS.EPCIS_BODY_IN_UPPER_CASE,
-          EPCIS.EVENT_LIST_IN_UPPER_CASE);
+          EPCIS.EPCIS_BODY_IN_CAMEL_CASE,
+          EPCIS.EVENT_LIST_IN_CAMEL_CASE);
   public static final List<String> WHAT_DIMENSION_XML_PATH =
       List.of(
           EPCIS.EPC + EPCIS.PATH_DELIMITER + EPCIS.EPC_LIST + EPCIS.PATH_DELIMITER,
@@ -172,8 +170,8 @@ public class ConstantEventHashInfo {
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.SOURCE_LIST, EPCIS.TYPE);
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.DESTINATION_LIST, EPCIS.TYPE);
 
-    SENSOR_REPORT_FORMAT.put(EPCIS.TYPE, GS1_VOC_DOMAIN);
-    SENSOR_REPORT_FORMAT.put(EPCIS.EXCEPTION, GS1_VOC_DOMAIN);
-    SENSOR_REPORT_FORMAT.put(EPCIS.COMPONENT, GS1_CBV_DOMAIN + "Comp-");
+    SENSOR_REPORT_FORMAT.put(EPCIS.TYPE, EPCIS.GS1_VOC_DOMAIN);
+    SENSOR_REPORT_FORMAT.put(EPCIS.EXCEPTION, EPCIS.GS1_VOC_DOMAIN);
+    SENSOR_REPORT_FORMAT.put(EPCIS.COMPONENT, EPCIS.GS1_CBV_DOMAIN + "Comp-");
   }
 }

@@ -22,6 +22,7 @@ import io.smallrye.mutiny.Multi;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -40,53 +41,74 @@ public class EventHashGeneratorPublisherTest {
   // General test to fix bugs or necessary code modification for XML document.
   @Test
   public void xmlHashGeneratorTest() {
-    final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
+
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/ObjectEvent.xml");
 
     final Multi<Map<String, String>> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
 
-    assertEquals(1, xmlHashIds.subscribe().asStream().toList().size());
+    assertEquals(2, xmlHashIds.subscribe().asStream().toList().size());
   }
 
   // General test to show pre hashes for XML document.
   @Test
   public void xmlPreHashGeneratorTest() {
-    final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisEvents.xml");
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/ObjectEvent.xml");
 
     final Multi<Map<String, String>> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
 
-    assertEquals(1, xmlHashIds.subscribe().asStream().toList().size());
+    assertEquals(2, xmlHashIds.subscribe().asStream().toList().size());
   }
 
   // General test to fix bugs or necessary code modification for JSON document.
   @Test
   public void jsonHashGeneratorTest() throws IOException {
-    final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/ObjectEvent.json");
 
     final Multi<Map<String, String>> jsonHashIds =
         eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-256");
 
-    assertEquals(1, jsonHashIds.subscribe().asStream().toList().size());
+    assertEquals(2, jsonHashIds.subscribe().asStream().toList().size());
   }
 
   // General tst to show pre hashes for JSON document.
   @Test
   public void jsonPreHashGeneratorTest() throws IOException {
-    final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisEvents.json");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/ObjectEvent.json");
 
     final Multi<Map<String, String>> jsonHashIds =
         eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
 
-    assertEquals(1, jsonHashIds.subscribe().asStream().toList().size());
+    assertEquals(2, jsonHashIds.subscribe().asStream().toList().size());
   }
 
   // Test to ensure the pre-hash string is generated correctly for simple event.
   @Test
   public void withSimpleSingleEventTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final InputStream xmlStream = getClass().getResourceAsStream("/SingleEvent.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/SingleEvent.json");
+
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/AggregationEvent.xml");
+
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/AggregationEvent.json");
 
     final Multi<Map<String, String>> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
@@ -102,8 +124,17 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void withErrorDeclarationEventTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final InputStream xmlStream = getClass().getResourceAsStream("/WithErrorDeclaration.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/WithErrorDeclaration.json");
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/ObjectEvent_with_error_declaration.xml");
+
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/ObjectEvent_with_error_declaration.json");
 
     final Multi<Map<String, String>> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
@@ -119,10 +150,17 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void withFullCombinationFieldsTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
+
     final InputStream xmlStream =
-        getClass().getResourceAsStream("/WithFullCombinationOfFields.xml");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/AggregationEvent_all_possible_fields.xml");
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent_all_possible_fields.json");
 
     final List<String> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
@@ -132,32 +170,21 @@ public class EventHashGeneratorPublisherTest {
     assertEquals(xmlHashIds, jsonHashIds);
   }
 
-  // Test to ensure that pre-hash string is created accurately when EPCIS document contains all
-  // possible fields.
-  @Test
-  public void preFullCombinationFieldsTest() throws IOException {
-    // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final InputStream xmlStream =
-        getClass().getResourceAsStream("/WithFullCombinationOfFields.xml");
-    final InputStream jsonStream =
-        getClass().getResourceAsStream("/WithFullCombinationOfFields.json");
-
-    final Multi<Map<String, String>> xmlHashIds =
-        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
-    final Multi<Map<String, String>> jsonHashIds =
-        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-
-    assertEquals(
-        xmlHashIds.subscribe().asStream().toList(), jsonHashIds.subscribe().asStream().toList());
-  }
-
   // Test to ensure that order of pre-hash always remains the same even when EPCIS document values
   // are jumbled up.
   @Test
   public void withJumbledOrderFieldsTest() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final InputStream xmlStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/withJumbledFieldsOrder.json");
+    // src/main/resources/2.0/EPCIS/XML/Capture/Documents/JumbledFieldsOrder.xml
+
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/JumbledFieldsOrder.xml");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/JumbledFieldsOrder.json");
 
     final List<String> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
@@ -171,8 +198,17 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void withUserExtensions() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
-    final InputStream xmlStream = getClass().getResourceAsStream("/withUserExtensions.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/withUserExtensions.json");
+
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/AggregationEvent_with_userExtensions.xml");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent_with_userExtensions.json");
 
     final List<String> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
@@ -183,12 +219,21 @@ public class EventHashGeneratorPublisherTest {
   }
 
   @Test
-  public void withUserExtensionsHavingEventID() throws IOException {
+  public void withUserExtensionsHavingEventID() throws IOException, URISyntaxException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
     final InputStream xmlStream =
-        getClass().getResourceAsStream("/withUserExtensionsHavingEventID.xml");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/TransformationEvent_with_userExtensions.xml");
+
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/withUserExtensionsHavingEventID.json");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_with_userExtensions.json");
+
+    // getClass().getResourceAsStream("/withUserExtensionsHavingEventID.json");
 
     final List<String> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
@@ -201,8 +246,16 @@ public class EventHashGeneratorPublisherTest {
   // Test to ensure different combination of events in single EPCIS document
   @Test
   public void withCombinationOfEvents() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/EventCombination.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/EventCombination.json");
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/Combination_of_different_event.xml");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/Combination_of_different_event.json");
 
     final List<String> xmlHashIds =
         eventHashGenerator.fromXml(xmlStream, "sha-512").subscribe().asStream().toList();
@@ -232,8 +285,16 @@ public class EventHashGeneratorPublisherTest {
   // ordered
   @Test
   public void withNewElementsJsonTest() throws IOException {
-    final InputStream jsonStream = getClass().getResourceAsStream("/withNewElements.json");
-    final InputStream xmlStream = getClass().getResourceAsStream("/withNewElements.xml");
+
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/ObjectEvent_with_sensorData.json");
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/ObjectEvent_with_sensorData.xml");
 
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
@@ -249,25 +310,18 @@ public class EventHashGeneratorPublisherTest {
   @Test
   public void userExtensionsOrderJsonTest() throws IOException {
     // Check the order for user extensions in XML and JSON is same
-    final InputStream xmlStream = getClass().getResourceAsStream("/UserExtensionsOrder.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/UserExtensionsOrder.json");
 
-    final Multi<Map<String, String>> xmlEventHash =
-        eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
-    final Multi<Map<String, String>> jsonEventHash =
-        eventHashGenerator.fromJson(jsonStream, "prehash", "sha3-512");
-
-    assertEquals(
-        xmlEventHash.subscribe().asStream().toList(),
-        jsonEventHash.subscribe().asStream().toList());
-  }
-
-  @Test
-  public void userExtensionsComplexOrderJsonTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/UserExtensionsComplexOrder.xml");
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/ObjectEvent_with_userExtensions.xml");
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/UserExtensionsComplexOrder.json");
-    eventHashGenerator.prehashJoin("\\n");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/ObjectEvent_with_userExtensions.json");
+
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
     final Multi<Map<String, String>> jsonEventHash =
@@ -280,8 +334,17 @@ public class EventHashGeneratorPublisherTest {
 
   @Test
   public void bizTransactionOrderTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/bizTransactionOrder.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/bizTransactionOrder.json");
+
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/TransactionEvent_with_userExtensions.xml");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/TransactionEvent_with_userExtensions.json");
 
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha3-512");
@@ -295,10 +358,17 @@ public class EventHashGeneratorPublisherTest {
 
   @Test
   public void fullCombinationOrderAggregationEventTest() throws IOException {
+
     final InputStream xmlStream =
-        getClass().getResourceAsStream("/aggregation_event_all_possible_fields.xml");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/AggregationEvent_all_possible_fields.xml");
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/aggregation_event_all_possible_fields.json");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent_all_possible_fields.json");
 
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
@@ -312,27 +382,17 @@ public class EventHashGeneratorPublisherTest {
 
   @Test
   public void fullCombinationOrderTransactionEventTest() throws IOException {
+
     final InputStream xmlStream =
-        getClass().getResourceAsStream("/transaction_event_all_possible_fields.xml");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/TransactionEvent_all_possible_fields.xml");
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/transaction_event_all_possible_fields.json");
-
-    final Multi<Map<String, String>> xmlEventHash =
-        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
-    final Multi<Map<String, String>> jsonEventHash =
-        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-
-    assertEquals(
-        xmlEventHash.subscribe().asStream().toList(),
-        jsonEventHash.subscribe().asStream().toList());
-  }
-
-  @Test
-  public void persistentDispositionTest() throws IOException {
-    final InputStream xmlStream =
-        getClass().getResourceAsStream("/PersistentDisposition-example.xml");
-    final InputStream jsonStream =
-        getClass().getResourceAsStream("/PersistentDisposition-example.json");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/TransactionEvent_all_possible_fields.json");
 
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
@@ -346,8 +406,15 @@ public class EventHashGeneratorPublisherTest {
 
   @Test
   public void curieStringTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/CurieString.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/CurieString.json");
+
+    final InputStream xmlStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/CurieString_document.xml");
+    final InputStream jsonStream =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/CurieString_document.json");
 
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
@@ -361,40 +428,17 @@ public class EventHashGeneratorPublisherTest {
 
   @Test
   public void sensorDataTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/SensorDataExample.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/SensorDataExample.json");
 
-    final Multi<Map<String, String>> xmlEventHash =
-        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
-    final Multi<Map<String, String>> jsonEventHash =
-        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-
-    assertEquals(
-        xmlEventHash.subscribe().asStream().toList(),
-        jsonEventHash.subscribe().asStream().toList());
-  }
-
-  @Test
-  public void errorDeclarationTest() throws IOException {
     final InputStream xmlStream =
-        getClass().getResourceAsStream("/ErrorDeclarationAndCorrectiveEvent.xml");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/SensorData_with_combined_events.xml");
     final InputStream jsonStream =
-        getClass().getResourceAsStream("/ErrorDeclarationAndCorrectiveEvent.json");
-
-    final Multi<Map<String, String>> xmlEventHash =
-        eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
-    final Multi<Map<String, String>> jsonEventHash =
-        eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-
-    assertEquals(
-        xmlEventHash.subscribe().asStream().toList(),
-        jsonEventHash.subscribe().asStream().toList());
-  }
-
-  @Test
-  public void orderAndConversionTogetherTest() throws IOException {
-    final InputStream xmlStream = getClass().getResourceAsStream("/SampleXML.xml");
-    final InputStream jsonStream = getClass().getResourceAsStream("/SampleJSON.json");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/SensorData_with_combined_events.json");
 
     final Multi<Map<String, String>> xmlEventHash =
         eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");

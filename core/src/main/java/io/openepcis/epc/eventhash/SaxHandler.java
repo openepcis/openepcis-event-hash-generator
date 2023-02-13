@@ -15,7 +15,7 @@
  */
 package io.openepcis.epc.eventhash;
 
-import io.openepcis.epc.eventhash.constant.ConstantEPCISInfo;
+import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.smallrye.mutiny.subscription.MultiEmitter;
 import java.util.ArrayDeque;
@@ -82,7 +82,7 @@ public class SaxHandler extends DefaultHandler {
     if (rootNode == null && ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
       rootNode = new ContextNode(contextHeader);
       currentNode = rootNode;
-      rootNode.children.add(new ContextNode(rootNode, ConstantEPCISInfo.TYPE, qName));
+      rootNode.children.add(new ContextNode(rootNode, EPCIS.TYPE, qName));
     } else if (currentNode != null
         && ConstantEventHashInfo.WHY_DIMENSION_XML_PATH.stream()
             .anyMatch(getXMLPath()::startsWith)) {
@@ -189,6 +189,6 @@ public class SaxHandler extends DefaultHandler {
   }
 
   private String getXMLPath() {
-    return String.join(ConstantEPCISInfo.PATH_DELIMITER, this.path);
+    return String.join(EPCIS.PATH_DELIMITER, this.path);
   }
 }

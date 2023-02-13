@@ -15,12 +15,11 @@
  */
 package io.openepcis.epc.eventhash;
 
-import static io.openepcis.epc.eventhash.constant.ConstantEPCISInfo.*;
 import static io.openepcis.epc.eventhash.constant.ConstantEventHashInfo.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.openepcis.epc.translator.constants.Constants;
+import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.translator.util.ConverterUtil;
 import java.time.Instant;
 import java.util.*;
@@ -87,7 +86,7 @@ public class ContextNode {
       // If the array contains direct text value and not another array then get the textValue and
       // add it.
       if (n.isValueNode() && !n.isArray() && EPC_LISTS.stream().anyMatch(name::equals)) {
-        children.add(new ContextNode(this, EPC, n.textValue()));
+        children.add(new ContextNode(this, EPCIS.EPC, n.textValue()));
       } else if (n.isValueNode() && !n.isArray()) {
         children.add(new ContextNode(this, name, n.asText()));
       } else if (n.isArray()) {
@@ -130,7 +129,7 @@ public class ContextNode {
         // children by calling Constructor 3. Eg: epcList, childEPCs, etc.
         final ArrayNode arrayNode = (ArrayNode) n.getValue();
         children.add(new ContextNode(this, n.getKey(), arrayNode));
-      } else if (!n.getKey().equals(ERROR_DECLARATION)) {
+      } else if (!n.getKey().equals(EPCIS.ERROR_DECLARATION)) {
         // For all other fields which may have complex structure, add the field values from it to
         // children by calling Constructor 2. Eg: readPoint, etc. but skip errorDeclaration
         children.add(new ContextNode(this, n.getKey(), n.getValue().fields()));
@@ -205,7 +204,7 @@ public class ContextNode {
               node.getName() != null
                       && EXCLUDE_LINE_BREAK.contains(node.getName())
                       && !(node.getParent().getName() != null
-                          && node.getParent().getName().equals(SENSOR_REPORT))
+                          && node.getParent().getName().equals(EPCIS.SENSOR_REPORT))
                   ? s
                   : s + "\n");
         }
@@ -228,8 +227,8 @@ public class ContextNode {
         && node.getChildren() != null
         && !node.getChildren().isEmpty()
         && node.getChildren().get(0).getName() != null
-        && (node.getName().equals(SENSOR_ELEMENT)
-            || !node.getChildren().get(0).getName().equalsIgnoreCase(SENSOR_REPORT))) {
+        && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
+            || !node.getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
       // pre-hash string. Additional condition has been added to avoid the addition of sensorReport
       // twice to the pre-hash string.
@@ -263,7 +262,7 @@ public class ContextNode {
       path.push(fieldParent.getName());
       fieldParent = fieldParent.getParent();
     }
-    return path.contains(ILMD);
+    return path.contains(EPCIS.ILMD);
   }
 
   // private method to find the parent of the element which can be later used to convert the Bare
@@ -295,7 +294,7 @@ public class ContextNode {
         && getValue() != null
         && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
         && !EXCLUDE_FIELDS_IN_PREHASH.contains(getName())
-        && !findParent(this).equalsIgnoreCase(CONTEXT)) {
+        && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)) {
       // Add information related to direct name and value based fields. Then if attributes are
       // present then call the method to format them.
       return userExtensionsFormatter(name, value, namespaces) + "\n";
@@ -304,12 +303,12 @@ public class ContextNode {
       if (getName() != null
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
           && !EXCLUDE_FIELDS_IN_PREHASH.contains(getName())
-          && !findParent(this).equalsIgnoreCase(CONTEXT)
-          && (getName().equals(SENSOR_ELEMENT)
+          && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
+          && (getName().equals(EPCIS.SENSOR_ELEMENT)
               || (!children.isEmpty()
                   && children.get(0).getName() != null
                   && !getName().equals(getChildren().get(0).getName())
-                  && !getChildren().get(0).getName().equalsIgnoreCase(SENSOR_REPORT)))) {
+                  && !getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT)))) {
         sb.append(userExtensionsFormatter(getName(), getValue(), namespaces));
       }
 
@@ -343,12 +342,12 @@ public class ContextNode {
     // required during pre-hash creation.
     if (EPC_LISTS.contains(name)) {
       // if instance identifiers are in URN format then change it to WebURI format
-      if (value.startsWith(INSTANCE_IDENTIFIER_URN_PREFIX)) {
-        return EPC + "=" + ConverterUtil.toURI(value);
+      if (value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX)) {
+        return EPCIS.EPC + "=" + ConverterUtil.toURI(value);
       } else {
-        return EPC + "=" + ConverterUtil.shortNameReplacer(value);
+        return EPCIS.EPC + "=" + ConverterUtil.shortNameReplacer(value);
       }
-    } else if ((value.startsWith(INSTANCE_IDENTIFIER_URN_PREFIX))
+    } else if ((value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX))
         || (CLASS_IDENTIFIER_URN_PREFIX.stream().anyMatch(value::startsWith))) {
       // If element value is in URN format then change it to WebURI format
       return name + "=" + gs1IdentifierFormat(value);
@@ -356,11 +355,13 @@ public class ContextNode {
       // For instance/class identifier fields or sensor related fields replace the short names with
       // corresponding identifier keys and/or replace custom gs1 domain
       return name + "=" + ConverterUtil.shortNameReplacer(value);
-    } else if ((name.equals(TYPE) || name.equals(EXCEPTION) || name.equals(COMPONENT))
+    } else if ((name.equals(EPCIS.TYPE)
+            || name.equals(EPCIS.EXCEPTION)
+            || name.equals(EPCIS.COMPONENT))
         && (currentNode != null
             && currentNode.getParent() != null
             && currentNode.getParent().getName() != null
-            && currentNode.getParent().getName().equals(SENSOR_REPORT))) {
+            && currentNode.getParent().getName().equals(EPCIS.SENSOR_REPORT))) {
       // For sensorReport type/exception field add the gs1 domain
       return formatSensorField(name, value);
     } else if (TIME_ATTRIBUTE_LIST.contains(name)) {
@@ -378,22 +379,21 @@ public class ContextNode {
       // bareString values then convert them to WebURI
       return name
           + "="
-          + ConverterUtil.toCbvVocabulary(
-              value, findParent(currentNode), Constants.WEBURI_FORMATTED);
+          + ConverterUtil.toCbvVocabulary(value, findParent(currentNode), EPCIS.WEBURI);
     } else if (SOURCE_DESTINATION_URN_PREFIX.stream().anyMatch(value::startsWith)) {
       // If the field is of Source/Destination SGLN type then convert the value from URN to WebURI.
       return name + "=" + ConverterUtil.toURI(value);
-    } else if (value.startsWith(INSTANCE_IDENTIFIER_URN_PREFIX)
+    } else if (value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX)
         || CLASS_IDENTIFIER_URN_PREFIX.stream().anyMatch(value::startsWith)) {
       // If the field is of Identifiers type then convert the value to WebURI type
       return name + "=" + ConverterUtil.toURI(value);
-    } else if (value.startsWith(GS1_FORMATTED_VALUE)) {
+    } else if (value.startsWith(EPCIS.GS1_PREFIX)) {
       // For sensorReport elements if value contains gs1:Pressure etc. then strip the starting gs1:
-      return name + "=" + value.substring(value.indexOf(GS1_FORMATTED_VALUE) + 4);
+      return name + "=" + value.substring(value.indexOf(EPCIS.GS1_PREFIX) + 4);
     } else if (EPCIS_EVENT_TYPES.stream().anyMatch(value::equals)) {
       // If the value matches any of the event type then replace the type with eventType to match
       // pre-hash string requirement
-      return EVENT_TYPE + "=" + value + "\n";
+      return EPCIS.EVENT_TYPE + "=" + value + "\n";
     } else if (value.equals("")) {
       // If the field value has Null or empty values then return only the name. Used for sensor
       // information in XML document.
@@ -407,7 +407,7 @@ public class ContextNode {
 
   // Method to format the values if it matches any of the GS1 identifiers format
   private String gs1IdentifierFormat(final String value) {
-    if (value.startsWith(INSTANCE_IDENTIFIER_URN_PREFIX)) {
+    if (value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX)) {
       // If element value is in URN format then change it to WebURI format
       return ConverterUtil.toURI(value);
     } else if (CLASS_IDENTIFIER_URN_PREFIX.stream().anyMatch(value::startsWith)) {
@@ -430,7 +430,8 @@ public class ContextNode {
 
   // Method to format sensor element fields such as type, exception
   private String formatSensorField(final String name, String value) {
-    if (value.startsWith(GS1_FORMATTED_VALUE)) {
+
+    if (value.startsWith(EPCIS.GS1_PREFIX)) {
       value = SENSOR_REPORT_FORMAT.get(name) + value.substring(4);
     } else if (!value.contains(":")) {
       value = SENSOR_REPORT_FORMAT.get(name) + value;

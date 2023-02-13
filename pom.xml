@@ -53,6 +53,12 @@
             <organization>benelog GmbH &amp; Co. KG</organization>
             <organizationUrl>https://www.benelog.com</organizationUrl>
         </developer>
+        <developer>
+            <name>Shaik Dayan</name>
+            <email>dayan.shaik@benelog.com</email>
+            <organization>benelog GmbH &amp; Co. KG</organization>
+            <organizationUrl>https://www.benelog.com</organizationUrl>
+        </developer>
     </developers>
 
     <scm>

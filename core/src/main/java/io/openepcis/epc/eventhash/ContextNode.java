@@ -301,6 +301,7 @@ public class ContextNode {
     } else {
 
       if (getName() != null
+          && !getName().equals(EPCIS.SENSOR_ELEMENT_LIST)
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
           && !EXCLUDE_FIELDS_IN_PREHASH.contains(getName())
           && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)

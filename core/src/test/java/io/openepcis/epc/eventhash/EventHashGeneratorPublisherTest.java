@@ -22,7 +22,6 @@ import io.smallrye.mutiny.Multi;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class EventHashGeneratorPublisherTest {
   private EventHashGenerator eventHashGenerator;
 
   @Before
-  public void before() throws Exception {
+  public void before() {
     eventHashGenerator = new EventHashGenerator();
   }
 
@@ -219,7 +218,7 @@ public class EventHashGeneratorPublisherTest {
   }
 
   @Test
-  public void withUserExtensionsHavingEventID() throws IOException, URISyntaxException {
+  public void withUserExtensionsHavingEventID() throws IOException {
     // For same event in XML & JSON format check if the generated Hash-IDs match.
     final InputStream xmlStream =
         getClass()
@@ -448,5 +447,227 @@ public class EventHashGeneratorPublisherTest {
     assertEquals(
         xmlEventHash.subscribe().asStream().toList(),
         jsonEventHash.subscribe().asStream().toList());
+  }
+
+  // Compare EPCIS Document with EPCIS Query Document
+  @Test
+  public void combinationJSONQueryDocumentTest() throws IOException {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/Combination_of_different_event.json");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Query/Combination_of_different_event.json");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromJson(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromJson(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+    // documentEventHash.subscribe().with(dHash -> System.out.println(dHash.get("sha-256") + "\n" +
+    // dHash.get("prehash") + "\n\n"), failure -> System.out.println("Document HashId Generation
+    // Failed with " + failure));
+  }
+
+  @Test
+  public void curieJSONQueryDocumentTest() throws IOException {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/CurieString_document.json");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Query/CurieString_document.json");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromJson(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromJson(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void jumbledJSONOrderQueryDocumentTest() throws IOException {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/JumbledFieldsOrder.json");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Query/JumbledFieldsOrder.json");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromJson(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromJson(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void sensorDataJSONnQueryDocumentTest() throws IOException {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/SensorData_with_combined_events.json");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/JSON/Query/SensorData_with_combined_events.json");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromJson(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromJson(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void errorDeclarationJSONQueryDocumentTest() throws IOException {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_with_errorDeclaration.json");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Query/TransformationEvent_with_errorDeclaration.json");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromJson(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromJson(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void combinationXMLQueryDocumentTest() {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/Combination_of_different_event.xml");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Query/Combination_of_different_event.xml");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromXml(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromXml(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void curieXMLQueryDocumentTest() {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/CurieString_document.xml");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Query/CurieString_document.xml");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromXml(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromXml(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void jumbledXMLOrderQueryDocumentTest() {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/JumbledFieldsOrder.xml");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Query/JumbledFieldsOrder.xml");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromXml(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromXml(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void sensorDataXMLQueryDocumentTest() {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/SensorData_with_combined_events.xml");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("2.0/EPCIS/XML/Query/SensorData_with_combined_events.xml");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromXml(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromXml(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void errorDeclarationXMLQueryDocumentTest() {
+    final InputStream epcisDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/TransformationEvent_with_errorDeclaration.xml");
+    final InputStream epcisQueryDocument =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Query/TransformationEvent_with_errorDeclaration.xml");
+
+    final Multi<Map<String, String>> documentEventHash =
+        eventHashGenerator.fromXml(epcisDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+        eventHashGenerator.fromXml(epcisQueryDocument, "prehash", "sha-256");
+
+    assertEquals(
+        documentEventHash.subscribe().asStream().toList(),
+        queryEventHash.subscribe().asStream().toList());
   }
 }

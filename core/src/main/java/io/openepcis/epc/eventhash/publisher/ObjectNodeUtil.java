@@ -15,6 +15,8 @@
  */
 package io.openepcis.epc.eventhash.publisher;
 
+import static io.openepcis.constants.EPCIS.*;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class ObjectNodeUtil {
 
   protected static final List<String> REQUIRED_DOCUMENT_FIELDS =
-      Arrays.asList("@context", "type", "schemaVersion", "creationDate");
+      Arrays.asList(CONTEXT, TYPE, SCHEMA_VERSION, CREATION_DATE);
 
   public static boolean isValidEPCISDocumentNode(final ObjectNode header) {
     for (String field : REQUIRED_DOCUMENT_FIELDS) {

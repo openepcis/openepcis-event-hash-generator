@@ -15,6 +15,8 @@
  */
 package io.openepcis.epc.eventhash.publisher;
 
+import static io.openepcis.constants.EPCIS.*;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -36,16 +38,13 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
   private static final ObjectMapper mapper =
       new ObjectMapper().registerModule(new JavaTimeModule());
   private static final JsonFactory jsonFactory = new JsonFactory();
-
   private final ObjectNode header = mapper.createObjectNode();
   private final JsonParser jsonParser;
-
   private final AtomicBoolean headerSent = new AtomicBoolean(false);
   private final AtomicBoolean inEventList = new AtomicBoolean(false);
   private final AtomicBoolean ignoreEventList = new AtomicBoolean(false);
   private final AtomicLong nodeCount = new AtomicLong();
   private final AtomicReference<ObjectNodeSubscription> subscription = new AtomicReference<>();
-
   private JsonToken token;
 
   public ObjectNodePublisher(final InputStream in) throws IOException {
@@ -69,7 +68,7 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
       while (token != null && token != JsonToken.END_OBJECT) {
         final String fieldName = jsonParser.nextFieldName();
         token = jsonParser.nextToken();
-        if ("eventList".equals(fieldName)) {
+        if (fieldName.equals(EVENT_LIST_IN_CAMEL_CASE)) {
           if (token != JsonToken.START_ARRAY) {
             throw new IOException("invalid eventList structure, must be an array");
           }
@@ -77,7 +76,9 @@ public class ObjectNodePublisher<T extends ObjectNode> implements Publisher<T> {
           inEventList.getAndSet(true);
           // eventList reached - back out and return
           return Optional.empty();
-        } else if (!"epcisBody".equals(fieldName) && fieldName != null) {
+        } else if (!fieldName.equals(EPCIS_BODY_IN_CAMEL_CASE)
+            && !fieldName.equals(QUERY_RESULTS_IN_CAMEL_CASE)
+            && !fieldName.equals(RESULTS_BODY_IN_CAMEL_CASE)) {
           final JsonNode o = jsonParser.readValueAsTree();
           if (o != null) {
             header.set(fieldName, o);

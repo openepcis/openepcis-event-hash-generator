@@ -237,7 +237,8 @@ public class EventHashGenerator {
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
     addToContextHeader(objectNode, contextHeader);
-    if (!objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_DOCUMENT)) {
+    if (!objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_DOCUMENT)
+        && !objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_QUERY_DOCUMENT)) {
       final ContextNode contextNode = new ContextNode(objectNode.fields(), contextHeader);
       final String preHashString = contextNode.toShortenedString();
 

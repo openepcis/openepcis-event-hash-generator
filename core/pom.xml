@@ -118,6 +118,13 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <!-- Common snippets dependencies -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-reactive-event-publisher</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
     </dependencies>
 
 

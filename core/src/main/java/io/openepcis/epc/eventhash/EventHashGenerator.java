@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.exception.EventHashException;
-import io.openepcis.epc.eventhash.publisher.ObjectNodePublisher;
+import io.openepcis.reactive.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.subscription.MultiEmitter;
 import java.io.IOException;

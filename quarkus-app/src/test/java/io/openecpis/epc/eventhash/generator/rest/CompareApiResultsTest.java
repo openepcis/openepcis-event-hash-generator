@@ -79,8 +79,7 @@ public class CompareApiResultsTest {
     };
   }
 
-  // Compare Event Hash generated for XML and JSON document.
-  // Parameterized test to compare event hash for XML and JSON documents
+  // Parameterized test to compare event hash for XML and JSON EPCIS documents
   @org.testng.annotations.Test(dataProvider = "documentTestData")
   public void compareDocumentEventHashTest(final String xmlFilePath, final String jsonFilePath)
       throws IOException {
@@ -108,8 +107,7 @@ public class CompareApiResultsTest {
     xmlResponse.then().body(equalTo(jsonResponse.getBody().asString()));
   }
 
-  // Compare Event Hash generated for XML and JSON document.
-  // Parameterized test to compare event hash for XML and JSON documents
+  // Parameterized test to compare event hash for XML and JSON EPCIS events
   @org.testng.annotations.Test(dataProvider = "eventTestData")
   public void compareEventsListEventHashTest(final String xmlFilePath, final String jsonFilePath)
       throws IOException {
@@ -124,6 +122,7 @@ public class CompareApiResultsTest {
             .when()
             .post(eventListEventHashAPI);
 
+    // Add the wrapper array for EPCIS events
     final ArrayNode jsonArray = objectMapper.createArrayNode();
     final ObjectNode objectNode =
         (ObjectNode)

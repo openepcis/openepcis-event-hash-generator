@@ -166,7 +166,7 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
-    return (contentType.equals("application/xml")
+    return (contentType.contains("application/xml")
             ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
             : eventHashGenerator.fromJson(
                 inputDocumentStream, hashParameters.toArray(String[]::new)))
@@ -284,7 +284,7 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
-    return (contentType.equals("application/xml")
+    return (contentType.contains("application/xml")
             ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
             : eventHashGenerator.fromJson(
                 generateJsonDocumentWrapper(inputDocumentStream),

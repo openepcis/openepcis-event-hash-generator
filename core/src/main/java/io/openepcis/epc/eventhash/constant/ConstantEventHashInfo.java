@@ -163,7 +163,7 @@ public class ConstantEventHashInfo {
   public static final MultiValuedMap<String, String> BARE_STRING_FIELD_PARENT_CHILD =
       new ArrayListValuedHashMap<>();
 
-  public static final List<String> CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH = new ArrayList<>();
+  public static final List<String> FIELDS_TO_EXCLUDE_IN_PREHASH = new ArrayList<>();
 
   static {
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.BIZ_STEP, EPCIS.BIZ_STEP);
@@ -179,20 +179,20 @@ public class ConstantEventHashInfo {
     SENSOR_REPORT_FORMAT.put(EPCIS.COMPONENT, EPCIS.GS1_CBV_DOMAIN + "Comp-");
 
     // Add default fields
-    CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+    FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
   }
 
   public static void addFieldsToExclude(final List<String> fieldsToExclude) {
     // Add all the default fields that's not required in event-hash
-    CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+    FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
 
     // Add the user provided fields which needs to be excluded
     if (fieldsToExclude != null && !fieldsToExclude.isEmpty()) {
-      CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(fieldsToExclude);
+      FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(fieldsToExclude);
     }
   }
 
   public static void clearFieldsToExclude() {
-    CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.clear();
+    FIELDS_TO_EXCLUDE_IN_PREHASH.clear();
   }
 }

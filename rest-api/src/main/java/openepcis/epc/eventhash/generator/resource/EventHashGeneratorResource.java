@@ -172,7 +172,7 @@ public class EventHashGeneratorResource {
 
     // If user has provided fields to ignore during hash generation then add them
     if (!StringUtils.isBlank(ignoreFields)) {
-      eventHashGenerator.customFieldsToIgnore(ignoreFields);
+      eventHashGenerator.excludeFieldsInPreHash(ignoreFields);
     }
 
     // Add the Hash Algorithm type to the List.

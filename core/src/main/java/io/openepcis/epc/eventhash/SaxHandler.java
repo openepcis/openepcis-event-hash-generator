@@ -47,7 +47,7 @@ public class SaxHandler extends DefaultHandler {
     path.push(qName);
 
     // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
-    if (ConstantEventHashInfo.CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
+    if (ConstantEventHashInfo.FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
         .noneMatch(getXMLPath()::contains)) {
       // Reset attributes for every element
       currentAttributes = new HashMap<>();
@@ -101,7 +101,7 @@ public class SaxHandler extends DefaultHandler {
   @Override
   public void characters(char[] ch, int start, int length) {
     // Ignore the non-required elements such as errorDeclaration, recordTime, etc.
-    if (ConstantEventHashInfo.CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
+    if (ConstantEventHashInfo.FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
         .noneMatch(getXMLPath()::contains)) {
       currentValue.append(ch, start, length);
     }
@@ -109,7 +109,7 @@ public class SaxHandler extends DefaultHandler {
 
   @Override
   public void endElement(final String uri, final String localName, final String qName) {
-    if (ConstantEventHashInfo.CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
+    if (ConstantEventHashInfo.FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
         .noneMatch(getXMLPath()::contains)) {
       // Do not store the values for the fields which needs to be ignored such as EPCISDocument,
       // EPCISBody, etc.
@@ -138,7 +138,7 @@ public class SaxHandler extends DefaultHandler {
 
       // After completing the particular element reading, remove that element from the stack.
       path.pop();
-    } else if (ConstantEventHashInfo.CUSTOM_FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
+    } else if (ConstantEventHashInfo.FIELDS_TO_EXCLUDE_IN_PREHASH.stream()
         .anyMatch(getXMLPath()::contains)) {
       path.pop();
     }

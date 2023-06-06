@@ -53,18 +53,18 @@ public class EventHashGenerator {
   /**
    * Method used to populate custom fields that needs to be ignored during the pre-hash generation
    *
-   * @param ignoreFieldsForHash List of string element with field name which will be ignored during
-   *     the pre-hash generation.
+   * @param excludeFields List of string element with field name which will be ignored during the
+   *     pre-hash generation.
    */
-  public void customFieldsToIgnore(final String ignoreFieldsForHash) {
-    final List<String> ignoreFieldsList =
-        Arrays.stream(ignoreFieldsForHash.split(",")).map(String::trim).toList();
+  public void excludeFieldsInPreHash(final String excludeFields) {
+    final List<String> excludeFieldsList =
+        Arrays.stream(excludeFields.split(",")).map(String::trim).toList();
 
     // Clear the existing element if any
     ConstantEventHashInfo.clearFieldsToExclude();
 
     // Add the provided elements to List which will be ignored during pre-hash generation
-    ConstantEventHashInfo.addFieldsToExclude(ignoreFieldsList);
+    ConstantEventHashInfo.addFieldsToExclude(excludeFieldsList);
   }
 
   /**

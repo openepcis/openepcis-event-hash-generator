@@ -28,11 +28,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
+import mutiny.zero.flow.adapters.AdaptersToFlow;
 
 @Slf4j
 @NoArgsConstructor
@@ -276,7 +277,8 @@ public class EventHashGenerator {
       final Map<String, String> contextHeader,
       final String... hashAlgorithms)
       throws IOException {
-    final ObjectNodePublisher<ObjectNode> publisher = new ObjectNodePublisher<>(jsonStream);
+    final Publisher publisher =
+        AdaptersToFlow.publisher(new ObjectNodePublisher<ObjectNode>(jsonStream));
     return internalFromPublisher(cls, publisher, contextHeader, hashAlgorithms);
   }
 

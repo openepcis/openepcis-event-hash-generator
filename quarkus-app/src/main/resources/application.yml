@@ -2,7 +2,8 @@ quarkus:
   swagger-ui:
     always-include: true
   http:
-    cors: true
+    cors:
+      enabled: true
     port: 9000
 
   container-image:

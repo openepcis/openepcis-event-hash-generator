@@ -20,6 +20,7 @@ import static java.util.Map.entry;
 import io.openepcis.constants.EPCIS;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,19 +64,20 @@ public class ConstantEventHashInfo {
           EPCIS.BIZ_TRANSACTION_URN_PREFIX,
           EPCIS.SRC_DEST_URN_PREFIX,
           EPCIS.ERROR_REASON_URN_PREFIX);
-  public static final List<String> EXCLUDE_FIELDS_IN_PREHASH =
-      List.of(
-          EPCIS.ERROR_DECLARATION,
-          EPCIS.DECLARATION_TIME,
-          EPCIS.REASON,
-          EPCIS.CORRECTIVE_EVENT_IDS,
-          EPCIS.CORRECTIVE_EVENT_ID,
-          EPCIS.RECORD_TIME,
-          EPCIS.EVENT_ID,
-          EPCIS.CONTEXT,
-          "rdfs:comment",
-          "#text",
-          "comment");
+  public static final List<String> DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH =
+      new ArrayList<>(
+          List.of(
+              EPCIS.ERROR_DECLARATION,
+              EPCIS.DECLARATION_TIME,
+              EPCIS.REASON,
+              EPCIS.CORRECTIVE_EVENT_IDS,
+              EPCIS.CORRECTIVE_EVENT_ID,
+              EPCIS.RECORD_TIME,
+              EPCIS.EVENT_ID,
+              EPCIS.CONTEXT,
+              "rdfs:comment",
+              "#text",
+              "comment"));
   public static final DateTimeFormatter DATE_FORMATTER =
       new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
@@ -161,6 +163,9 @@ public class ConstantEventHashInfo {
   public static final MultiValuedMap<String, String> BARE_STRING_FIELD_PARENT_CHILD =
       new ArrayListValuedHashMap<>();
 
+  public final List<String> FIELDS_TO_EXCLUDE_IN_PREHASH =
+      new ArrayList<>(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+
   static {
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.BIZ_STEP, EPCIS.BIZ_STEP);
     BARE_STRING_FIELD_PARENT_CHILD.put(EPCIS.DISPOSITION, EPCIS.DISPOSITION);
@@ -173,5 +178,29 @@ public class ConstantEventHashInfo {
     SENSOR_REPORT_FORMAT.put(EPCIS.TYPE, EPCIS.GS1_VOC_DOMAIN);
     SENSOR_REPORT_FORMAT.put(EPCIS.EXCEPTION, EPCIS.GS1_VOC_DOMAIN);
     SENSOR_REPORT_FORMAT.put(EPCIS.COMPONENT, EPCIS.GS1_CBV_DOMAIN + "Comp-");
+  }
+
+  private static final ConstantEventHashInfo context = new ConstantEventHashInfo();
+
+  public static ConstantEventHashInfo getContext() {
+    return context;
+  }
+
+  public void addFieldsToExclude(final List<String> fieldsToExclude) {
+    // Add all the default fields that's not required in event-hash
+    FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+
+    // Add the user provided fields which needs to be excluded
+    if (fieldsToExclude != null && !fieldsToExclude.isEmpty()) {
+      FIELDS_TO_EXCLUDE_IN_PREHASH.addAll(fieldsToExclude);
+    }
+  }
+
+  public void clearFieldsToExclude() {
+    FIELDS_TO_EXCLUDE_IN_PREHASH.clear();
+  }
+
+  public List<String> getFieldsToExcludeInPrehash() {
+    return FIELDS_TO_EXCLUDE_IN_PREHASH;
   }
 }

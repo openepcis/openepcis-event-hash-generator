@@ -545,12 +545,12 @@ public class EventHashGeneratorPublisherTest {
         getClass()
             .getClassLoader()
             .getResourceAsStream(
-                "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_with_errorDeclaration.json");
+                "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_with_error_declaration.json");
     final InputStream epcisQueryDocument =
         getClass()
             .getClassLoader()
             .getResourceAsStream(
-                "2.0/EPCIS/JSON/Query/TransformationEvent_with_errorDeclaration.json");
+                "2.0/EPCIS/JSON/Query/TransformationEvent_with_error_declaration.json");
 
     final Multi<Map<String, String>> documentEventHash =
         eventHashGenerator.fromJson(epcisDocument, "prehash", "sha-256");

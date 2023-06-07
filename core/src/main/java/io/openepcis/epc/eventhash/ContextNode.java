@@ -20,6 +20,7 @@ import static io.openepcis.epc.eventhash.constant.ConstantEventHashInfo.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.openepcis.constants.EPCIS;
+import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.epc.translator.util.ConverterUtil;
 import java.time.Instant;
 import java.util.*;
@@ -162,7 +163,6 @@ public class ContextNode {
   // Private method to return the Strings from well known EPCIS fields/attributes of EPCIS event
   // such as type, eventTime, bizStep etc. by omitting the User-Extensions.
   private String epcisFieldsPreHashBuilder() {
-
     // Check if the elements are of root elements and do not contain the children elements. If the
     // element is part of EPCIS standard fields then append to pre-hash string.
     if (children.isEmpty()
@@ -238,7 +238,8 @@ public class ContextNode {
         && node.getChildren() != null
         && !node.getChildren().isEmpty()
         && node.getChildren().get(0).getName() == null
-        && EXCLUDE_FIELDS_IN_PREHASH.stream().noneMatch(getName()::equals)) {
+        && ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().stream()
+            .noneMatch(getName()::equals)) {
       fieldName = node.getName();
     }
 
@@ -293,7 +294,7 @@ public class ContextNode {
         && getName() != null
         && getValue() != null
         && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-        && !EXCLUDE_FIELDS_IN_PREHASH.contains(getName())
+        && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
         && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)) {
       // Add information related to direct name and value based fields. Then if attributes are
       // present then call the method to format them.
@@ -303,7 +304,7 @@ public class ContextNode {
       if (getName() != null
           && !getName().equals(EPCIS.SENSOR_ELEMENT_LIST)
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-          && !EXCLUDE_FIELDS_IN_PREHASH.contains(getName())
+          && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
           && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
           && (getName().equals(EPCIS.SENSOR_ELEMENT)
               || (!children.isEmpty()
@@ -335,7 +336,8 @@ public class ContextNode {
       final String name, final String value, final ContextNode currentNode) {
     // If the field matches to ignore field then do not include them within the event pre hash. Ex:
     // recordTime
-    if (EXCLUDE_FIELDS_IN_PREHASH.stream().anyMatch(name::startsWith)) {
+    if (ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().stream()
+        .anyMatch(name::startsWith)) {
       return null;
     }
 

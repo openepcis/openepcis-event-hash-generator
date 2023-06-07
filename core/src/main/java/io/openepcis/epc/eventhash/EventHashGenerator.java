@@ -18,26 +18,24 @@ package io.openepcis.epc.eventhash;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.openepcis.constants.EPCIS;
+import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.epc.eventhash.exception.EventHashException;
 import io.openepcis.reactive.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.subscription.MultiEmitter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 
 @Slf4j
 @NoArgsConstructor
 public class EventHashGenerator {
-
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
   private String prehashJoin = "";
 
@@ -51,6 +49,26 @@ public class EventHashGenerator {
 
   public void prehashJoin(final String s) {
     prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
+  }
+
+  /**
+   * Method used to populate custom fields that needs to be ignored during the pre-hash generation
+   *
+   * @param excludeFields List of string element with field name which will be ignored during the
+   *     pre-hash generation.
+   */
+  public void excludeFieldsInPreHash(final String excludeFields) {
+    // If user has provided any values then add them to fields which needs to be omitted
+    if (!StringUtils.isBlank(excludeFields)) {
+      final List<String> excludeFieldsList =
+          Arrays.stream(excludeFields.split(",")).map(String::trim).toList();
+
+      // Clear the existing element if any
+      ConstantEventHashInfo.getContext().clearFieldsToExclude();
+
+      // Add the provided elements to List which will be ignored during pre-hash generation
+      ConstantEventHashInfo.getContext().addFieldsToExclude(excludeFieldsList);
+    }
   }
 
   /**

@@ -31,9 +31,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -52,7 +54,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
     description = "Generate event hash for EPCIS XML or JSON/JSON-LD document or event list.")
 public class EventHashGeneratorResource {
 
-  @Inject ManagedExecutor managedExecutor;
+  @Inject
+  ManagedExecutor managedExecutor;
   @Inject EventHashGenerator eventHashGenerator;
   @Inject JsonFactory jsonFactory;
   private static final String SHA_256 = "sha-256";
@@ -146,7 +149,13 @@ public class EventHashGeneratorResource {
                       enumeration = {"true", "false"}))
           @DefaultValue("false")
           @QueryParam("beautifyPreHash")
-          Boolean beautifyPreHash)
+          Boolean beautifyPreHash,
+      @Parameter(
+              description = "Ignore fields for Hash-ID generation",
+              schema = @Schema(description = "empty defaults to no fields ignored"))
+          @DefaultValue("")
+          @QueryParam("ignoreFields")
+          String ignoreFields)
       throws IOException {
     // List to store the parameters based on the user provided inputs.
     final List<String> hashParameters = new ArrayList<>();
@@ -161,6 +170,11 @@ public class EventHashGeneratorResource {
       } else {
         eventHashGenerator.prehashJoin("");
       }
+    }
+
+    // If user has provided fields to ignore during hash generation then add them
+    if (!StringUtils.isBlank(ignoreFields)) {
+      eventHashGenerator.excludeFieldsInPreHash(ignoreFields);
     }
 
     // Add the Hash Algorithm type to the List.

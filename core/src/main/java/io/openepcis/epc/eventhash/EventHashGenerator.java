@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mutiny.zero.flow.adapters.AdaptersToFlow;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @NoArgsConstructor
@@ -58,14 +58,17 @@ public class EventHashGenerator {
    *     pre-hash generation.
    */
   public void excludeFieldsInPreHash(final String excludeFields) {
-    final List<String> excludeFieldsList =
-        Arrays.stream(excludeFields.split(",")).map(String::trim).toList();
+    // If user has provided any values then add them to fields which needs to be omitted
+    if (!StringUtils.isBlank(excludeFields)) {
+      final List<String> excludeFieldsList =
+          Arrays.stream(excludeFields.split(",")).map(String::trim).toList();
 
-    // Clear the existing element if any
-    ConstantEventHashInfo.clearFieldsToExclude();
+      // Clear the existing element if any
+      ConstantEventHashInfo.getContext().clearFieldsToExclude();
 
-    // Add the provided elements to List which will be ignored during pre-hash generation
-    ConstantEventHashInfo.addFieldsToExclude(excludeFieldsList);
+      // Add the provided elements to List which will be ignored during pre-hash generation
+      ConstantEventHashInfo.getContext().addFieldsToExclude(excludeFieldsList);
+    }
   }
 
   /**

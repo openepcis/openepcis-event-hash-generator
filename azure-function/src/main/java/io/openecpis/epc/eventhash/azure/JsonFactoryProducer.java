@@ -18,7 +18,7 @@ package io.openecpis.epc.eventhash.azure;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 public class JsonFactoryProducer {
 

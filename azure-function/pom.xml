@@ -23,27 +23,22 @@
   <artifactId>openepcis-event-hash-generator-azure</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <properties>
-    <compiler-plugin.version>3.10.1</compiler-plugin.version>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.target>17</maven.compiler.target>
-    <maven.compiler.source>17</maven.compiler.source>
+    <azure.functions.maven.plugin.version>1.19.0</azure.functions.maven.plugin.version>
+    <compiler-plugin.version>3.11.0</compiler-plugin.version>
+    <functionAppName>epcis</functionAppName>
+    <functionAppRegion>eastus</functionAppRegion>
+    <function>eventhash</function>
+    <functionResourceGroup>java-functions-group</functionResourceGroup>
+    <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus-plugin.version>2.16.0.Final</quarkus-plugin.version>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus.platform.version>2.16.0.Final</quarkus.platform.version>
-    <resources-plugin.version>3.1.1</resources-plugin.version>
-    <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
-
-    <azure.functions.maven.plugin.version>1.19.1</azure.functions.maven.plugin.version>
-    <functionAppName>epcis</functionAppName>
-    <functionAppRegion>westus</functionAppRegion>
-    <functionResourceGroup>java-functions-group</functionResourceGroup>
-    <function>eventhash</function>
-    <stagingDirectory>${project.build.directory}/azure-functions/${functionAppName}</stagingDirectory>
-    <quarkus.package.type>uber-jar</quarkus.package.type>
+    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+    <quarkus.platform.version>3.1.1.Final</quarkus.platform.version>
+    <skipITs>true</skipITs>
+    <surefire-plugin.version>3.0.0</surefire-plugin.version>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -58,23 +53,37 @@
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-reactive-routes</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-undertow</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-azure-functions-http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.microsoft.azure.functions</groupId>
+      <artifactId>azure-functions-java-library</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-undertow</artifactId>
     </dependency>
     <!-- OpenEPCIS dependency for classes and data-->
     <dependency>
@@ -82,7 +91,13 @@
       <artifactId>openepcis-event-hash-generator</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <!--
+    <dependency>
+      <groupId>io.openepcis</groupId>
+      <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    -->
     <!-- OpenEPCIS dependency for returning the ProblemResponseBody and data-->
     <dependency>
       <groupId>io.openepcis</groupId>
@@ -112,7 +127,7 @@
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.moxy</artifactId>
-      <version>4.0.0</version>
+      <version>4.0.1</version>
     </dependency>
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
@@ -137,13 +152,16 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.quarkus</groupId>
+        <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${quarkus-plugin.version}</version>
+        <version>${quarkus.platform.version}</version>
+        <extensions>true</extensions>
         <executions>
           <execution>
             <goals>
               <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
             </goals>
           </execution>
         </executions>
@@ -151,6 +169,11 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>
+        <configuration>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -162,24 +185,26 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
-      <!-- we only use azure plugin to deploy to Azure.
-           The directory structure is set up through various plugins in this pom -->
       <plugin>
         <groupId>com.microsoft.azure</groupId>
         <artifactId>azure-functions-maven-plugin</artifactId>
         <version>${azure.functions.maven.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>package-functions</id>
+            <goals>
+              <goal>package</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
-          <resourceGroup>${functionResourceGroup}</resourceGroup>
           <appName>${functionAppName}</appName>
+          <resourceGroup>${functionResourceGroup}</resourceGroup>
+          <appServicePlanName>java-functions-app-service-plan</appServicePlanName>
           <region>${functionAppRegion}</region>
           <runtime>
-            <!-- runtime os, could be windows, linux or docker-->
-            <os>windows</os>
+            <os>linux</os>
             <javaVersion>17</javaVersion>
-            <!-- for docker function, please set the following parameters -->
-            <!-- <image>[hub-user/]repo-name[:tag]</image> -->
-            <!-- <serverId></serverId> -->
-            <!-- <registryUrl></registryUrl>  -->
           </runtime>
           <appSettings>
             <property>
@@ -190,73 +215,15 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${resources-plugin.version}</version>
-        <executions>
-          <!-- add azure required json files
-               to Azure staging directory -->
-          <execution>
-            <id>copy-base-azure-config</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <overwrite>true</overwrite>
-              <outputDirectory>${stagingDirectory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/azure-config</directory>
-                  <includes>
-                    <include>host.json</include>
-                    <include>local.settings.json</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <!-- copy unpacked function.json into Azure staging directory -->
-          <execution>
-            <id>copy-function-json</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <overwrite>true</overwrite>
-              <outputDirectory>${stagingDirectory}/${function}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/azure-config</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>function.json</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- azure plugin wants a specific name for the jar so need to copy runner jar and rename it -->
-      <plugin>
-        <groupId>com.coderplus.maven.plugins</groupId>
-        <artifactId>copy-rename-maven-plugin</artifactId>
-        <version>1.0.1</version>
-        <executions>
-          <execution>
-            <id>rename-file</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <sourceFile>${project.build.directory}/${project.artifactId}-${project.version}-runner.jar</sourceFile>
-              <destinationFile>${stagingDirectory}/${project.artifactId}-${project.version}.jar</destinationFile>
-            </configuration>
-          </execution>
-        </executions>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>obj</directory>
+            </fileset>
+          </filesets>
+        </configuration>
       </plugin>
     </plugins>
   </build>

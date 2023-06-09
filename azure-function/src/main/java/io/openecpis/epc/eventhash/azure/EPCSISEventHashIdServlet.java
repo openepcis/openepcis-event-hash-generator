@@ -24,6 +24,7 @@ import io.smallrye.mutiny.Multi;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -178,7 +179,7 @@ public class EPCSISEventHashIdServlet extends AbstractHashIdServlet {
               jsonGenerator.writeStartObject();
               jsonGenerator.writeStringField("type", "EPCISDocument");
               jsonGenerator.writeStringField("schemaVersion", "2.0");
-              jsonGenerator.writeStringField("creationDate", Instant.now().toString());
+              jsonGenerator.writeStringField("creationDate", Instant.now().truncatedTo(ChronoUnit.MILLIS).toString());
               jsonGenerator.writeObjectFieldStart("epcisBody");
               jsonGenerator.writeFieldName("eventList");
               int r;

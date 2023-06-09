@@ -28,6 +28,7 @@ import io.smallrye.mutiny.Multi;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -332,7 +333,7 @@ public class EventHashGeneratorResource {
                                   "epcisBody": {
                                     "eventList": [
                                 """,
-                    Instant.now().toString());
+                    Instant.now().truncatedTo(ChronoUnit.MILLIS).toString());
             outTransform.write(documentHeader.getBytes(StandardCharsets.UTF_8));
             outTransform.flush();
             int eventIndex = 0;

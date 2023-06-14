@@ -13,20 +13,22 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openecpis.epc.eventhash.azure;
+package io.openepcis.epc.eventhash.azure;
 
 import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.smallrye.mutiny.Multi;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MediaType;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.MediaType;
 
 public abstract class AbstractHashIdServlet extends HttpServlet {
 
@@ -51,6 +53,7 @@ public abstract class AbstractHashIdServlet extends HttpServlet {
     // Add the Hash Algorithm type to the List.
     hashParameters.addAll(
         hashAlgorithms != null && !hashAlgorithms.isEmpty() ? hashAlgorithms : List.of("sha-256"));
+
     return hashParameters;
   }
 

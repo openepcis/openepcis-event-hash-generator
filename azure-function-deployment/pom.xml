@@ -1,23 +1,6 @@
 <?xml version="1.0"?>
-<!--
-
-    Copyright 2022 benelog GmbH & Co. KG
-
-        Licensed under the Apache License, Version 2.0 (the "License");
-        you may not use this file except in compliance with the License.
-        You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-        Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
-        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        See the License for the specific language governing permissions and
-        limitations under the License.
-
--->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.openepcis</groupId>
   <artifactId>openepcis-event-hash-generator-azure</artifactId>
@@ -27,7 +10,6 @@
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
     <functionAppName>epcis</functionAppName>
     <functionAppRegion>eastus</functionAppRegion>
-    <function>eventhash</function>
     <functionResourceGroup>java-functions-group</functionResourceGroup>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,7 +20,6 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
   </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -61,68 +42,30 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive</artifactId>
+      <artifactId>quarkus-undertow</artifactId>
     </dependency>
     <dependency>
       <groupId>com.microsoft.azure.functions</groupId>
       <artifactId>azure-functions-java-library</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-undertow</artifactId>
-    </dependency>
-    <!-- OpenEPCIS dependency for classes and data-->
-    <dependency>
-      <groupId>io.openepcis</groupId>
-      <artifactId>openepcis-event-hash-generator</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>io.openepcis</groupId>
-      <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    -->
-    <!-- OpenEPCIS dependency for returning the ProblemResponseBody and data-->
+
+    <!-- OpenEPCIS dependencies -->
     <dependency>
       <groupId>io.openepcis</groupId>
       <artifactId>openepcis-model-rest</artifactId>
       <scope>compile</scope>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>io.openepcis</groupId>
       <artifactId>openepcis-model-epcis</artifactId>
       <scope>compile</scope>
       <version>${project.version}</version>
     </dependency>
-
-    <!-- Apache IO package for String manipulation String <-> InputStream -->
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.eclipse.microprofile.openapi</groupId>
-      <artifactId>microprofile-openapi-api</artifactId>
-      <scope>provided</scope>
+      <groupId>io.openepcis</groupId>
+      <artifactId>openepcis-event-hash-generator</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
@@ -134,10 +77,13 @@
       <artifactId>jakarta.xml.bind-api</artifactId>
       <version>4.0.0</version>
     </dependency>
+
     <dependency>
-      <groupId>org.eclipse.microprofile.openapi</groupId>
-      <artifactId>microprofile-openapi-api</artifactId>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
+
+    <!-- test dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>

@@ -13,14 +13,17 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-package io.openecpis.epc.eventhash.azure;
+package io.openepcis.epc.eventhash.azure;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.openepcis.epc.eventhash.EventHashGenerator;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
+import org.eclipse.microprofile.context.ManagedExecutor;
 
-public class JsonFactoryProducer {
+public class AzureBeansProducer {
 
   @Produces
   public JsonFactory createJsonFactory() {
@@ -28,4 +31,16 @@ public class JsonFactoryProducer {
         new ObjectMapper().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     return new JsonFactory().setCodec(objectMapper);
   }
+
+  @Produces
+  public ManagedExecutor managedExecutor() {
+    return ManagedExecutor.builder().build();
+  }
+
+  @Produces
+  @RequestScoped
+  public EventHashGenerator eventHashGenerator() {
+    return new EventHashGenerator();
+  }
+
 }

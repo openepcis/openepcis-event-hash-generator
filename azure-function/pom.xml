@@ -33,7 +33,7 @@
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>2.16.0.Final</quarkus.platform.version>
-    <resources-plugin.version>3.1.1</resources-plugin.version>
+    <resources-plugin.version>3.3.1</resources-plugin.version>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 
     <azure.functions.maven.plugin.version>1.19.1</azure.functions.maven.plugin.version>

@@ -74,6 +74,7 @@
     <modules>
         <module>core</module>
         <module>cli</module>
+        <module>restassured</module>
         <module>rest-api</module>
         <module>quarkus-app</module>
     </modules>
@@ -91,7 +92,12 @@
                 <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-event-hash-generator-restassured</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
             <!-- OpenEPCIS model dependencies -->
             <dependency>
                 <groupId>io.openepcis</groupId>
@@ -104,6 +110,13 @@
                 <artifactId>openepcis-model-epcis</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
+            </dependency>
+            <!-- Add constants as dependencies -->
+            <dependency>
+                <groupId>io.openepcis</groupId>
+                <artifactId>openepcis-test-resources</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Eclipse microprofile OpenAPI support -->

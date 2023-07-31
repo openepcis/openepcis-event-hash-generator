@@ -322,7 +322,7 @@ public class EventHashGenerator {
       return (T) map;
     } catch (Exception e) {
       throw new EventHashException(
-          "Exception occurred during event hash generation : " + e.getMessage() + e);
+          "Exception occurred during event hash generation : " + e.getMessage(), e);
     }
   }
 

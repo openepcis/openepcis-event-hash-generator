@@ -24,7 +24,4 @@ public class EventHashException extends RuntimeException {
     super(msg);
   }
 
-  public EventHashException(Throwable parent) {
-    super(parent);
-  }
 }

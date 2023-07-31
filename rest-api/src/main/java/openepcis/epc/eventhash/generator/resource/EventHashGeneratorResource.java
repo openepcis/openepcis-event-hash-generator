@@ -369,8 +369,7 @@ public class EventHashGeneratorResource {
             }
             throw new EventHashException(
                 "Exception occurred during the creation of wrapper document for eventList : "
-                    + ex.getMessage()
-                    + ex);
+                    + ex.getMessage(), ex);
           } finally {
             try {
               inputEventList.close();

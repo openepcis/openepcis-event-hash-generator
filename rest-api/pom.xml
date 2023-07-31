@@ -65,6 +65,11 @@
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-event-hash-generator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-event-hash-generator-restassured</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- OpenEPCIS dependency for returning the ProblemResponseBody and data-->
         <dependency>
@@ -94,5 +99,60 @@
             <groupId>org.eclipse.microprofile.context-propagation</groupId>
             <artifactId>microprofile-context-propagation-api</artifactId>
         </dependency>
+
+        <!-- REST assured as dependencies for testing -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-test-resources</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

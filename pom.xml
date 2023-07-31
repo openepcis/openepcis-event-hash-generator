@@ -76,6 +76,7 @@
         <module>cli</module>
         <module>restassured</module>
         <module>rest-api</module>
+        <module>servlet-api</module>
         <module>quarkus-app</module>
     </modules>
 

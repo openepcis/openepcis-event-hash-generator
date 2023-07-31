@@ -19,6 +19,11 @@
             <artifactId>openepcis-test-resources</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-model-rest</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- REST assured as dependencies for testing -->
         <dependency>

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.openepcis.epc.eventhash.exception.EventHashException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 import java.io.IOException;
@@ -18,13 +19,14 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @Singleton
+@RequiredArgsConstructor
 public class DocumentWrapperSupport {
 
-    @Inject
-    JsonFactory jsonFactory;
 
-    @Inject
-    ManagedExecutor managedExecutor;
+    private  final JsonFactory jsonFactory;
+
+    private final ManagedExecutor managedExecutor;
+
 
     public final InputStream generateJsonDocumentWrapper(final InputStream inputEventList)
             throws IOException {

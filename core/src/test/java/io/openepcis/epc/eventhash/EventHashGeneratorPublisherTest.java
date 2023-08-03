@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -649,25 +650,88 @@ public class EventHashGeneratorPublisherTest {
   }
 
   @Test
-  public void errorDeclarationXMLQueryDocumentTest() {
-    final InputStream epcisDocument =
-        getClass()
-            .getClassLoader()
-            .getResourceAsStream(
-                "2.0/EPCIS/XML/Capture/Documents/TransformationEvent_with_errorDeclaration.xml");
-    final InputStream epcisQueryDocument =
-        getClass()
-            .getClassLoader()
-            .getResourceAsStream(
-                "2.0/EPCIS/XML/Query/TransformationEvent_with_errorDeclaration.xml");
+  public void errorDeclarationXMLQueryDocumentTest() throws IOException {
+    final InputStream xmlDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/XML/Capture/Documents/TransformationEvent_all_possible_fields.xml");
+    final InputStream jsonDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_all_possible_fields.json");
+
 
     final Multi<Map<String, String>> documentEventHash =
-        eventHashGenerator.fromXml(epcisDocument, "prehash", "sha-256");
+        eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256");
     final Multi<Map<String, String>> queryEventHash =
-        eventHashGenerator.fromXml(epcisQueryDocument, "prehash", "sha-256");
+        eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256");
 
     assertEquals(
         documentEventHash.subscribe().asStream().toList(),
         queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void xmlVsJsonCaptureDocument() throws IOException {
+    final InputStream xmlDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/XML/Capture/Documents/TransformationEvent_with_userExtensions.xml");
+    final InputStream jsonDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_with_userExtensions.json");
+
+    final Multi<Map<String, String>> documentEventHash =
+            eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash =
+            eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256");
+
+    assertEquals(
+            documentEventHash.subscribe().asStream().toList(),
+            queryEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void objectEventAllFieldsTest() throws IOException {
+    final InputStream xmlDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/XML/Capture/Documents/ObjectEvent_all_possible_fields.xml");
+    final InputStream jsonDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/JSON/Capture/Documents/ObjectEvent_all_possible_fields.json");
+
+    final Multi<Map<String, String>> xmlEventHash = eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256");
+
+    assertEquals(xmlEventHash.subscribe().asStream().toList(), jsonEventHash.subscribe().asStream().toList());
+  }
+
+  @Test
+  public void transformationEventAllFieldsTest() throws IOException {
+    final InputStream xmlDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/XML/Capture/Documents/TransformationEvent_all_possible_fields.xml");
+    final InputStream jsonDocument =
+            getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(
+                            "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_all_possible_fields.json");
+
+    eventHashGenerator.prehashJoin("\\n");
+    final Multi<Map<String, String>> xmlEventHash = eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256");
+
+    assertEquals(xmlEventHash.subscribe().asStream().toList(), jsonEventHash.subscribe().asStream().toList());
   }
 }

@@ -16,24 +16,12 @@
 package openepcis.epc.eventhash.generator.resource;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.openepcis.epc.eventhash.DocumentWrapperSupport;
 import io.openepcis.epc.eventhash.EventHashGenerator;
-import io.openepcis.epc.eventhash.exception.EventHashException;
 import io.openepcis.model.epcis.EPCISDocument;
 import io.openepcis.model.epcis.EPCISEvent;
 import io.openepcis.model.rest.ProblemResponseBody;
 import io.smallrye.mutiny.Multi;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -49,6 +37,12 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBodySchema
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Path("/api")
 @Tag(

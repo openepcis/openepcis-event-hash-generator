@@ -4,7 +4,6 @@ import io.openepcis.epc.eventhash.DocumentWrapperSupport;
 import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.model.rest.servlet.ServletSupport;
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,17 +29,17 @@ public class EventHashGeneratorServlets {
         ServletSupport servletSupport;
 
         @Override
-        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             try {
                 // List to store the parameters based on the user provided inputs.
                 final List<String> hashParameters = new ArrayList<>();
 
                 // If Pre-Hash string is requested then add the prehash string to the List
-                if (Boolean.valueOf(Optional.ofNullable(req.getParameter("prehash")).orElse("false"))) {
+                if (Boolean.parseBoolean(Optional.ofNullable(req.getParameter("prehash")).orElse("false"))) {
                     hashParameters.add("prehash");
 
                     // If user has requested for beautification for prehash string then add beautification.
-                    if (Boolean.valueOf(Optional.ofNullable(req.getParameter("beautifyPreHash")).orElse("false"))) {
+                    if (Boolean.parseBoolean(Optional.ofNullable(req.getParameter("beautifyPreHash")).orElse("false"))) {
                         eventHashGenerator.prehashJoin("\\n");
                     } else {
                         eventHashGenerator.prehashJoin("");
@@ -54,7 +53,7 @@ public class EventHashGeneratorServlets {
                 }
 
                 // Add the Hash Algorithm type to the List.
-                final String hashAlgorithm = req.getParameter("ignoreFields");
+                final String hashAlgorithm = req.getParameter("hashAlgorithm");
                 hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {
@@ -89,17 +88,17 @@ public class EventHashGeneratorServlets {
         DocumentWrapperSupport documentWrapperSupport;
 
         @Override
-        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             try {
                 // List to store the parameters based on the user provided inputs.
                 final List<String> hashParameters = new ArrayList<>();
 
                 // If Pre-Hash string is requested then add the prehash string to the List
-                if (Boolean.valueOf(Optional.ofNullable(req.getParameter("prehash")).orElse("false"))) {
+                if (Boolean.parseBoolean(Optional.ofNullable(req.getParameter("prehash")).orElse("false"))) {
                     hashParameters.add("prehash");
 
                     // If user has requested for beautification for prehash string then add beautification.
-                    if (Boolean.valueOf(Optional.ofNullable(req.getParameter("beautifyPreHash")).orElse("false"))) {
+                    if (Boolean.parseBoolean(Optional.ofNullable(req.getParameter("beautifyPreHash")).orElse("false"))) {
                         eventHashGenerator.prehashJoin("\\n");
                     } else {
                         eventHashGenerator.prehashJoin("");
@@ -113,14 +112,14 @@ public class EventHashGeneratorServlets {
                 }
 
                 // Add the Hash Algorithm type to the List.
-                final String hashAlgorithm = req.getParameter("ignoreFields");
+                final String hashAlgorithm = req.getParameter("hashAlgorithm");
                 hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
-                if (!accept.isPresent()) {
+                if (accept.isEmpty()) {
                     return;
                 }
                 Optional<String> contentType = servletSupport.contentType(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML), accept.get(), req, resp);
-                if (!contentType.isPresent()) {
+                if (contentType.isEmpty()) {
                     return;
                 }
                 resp.setContentType(MediaType.APPLICATION_JSON);

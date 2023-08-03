@@ -220,7 +220,10 @@ public class ContextNode {
     String fieldName = "";
 
     if (Boolean.TRUE.equals(isIlmdPath(node))) {
-      fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
+      if(!isArrayNode(node)){
+        fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
+      }
+     // fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
     } else if (node.getName() != null
         && TemplateNodeMap.isEpcisField(node)
         && DUPLICATE_ENTRY_CHECK.stream().noneMatch(node.getName()::equals)
@@ -468,6 +471,11 @@ public class ContextNode {
     } else {
       return name;
     }
+  }
+
+  //Check if the parent is array if not do not add the user extension namespace twice
+  private boolean isArrayNode(final ContextNode node){
+   return node.getName() != null && !node.getChildren().isEmpty() && node.getChildren().get(0).getName() != null && (node.getName().equals(node.getChildren().get(0).getName()) && node.getChildren().get(0).getValue() != null);
   }
 
   // Get the parent and their subsequent children (test purpose only)

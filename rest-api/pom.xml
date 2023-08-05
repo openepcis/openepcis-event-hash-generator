@@ -84,6 +84,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <!--include test resources for OpenAPI Examples -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-test-resources</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Apache IO package for String manipulation String <-> InputStream -->
         <dependency>
             <groupId>commons-io</groupId>
@@ -109,11 +116,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.openepcis</groupId>
-            <artifactId>openepcis-test-resources</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -64,6 +64,11 @@
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-event-hash-generator-rest-api</artifactId>
         </dependency>
+        <!--include test resources for OpenAPI Examples -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-test-resources</artifactId>
+        </dependency>
 
         <!-- Quarkus Service related dependency-->
         <dependency>

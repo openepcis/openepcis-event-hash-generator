@@ -18,6 +18,7 @@ package openepcis.epc.eventhash.generator;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openepcis.epc.eventhash.EventHashGenerator;
+import io.openepcis.resources.oas.EPCISExampleOASFilter;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.ws.rs.ApplicationPath;
@@ -36,6 +37,8 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
                 @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0")))
 @ApplicationPath("/")
 public class RestApplication extends Application {
+
+  private EPCISExampleOASFilter filter;
 
   @Produces
   @RequestScoped

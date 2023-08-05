@@ -3,7 +3,9 @@ quarkus:
     always-include: true
   http:
     cors:
-      enabled: true
+      ~: true
+      methods: GET,POST
+      origins: "/.*/"
     port: 9000
 
   container-image:
@@ -11,3 +13,6 @@ quarkus:
     name: event-hash-generator-service
     additional-tags:
       - latest
+mp:
+  openapi:
+    filter: "io.openepcis.resources.oas.EPCISExampleOASFilter"

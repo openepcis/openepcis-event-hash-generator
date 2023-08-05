@@ -119,7 +119,7 @@
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-test-resources</artifactId>
-            <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Common snippets dependencies -->

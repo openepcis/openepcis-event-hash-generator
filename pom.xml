@@ -112,12 +112,11 @@
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
-            <!-- Add constants as dependencies -->
+            <!-- Add test resources as dependencies -->
             <dependency>
                 <groupId>io.openepcis</groupId>
                 <artifactId>openepcis-test-resources</artifactId>
                 <version>${project.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <!-- Eclipse microprofile OpenAPI support -->

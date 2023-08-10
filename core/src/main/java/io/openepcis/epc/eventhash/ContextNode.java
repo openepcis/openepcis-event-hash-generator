@@ -77,12 +77,12 @@ public class ContextNode {
     this.parent = parent;
     this.name = name;
     this.namespaces = parent.namespaces;
-    final Iterator<JsonNode> iter = node.elements();
+    final Iterator<JsonNode> iterator = node.elements();
 
     // For event fields with values in Array, loop over the array and add the elements one by one to
     // child based on type of value.
-    while (iter.hasNext()) {
-      var n = iter.next();
+    while (iterator.hasNext()) {
+      var n = iterator.next();
 
       // If the array contains direct text value and not another array then get the textValue and
       // add it.
@@ -173,7 +173,7 @@ public class ContextNode {
       // string by formatting.
 
       // Create the string for the attributes. If present append all attributes according EPCIS
-      // standard. Used maily for XML document.
+      // standard. Used mainly for XML document.
       final StringBuilder preHashBuilder = new StringBuilder();
 
       // For ILMD fields make call to userExtensions formatter and for all other fields make call to
@@ -200,13 +200,7 @@ public class ContextNode {
       for (ContextNode node : children) {
         final String s = node.epcisFieldsPreHashBuilder();
         if (!s.isEmpty()) {
-          sb.append(
-              node.getName() != null
-                      && EXCLUDE_LINE_BREAK.contains(node.getName())
-                      && !(node.getParent().getName() != null
-                          && node.getParent().getName().equals(EPCIS.SENSOR_REPORT))
-                  ? s
-                  : s + "\n");
+          sb.append(s).append("\n");
         }
       }
       return sb.toString();
@@ -223,13 +217,13 @@ public class ContextNode {
       if(!isArrayNode(node)){
         fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
       }
-     // fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
     } else if (node.getName() != null
         && TemplateNodeMap.isEpcisField(node)
         && DUPLICATE_ENTRY_CHECK.stream().noneMatch(node.getName()::equals)
         && node.getChildren() != null
         && !node.getChildren().isEmpty()
         && node.getChildren().get(0).getName() != null
+        && !node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST)
         && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
             || !node.getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
@@ -246,11 +240,7 @@ public class ContextNode {
       fieldName = node.getName();
     }
 
-    return (node.getName() != null && EXCLUDE_LINE_BREAK.contains(node.getName()))
-            || (node.getName() == null)
-            || (fieldName != null && fieldName.isEmpty())
-        ? fieldName
-        : fieldName + "\n";
+    return fieldName + "\n";
   }
 
   // Private function to store the path of the elements including the parents. Added to find the
@@ -323,10 +313,7 @@ public class ContextNode {
       for (ContextNode node : children) {
         final String childExtension = node.userExtensionsPreHashBuilder();
         if (!childExtension.isEmpty()) {
-          sb.append(
-              node.getName() != null && EXCLUDE_LINE_BREAK.contains(node.getName())
-                  ? childExtension
-                  : childExtension + "\n");
+          sb.append(childExtension).append("\n");
         }
       }
       return sb.toString();
@@ -425,7 +412,7 @@ public class ContextNode {
       if (interimValue % 1 == 0) {
         // If the value contains decimal 25.0 then return 25 if not then return same 25.2 to 25.2
         return Double.toString(interimValue).endsWith(".0")
-            ? (int) Math.floor(interimValue) + ""
+            ? String.valueOf((int) Math.floor(interimValue))
             : value;
       } else {
         return value;
@@ -463,13 +450,13 @@ public class ContextNode {
           + "}"
           + name.substring(name.indexOf(":") + 1)
           + "="
-          + gs1IdentifierFormat(value);
+          + gs1IdentifierFormat(value) + "\n";
     } else if (nameSpace != null) {
       return "{" + nameSpace + "}" + name.substring(name.indexOf(":") + 1);
     } else if (value != null && !value.equals("")) {
-      return name + "=" + gs1IdentifierFormat(value);
+      return name + "=" + gs1IdentifierFormat(value) + "\n";
     } else {
-      return name;
+      return name + "\n";
     }
   }
 

@@ -81,6 +81,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Apache commons for MultiValueMap for storing info -->

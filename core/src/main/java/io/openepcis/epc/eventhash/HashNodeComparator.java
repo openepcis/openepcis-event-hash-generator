@@ -166,7 +166,7 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       }
     } else if (Boolean.FALSE.equals(standardFieldSort)) {
       // For extension append to extension string only the extension elements
-      if (child.getValue() != null) {
+      if (child.getValue() != null && child.getName() != null && child.getName().contains(":")) {
         // If value is present then append after user-extension formatting
         extensionString.append(
             contextNode.userExtensionsFormatter(

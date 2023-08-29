@@ -15,6 +15,7 @@
  */
 package io.openepcis.epc.eventhash;
 
+import io.openepcis.constants.CBVVersion;
 import jakarta.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -114,6 +115,8 @@ public class HashIdGenerator {
       }
     }
 
-    return hashId.append("?ver=CBV2.0").toString();
+    return hashId.append("?ver=")
+            .append(EventHashGenerator.getCbvVersion() == CBVVersion.VERSION_2_0_0 ? "CBV2.0" : "CBV2.1")
+            .toString();
   }
 }

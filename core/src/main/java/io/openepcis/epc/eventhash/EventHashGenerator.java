@@ -17,6 +17,7 @@ package io.openepcis.epc.eventhash;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.epc.eventhash.exception.EventHashException;
@@ -29,6 +30,8 @@ import java.util.*;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
+
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +41,9 @@ import org.apache.commons.lang3.StringUtils;
 public class EventHashGenerator {
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
   private String prehashJoin = "";
+
+  @Getter
+  private static CBVVersion cbvVersion;
 
   static {
     try {
@@ -133,7 +139,8 @@ public class EventHashGenerator {
    * @throws IOException reading of JSON file may throw exception
    */
   public Multi<Map<String, String>> fromJson(
-      final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
+    final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
+    detectCBVVersion(hashAlgorithms); //Detect and store CBV version
     return fromJson(jsonStream, new HashMap<>(), hashAlgorithms);
   }
 
@@ -378,6 +385,20 @@ public class EventHashGenerator {
    */
   public Multi<Map<String, String>> fromXml(
       final InputStream xmlStream, final String... hashAlgorithms) {
+    detectCBVVersion(hashAlgorithms); //Detect and store CBV version
     return internalFromXml(Map.class, xmlStream, hashAlgorithms);
+  }
+
+  /**
+   * Detect the CBV version based on the provided input in hashAlgorithms
+   * If not specified then default the CBV version to CBV 2.0.1 (latest)
+   *
+   * @param hashAlgorithms contains the CBV Version i.e VERSION_2_0_0 or VERSION_2_0_1
+   */
+  private void detectCBVVersion(final String... hashAlgorithms){
+    //Get the corresponding cbv version if provided else default to CBV 2.1
+    cbvVersion = Arrays.stream(hashAlgorithms).map(CBVVersion::fromString)
+            .filter(Optional::isPresent).map(Optional::get)
+            .findFirst().orElse(CBVVersion.VERSION_2_0_1);
   }
 }

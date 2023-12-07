@@ -94,11 +94,6 @@
 
         <!-- Quarkus Test Dependency-->
         <dependency>
-            <groupId>io.openepcis</groupId>
-            <artifactId>openepcis-test-resources</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>

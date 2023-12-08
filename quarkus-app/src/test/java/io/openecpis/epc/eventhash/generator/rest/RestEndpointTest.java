@@ -16,44 +16,42 @@
 package io.openecpis.epc.eventhash.generator.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.quarkus.test.common.http.TestHTTPEndpoint;
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+
+import openepcis.epc.eventhash.generator.resource.EventHashGeneratorResource;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.jboss.resteasy.reactive.RestResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 public class RestEndpointTest {
-  // NOTE: RestAssured is aware of the application.properties quarkus.http.root-path switch
 
-  private String basePath;
-  private String documentEventHashAPI;
+  @TestHTTPEndpoint(EventHashGeneratorResource.class)
+  @TestHTTPResource
+  URL resourceUrl;
 
-  @Before
-  public void testApiEndpoint() {
-    int port =
-        ConfigProviderResolver.instance()
-            .getConfig()
-            .getOptionalValue("quarkus.http.port", Integer.class)
-            .orElse(8080);
-
-    basePath = "http://localhost:" + port;
-    documentEventHashAPI = basePath + "/api/generate/event-hash/document";
+  private String basePath() {
+    return resourceUrl.toString();
   }
 
+  private String documentEventHashAPI() {
+    return basePath() + "/generate/event-hash/document";
+  }
   @Test
   public void swaggerUITest() {
     RestAssured.when()
-        .get(basePath + "/q/swagger-ui/index.html")
+        .get(basePath() + "/../q/swagger-ui/index.html")
         .then()
         .statusCode(RestResponse.StatusCode.OK);
   }
@@ -64,7 +62,7 @@ public class RestEndpointTest {
         .contentType("application/json")
         .accept("application/json")
         .body(getClass().getResourceAsStream("/SensorDataExample.json"))
-        .post(basePath + "/api/generate/event-hash/document")
+        .post(basePath() + "/generate/event-hash/document")
         .then()
         .statusCode(RestResponse.StatusCode.OK);
   }
@@ -79,7 +77,7 @@ public class RestEndpointTest {
                 .getClassLoader()
                 .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/AggregationEvent.json"))
         .when()
-        .post(documentEventHashAPI)
+        .post(documentEventHashAPI())
         .then()
         .statusCode(200);
   }
@@ -95,10 +93,9 @@ public class RestEndpointTest {
                     .getClassLoader()
                     .getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/AggregationEvent.json"))
             .when()
-            .post(documentEventHashAPI);
+            .post(documentEventHashAPI());
 
-    assertEquals(500, jsonResponse.statusCode());
-    assertEquals("Content is not allowed in prolog.", jsonResponse.jsonPath().get("detail"));
+    assertEquals(415, jsonResponse.statusCode());
   }
 
   // Invalid Request type for XML input
@@ -116,9 +113,9 @@ public class RestEndpointTest {
                                 "2.0/EPCIS/XML/Capture/Documents/AggregationEvent.xml")),
                     StandardCharsets.UTF_8))
             .when()
-            .post(documentEventHashAPI);
+            .post(documentEventHashAPI());
 
-    assertEquals(500, xmlResponse.statusCode());
+    assertEquals(415, xmlResponse.statusCode());
     assertEquals("JsonParseException", xmlResponse.jsonPath().get("type"));
   }
 
@@ -136,7 +133,7 @@ public class RestEndpointTest {
                             "2.0/EPCIS/XML/Capture/Documents/AggregationEvent.xml")),
                 StandardCharsets.UTF_8))
         .when()
-        .post(documentEventHashAPI)
+        .post(documentEventHashAPI())
         .then()
         .statusCode(200);
   }

@@ -120,7 +120,7 @@
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-test-resources</artifactId>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
 
         <!-- Common snippets dependencies -->
@@ -133,6 +133,11 @@
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>mutiny-zero-flow-adapters</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -17,6 +17,7 @@ package io.openepcis.epc.eventhash;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.epc.eventhash.exception.EventHashException;
@@ -29,6 +30,8 @@ import java.util.*;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
+
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -133,7 +136,7 @@ public class EventHashGenerator {
    * @throws IOException reading of JSON file may throw exception
    */
   public Multi<Map<String, String>> fromJson(
-      final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
+    final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
     return fromJson(jsonStream, new HashMap<>(), hashAlgorithms);
   }
 

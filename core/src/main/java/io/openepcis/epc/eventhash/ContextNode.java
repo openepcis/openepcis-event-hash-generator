@@ -19,7 +19,6 @@ import static io.openepcis.epc.eventhash.constant.ConstantEventHashInfo.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.epc.translator.util.ConverterUtil;
@@ -224,7 +223,7 @@ public class ContextNode {
         && node.getChildren() != null
         && !node.getChildren().isEmpty()
         && node.getChildren().get(0).getName() != null
-        && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_0_1.equals(EventHashGenerator.getCbvVersion()))
+        && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST))
         && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
             || !node.getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
@@ -296,7 +295,7 @@ public class ContextNode {
     } else {
 
       if (getName() != null
-          && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_0_1.equals(EventHashGenerator.getCbvVersion()))
+          && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST))
           && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
           && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
           && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)

@@ -115,8 +115,6 @@ public class HashIdGenerator {
       }
     }
 
-    return hashId.append("?ver=")
-            .append(EventHashGenerator.getCbvVersion() == CBVVersion.VERSION_2_0_0 ? "CBV2.0" : "CBV2.1")
-            .toString();
+    return hashId.append("?ver=").append("CBV2.0").toString();
   }
 }

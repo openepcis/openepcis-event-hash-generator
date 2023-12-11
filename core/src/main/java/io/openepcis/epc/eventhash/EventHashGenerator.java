@@ -42,6 +42,9 @@ public class EventHashGenerator {
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
   private String prehashJoin = "";
 
+  @Getter
+  private static CBVVersion cbvVersion;
+
   static {
     try {
       SAX_PARSER_FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -257,6 +260,8 @@ public class EventHashGenerator {
       final ObjectNode objectNode,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
+    detectCBVVersion(hashAlgorithms); //Detect and store CBV version
+
     addToContextHeader(objectNode, contextHeader);
     if (!objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_DOCUMENT)
         && !objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_QUERY_DOCUMENT)) {
@@ -342,6 +347,8 @@ public class EventHashGenerator {
           }
         };
 
+    detectCBVVersion(hashAlgorithms); //Detect and store CBV version
+
     // After converting each XML event to ContextNode and storing information in rootNode, convert
     // it to pre-hash string and generate HashId out of it.
     return (Multi<T>)
@@ -382,5 +389,20 @@ public class EventHashGenerator {
   public Multi<Map<String, String>> fromXml(
       final InputStream xmlStream, final String... hashAlgorithms) {
     return internalFromXml(Map.class, xmlStream, hashAlgorithms);
+  }
+
+  /**
+   * Detect the CBV version based on the provided input in hashAlgorithms
+   * If not specified then default the CBV version to CBV 2.0.1 (latest)
+   *
+   * @param hashAlgorithms contains the CBV Version i.e VERSION_2_0_0 or VERSION_2_0_1
+   */
+  private void detectCBVVersion(final String... hashAlgorithms){
+    //Get the corresponding cbv version if provided else default to CBV 2.1
+    cbvVersion = Arrays.stream(hashAlgorithms)
+            .map(CBVVersion::fromString)
+            .flatMap(Optional::stream)
+            .findFirst()
+            .orElse(CBVVersion.VERSION_2_0_1);
   }
 }

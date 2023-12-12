@@ -395,7 +395,7 @@ public class EventHashGenerator {
    * Detect the CBV version based on the provided input in hashAlgorithms
    * If not specified then default the CBV version to CBV 2.0.0 (latest)
    *
-   * @param hashAlgorithms contains the CBV Version i.e VERSION_2_0_0 or VERSION_2_0_1
+   * @param hashAlgorithms contains the CBV Version i.e VERSION_2_0_0 or VERSION_2_1_0
    */
   private void detectCBVVersion(final String... hashAlgorithms){
     //Get the corresponding cbv version if provided else default to CBV 2.1

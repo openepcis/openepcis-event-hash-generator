@@ -393,7 +393,7 @@ public class EventHashGenerator {
 
   /**
    * Detect the CBV version based on the provided input in hashAlgorithms
-   * If not specified then default the CBV version to CBV 2.0.1 (latest)
+   * If not specified then default the CBV version to CBV 2.0.0 (latest)
    *
    * @param hashAlgorithms contains the CBV Version i.e VERSION_2_0_0 or VERSION_2_0_1
    */
@@ -403,6 +403,6 @@ public class EventHashGenerator {
             .map(CBVVersion::fromString)
             .flatMap(Optional::stream)
             .findFirst()
-            .orElse(CBVVersion.VERSION_2_0_1);
+            .orElse(CBVVersion.VERSION_2_0_0);
   }
 }

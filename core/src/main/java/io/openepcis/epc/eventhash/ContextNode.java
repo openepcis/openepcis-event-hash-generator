@@ -15,19 +15,21 @@
  */
 package io.openepcis.epc.eventhash;
 
-import static io.openepcis.epc.eventhash.constant.ConstantEventHashInfo.*;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.epc.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.epc.translator.util.ConverterUtil;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.openepcis.epc.eventhash.constant.ConstantEventHashInfo.*;
 
 /**
  * This class is utilized by EventHash and SaxHandler during the parsing of XML/JSON EPCIS document
@@ -155,9 +157,14 @@ public class ContextNode {
   // Method called by the external application after completion of converting the JSON/XML documents
   // into ContextNode.
   public String toShortenedString() {
-    // Add all the EPCIS standard fields to pre-hash string first then add all the users extensions
+    // For CBV 2.0: Add all the EPCIS standard fields to pre-hash string first then add all the users extensions
     // field that can appear anywhere with event and append the created string to pre-hash string.
-    return (epcisFieldsPreHashBuilder() + String.join("", userExtensionsPreHashBuilder())).trim();
+    if (CBVVersion.VERSION_2_0_0.equals(EventHashGenerator.getCbvVersion())) {
+      return (epcisFieldsPreHashBuilder() + String.join("", userExtensionsPreHashBuilder())).trim();
+    } else {
+      // For CBV 2.1: User Extensions that are part of standard fields are included within the respective field
+      return epcisFieldsPreHashBuilder().trim();
+    }
   }
 
   // Private method to return the Strings from well known EPCIS fields/attributes of EPCIS event
@@ -168,7 +175,7 @@ public class ContextNode {
     if (children.isEmpty()
         && getName() != null
         && getValue() != null
-        && TemplateNodeMap.isEpcisField(this)) {
+            && TemplateNodeMap.isEpcisField(this)) {
       // If the elements are EPCIS event root fields then directly append them to the pre-hash
       // string by formatting.
 
@@ -181,12 +188,13 @@ public class ContextNode {
       if (Boolean.TRUE.equals(isIlmdPath(this))) {
         preHashBuilder.append(userExtensionsFormatter(name, value, namespaces));
       } else {
-
         // Add the values for direct name and value based on the field
         preHashBuilder.append(epcisFieldFormatter(getName(), getValue(), this));
       }
 
       return preHashBuilder.toString();
+    } else if (children.isEmpty() && getName() != null && getValue() != null && !TemplateNodeMap.isEpcisField(this) && EventHashGenerator.getCbvVersion().equals(CBVVersion.VERSION_2_1_0)) {
+      return userExtensionsFormatter(this.getName(), this.getValue(), this.getNamespaces());
     } else {
       final StringBuilder sb = new StringBuilder();
 
@@ -198,7 +206,12 @@ public class ContextNode {
 
       // After sorting the child values loop through each of them and add values to pre-hash string
       for (ContextNode node : children) {
-        final String s = node.epcisFieldsPreHashBuilder();
+        String s = "";
+        if (node.getName() != null && !TemplateNodeMap.isEpcisField(node) && EventHashGenerator.getCbvVersion().equals(CBVVersion.VERSION_2_1_0)) {
+          s = node.userExtensionsPreHashBuilder();
+        } else {
+          s = node.epcisFieldsPreHashBuilder();
+        }
         if (!s.isEmpty()) {
           sb.append(s).append("\n");
         }
@@ -218,13 +231,13 @@ public class ContextNode {
         fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
       }
     } else if (node.getName() != null
-        && TemplateNodeMap.isEpcisField(node)
-        && DUPLICATE_ENTRY_CHECK.stream().noneMatch(node.getName()::equals)
-        && node.getChildren() != null
-        && !node.getChildren().isEmpty()
-        && node.getChildren().get(0).getName() != null
-        && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST))
-        && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
+            && TemplateNodeMap.isEpcisField(node)
+            && DUPLICATE_ENTRY_CHECK.stream().noneMatch(node.getName()::equals)
+            && node.getChildren() != null
+            && !node.getChildren().isEmpty()
+            && node.getChildren().get(0).getName() != null
+            && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(EventHashGenerator.getCbvVersion()))
+            && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
             || !node.getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
       // pre-hash string. Additional condition has been added to avoid the addition of sensorReport
@@ -295,15 +308,15 @@ public class ContextNode {
     } else {
 
       if (getName() != null
-          && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST))
-          && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-          && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
-          && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
-          && (getName().equals(EPCIS.SENSOR_ELEMENT)
+              && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(EventHashGenerator.getCbvVersion()))
+              && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
+              && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
+              && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
+              && (getName().equals(EPCIS.SENSOR_ELEMENT)
               || (!children.isEmpty()
-                  && children.get(0).getName() != null
-                  && !getName().equals(getChildren().get(0).getName())
-                  && !getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT)))) {
+              && children.get(0).getName() != null
+              && !getName().equals(getChildren().get(0).getName())
+              && !getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT)))) {
         sb.append(userExtensionsFormatter(getName(), getValue(), namespaces));
       }
 

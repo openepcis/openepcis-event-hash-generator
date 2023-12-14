@@ -89,7 +89,7 @@ jobs:
     needs: [build-jar-job]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'macos-latest-xl']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
@@ -97,8 +97,6 @@ jobs:
             label: 'linux-arm64'
           - os: 'macos-latest'
             label: 'mac'
-          - os: 'macos-latest-xl'
-            label: 'mac-xl'
     runs-on: ${{matrix.os}}
     steps:
       - name: checkout from git

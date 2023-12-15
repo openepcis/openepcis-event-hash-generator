@@ -15,11 +15,11 @@
  */
 package io.openepcis.epc.eventhash;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 import io.openepcis.constants.CBVVersion;
 import io.smallrye.mutiny.Multi;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,16 +27,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class EventHashGeneratorPublisherTest {
 
   private EventHashGenerator eventHashGenerator;
+  private EventHashGenerator eventHashGenerator2_1;
 
   @Before
   public void before() {
     eventHashGenerator = new EventHashGenerator();
+    eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
+    eventHashGenerator.prehashJoin("\\n");
+    eventHashGenerator2_1.prehashJoin("\\n");
   }
 
   // General test to fix bugs or necessary code modification for XML document.
@@ -729,7 +733,6 @@ public class EventHashGeneratorPublisherTest {
                     .getResourceAsStream(
                             "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_all_possible_fields.json");
 
-    eventHashGenerator.prehashJoin("\\n");
     final Multi<Map<String, String>> xmlEventHash = eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256");
     final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256");
 
@@ -741,9 +744,8 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlDocument = getClass().getClassLoader().getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/TransformationEvent_all_possible_fields.xml");
     final InputStream jsonDocument = getClass().getClassLoader().getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_all_possible_fields.json");
 
-    eventHashGenerator.prehashJoin("\\n");
-    final Multi<Map<String, String>> xmlEventHash = eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256", CBVVersion.VERSION_2_1_0.getVersion());
-    final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256", CBVVersion.VERSION_2_1_0.getVersion());
+    final Multi<Map<String, String>> xmlEventHash = eventHashGenerator2_1.fromXml(xmlDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> jsonEventHash = eventHashGenerator2_1.fromJson(jsonDocument, "prehash", "sha-256");
 
     assertEquals(xmlEventHash.subscribe().asStream().toList(), jsonEventHash.subscribe().asStream().toList());
   }
@@ -753,9 +755,8 @@ public class EventHashGeneratorPublisherTest {
     final InputStream xmlDocument = getClass().getClassLoader().getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/TransformationEvent_with_userExtensions.xml");
     final InputStream jsonDocument = getClass().getClassLoader().getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/TransformationEvent_with_userExtensions.json");
 
-    eventHashGenerator.prehashJoin("\\n");
-    final Multi<Map<String, String>> documentEventHash = eventHashGenerator.fromXml(xmlDocument, "prehash", "sha-256", CBVVersion.VERSION_2_1_0.getVersion());
-    final Multi<Map<String, String>> queryEventHash = eventHashGenerator.fromJson(jsonDocument, "prehash", "sha-256", CBVVersion.VERSION_2_1_0.getVersion());
+    final Multi<Map<String, String>> documentEventHash = eventHashGenerator2_1.fromXml(xmlDocument, "prehash", "sha-256");
+    final Multi<Map<String, String>> queryEventHash = eventHashGenerator2_1.fromJson(jsonDocument, "prehash", "sha-256");
 
     assertEquals(documentEventHash.subscribe().asStream().toList(), queryEventHash.subscribe().asStream().toList());
   }

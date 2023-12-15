@@ -107,7 +107,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
         </dependency>
         <!-- Add constants as dependencies -->
         <dependency>

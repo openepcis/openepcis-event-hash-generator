@@ -316,17 +316,13 @@ public class EventHashGeneratorResource {
                   @Schema(
                       description = "empty defaults to sha-256",
                       enumeration = {
-                        "sha-1",
                         "sha-224",
                         "sha-256",
                         "sha-384",
                         "sha-512",
                         "sha3-224",
                         "sha3-256",
-                        "sha3-384",
-                        "sha3-512",
-                        "md2",
-                        "md5"
+                        "sha3-512"
                       }))
           @DefaultValue("sha-256")
           @QueryParam("hashAlgorithm")

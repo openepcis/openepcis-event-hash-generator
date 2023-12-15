@@ -23,7 +23,13 @@ handle hundreds of millions of events easily and effectively. It is crucial to p
 
 Cryptographic hash functions are created via hashing algorithms. It is a mathematical formula that converts data of any size into a fixed-size hash. The goal of a hash function
 algorithm is to create a one-way function that is impossible to invert. Digital evolution has led to the development of a large number of hashing algorithms, some of the most
-well-known of which are as follows: Secure Hash Algorithm (SHA), Rivest-Shamir-Adleman (RSA), Message Digest 5 (MD5), etc. Currently, the tool supports the generation following Hash Ids: sha-1, sha-224, sha-256, sha-384, sha-512, sha3-224, sha3-256, sha3-384, sha3-512, md2, md5.
+well-known of which are as follows: Secure Hash Algorithm (SHA), Rivest-Shamir-Adleman (RSA), Message Digest 5 (MD5), etc. Currently, the tool supports the generation following Hash Ids: sha-224, 
+sha-256, sha-384, sha-512, sha3-224, sha3-256, and sha3-512.
+
+### CBV Versions:
+
+The current implementation facilitates the generation of Pre-Hash string and Hash-Id based on either `CBV 2.0` or `CBV 2.1` versions. CBV 2.1 introduces minor enhancements, including the immediate 
+appending of user extensions to the pre-hash string after the respective fields and the introduction of the sensorElementList keyword, etc. The resulting Hash ID indicates the corresponding CBV version, such as `ver=CBV2.0` or `ver=CBV2.1`. Users have the flexibility to specify the desired CBV version for Hash-Id generation. It is important to note that the generated Hash-Id may differ between CBV 2.0 and CBV 2.1 versions due to changes in ordering.
 
 ### Usage:
 The Java methods for generating the HashIds are encapsulated within the class EventHashGenerator. The technique for XML documents is described below:
@@ -33,9 +39,17 @@ specifies the type of hash algorithm needed (by default sha-256 algorithm is use
 
 #### HashId Generation for XML document
 ```
+//Input EPCIS document/eventList as stream
 final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisDocument.xml");
-final Multi<String> eventHashIds = EventHashGenerator.fromXml(xmlStream, "sha-512");
-//final List<String> eventHashIds = EventHashGenerator.fromXml(xmlStream, null).subscribe().asStream().toList();
+
+//Default constructor defaults to CBV 2.0: VERSION_2_0_0
+final EventHashGenerator eventHashGenerator = new EventHashGenerator();
+
+//Parameterized constructor for CBV 2.1: VERSION_2_1_0 or CBV 2.0: VERSION_2_0_0
+final EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
+
+//If only Hash-Ids are required
+final List<String> xmlHashIds = eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
 ```
 
 If the users have the EPCIS documents in JSON/JSON-LD format, then they can be provided as InputStream, which serves as the first argument to the `fromJson` method, and the second
@@ -43,9 +57,17 @@ parameter specifies the type of hash algorithm needed (by default sha-256 algori
 
 #### HashId Generation for JSON/JSON-LD Document
 ```
-final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisDocument.json");
-final Multi<String> eventHashIds = EventHashGenerator.fromJson(jsonStream, "sha3-256");
-//final List<String> eventHashIds = EventHashGenerator.fromJson(jsonStream, "sha-512").subscribe().asStream().toList();
+//Input EPCIS document/eventList as stream
+final InputStream jsonStream  = getClass().getResourceAsStream("/JsonEpcisDocument.json");
+
+//Default constructor defaults to CBV 2.0: VERSION_2_0_0
+final EventHashGenerator eventHashGenerator = new EventHashGenerator();
+
+//Parameterized constructor for CBV 2.1: VERSION_2_1_0 or CBV 2.0: VERSION_2_0_0
+final EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
+
+//If only Hash-Ids are required
+final List<String> jsonHashIds = eventHashGenerator2_1.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 ```
 
 #### Subscription logic:
@@ -56,16 +78,30 @@ If users have a large EPCIS document in XML or JSON/JSON-LD consisting of millio
 
 #### HashId Generation using Subscription logic
 ```
+//Input EPCIS document/eventList as stream
 final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisDocument.xml");
 final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisDocument.json");
- 
-EventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().with(
-                xmlHashId -> System.out.println(xmlHashId),
-                failure -> System.out.println("XML HashId Generation Failed with : " + failure));
- 
-EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().with(
-                jsonHashId -> System.out.println(jsonHashId),
-                failure -> System.out.println("JSON HashId Generation Failed with " + failure));
+
+//Default constructor defaults to CBV 2.0: VERSION_2_0_0
+final EventHashGenerator eventHashGenerator = new EventHashGenerator();
+
+//Parameterized constructor for CBV 2.1: VERSION_2_1_0 or CBV 2.0: VERSION_2_0_0
+final EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
+
+//To beautify pre-hash string
+eventHashGenerator.prehashJoin("\\n");
+
+//Generate SHA-256 Hash-Ids and also pre-hash string
+final Multi<Map<String, String>> xmlEventHash = eventHashGenerator2_1.fromXml(xmlStream, "prehash", "sha-256");
+
+//To display Pre-hash and Hash-Id
+xmlEventHash.subscribe().with(xmlHash -> System.out.println(xmlHash.get("sha-256") + "\n" + xmlHash.get("prehash") + "\n\n"), failure -> System.out.println("XML HashId Generation Failed with " + failure));
+
+//Generate SHA-256 Hash-Ids and also pre-hash string
+final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
+
+//To display Pre-hash and Hash-Id
+jsonEventHash.subscribe().with(jsonHash -> System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash") + "\n\n"), failure -> System.out.println("JSON HashId Generation Failed with " + failure));
 ```
 
 ### Releases
@@ -74,7 +110,7 @@ EventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().with(
 
 The easiest and fastest way to try it out, is by downloading the jar or the native command line clients directly from the latest release:
 
-[v0.9.2-beta3](https://github.com/openepcis/openepcis-event-hash-generator/releases/tag/v0.9.2-beta3)
+[v0.9.4](https://github.com/openepcis/openepcis-event-hash-generator/releases/tag/v0.9.4)
 
 #### Usage
 

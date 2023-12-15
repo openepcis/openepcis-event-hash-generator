@@ -156,20 +156,20 @@ public class ContextNode {
 
   // Method called by the external application after completion of converting the JSON/XML documents
   // into ContextNode.
-  public String toShortenedString() {
+  public String toShortenedString(final CBVVersion cbvVersion) {
     // For CBV 2.0: Add all the EPCIS standard fields to pre-hash string first then add all the users extensions
     // field that can appear anywhere with event and append the created string to pre-hash string.
-    if (CBVVersion.VERSION_2_0_0.equals(EventHashGenerator.getCbvVersion())) {
-      return (epcisFieldsPreHashBuilder() + String.join("", userExtensionsPreHashBuilder())).trim();
+    if (CBVVersion.VERSION_2_0_0.equals(cbvVersion)) {
+      return (epcisFieldsPreHashBuilder(cbvVersion) + String.join("", userExtensionsPreHashBuilder(cbvVersion))).trim();
     } else {
       // For CBV 2.1: User Extensions that are part of standard fields are included within the respective field
-      return epcisFieldsPreHashBuilder().trim();
+      return epcisFieldsPreHashBuilder(cbvVersion).trim();
     }
   }
 
   // Private method to return the Strings from well known EPCIS fields/attributes of EPCIS event
   // such as type, eventTime, bizStep etc. by omitting the User-Extensions.
-  private String epcisFieldsPreHashBuilder() {
+  private String epcisFieldsPreHashBuilder(final CBVVersion cbvVersion) {
     // Check if the elements are of root elements and do not contain the children elements. If the
     // element is part of EPCIS standard fields then append to pre-hash string.
     if (children.isEmpty()
@@ -193,13 +193,13 @@ public class ContextNode {
       }
 
       return preHashBuilder.toString();
-    } else if (children.isEmpty() && getName() != null && getValue() != null && !TemplateNodeMap.isEpcisField(this) && EventHashGenerator.getCbvVersion().equals(CBVVersion.VERSION_2_1_0)) {
+    } else if (children.isEmpty() && getName() != null && getValue() != null && !TemplateNodeMap.isEpcisField(this) && CBVVersion.VERSION_2_1_0.equals(cbvVersion)) {
       return userExtensionsFormatter(this.getName(), this.getValue(), this.getNamespaces());
     } else {
       final StringBuilder sb = new StringBuilder();
 
       // Call the function to add the EPCIS field name for children elements
-      sb.append(fieldName(this));
+      sb.append(fieldName(this, cbvVersion));
 
       // If child values are present then sort them according to event hash requirement
       this.sort(true);
@@ -207,10 +207,10 @@ public class ContextNode {
       // After sorting the child values loop through each of them and add values to pre-hash string
       for (ContextNode node : children) {
         String s = "";
-        if (node.getName() != null && !TemplateNodeMap.isEpcisField(node) && EventHashGenerator.getCbvVersion().equals(CBVVersion.VERSION_2_1_0)) {
-          s = node.userExtensionsPreHashBuilder();
+        if (node.getName() != null && !TemplateNodeMap.isEpcisField(node) && CBVVersion.VERSION_2_1_0.equals(cbvVersion)) {
+          s = node.userExtensionsPreHashBuilder(cbvVersion);
         } else {
-          s = node.epcisFieldsPreHashBuilder();
+          s = node.epcisFieldsPreHashBuilder(cbvVersion);
         }
         if (!s.isEmpty()) {
           sb.append(s).append("\n");
@@ -221,7 +221,7 @@ public class ContextNode {
   }
 
   // Private method to append the EPCIS field name during the child elements formatting.
-  private String fieldName(final ContextNode node) {
+  private String fieldName(final ContextNode node, final CBVVersion cbvVersion) {
     // For ILMD fields make call to userExtensions formatter and for all other fields make call to
     // normal field formatter.
     String fieldName = "";
@@ -236,7 +236,7 @@ public class ContextNode {
             && node.getChildren() != null
             && !node.getChildren().isEmpty()
             && node.getChildren().get(0).getName() != null
-            && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(EventHashGenerator.getCbvVersion()))
+            && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(cbvVersion))
             && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
             || !node.getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
@@ -290,7 +290,7 @@ public class ContextNode {
 
   // Private method to return the List of Strings contains the  user-defined extensions in required
   // pre-hash format.
-  private String userExtensionsPreHashBuilder() {
+  private String userExtensionsPreHashBuilder(final CBVVersion cbvVersion) {
     // Create a string and append the values when the provided value is empty i.e. for complex
     // structures.
     StringBuilder sb = new StringBuilder();
@@ -308,7 +308,7 @@ public class ContextNode {
     } else {
 
       if (getName() != null
-              && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(EventHashGenerator.getCbvVersion()))
+              && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(cbvVersion))
               && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
               && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
               && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
@@ -324,7 +324,7 @@ public class ContextNode {
       this.sort(false);
 
       for (ContextNode node : children) {
-        final String childExtension = node.userExtensionsPreHashBuilder();
+        final String childExtension = node.userExtensionsPreHashBuilder(cbvVersion);
         if (!childExtension.isEmpty()) {
           sb.append(childExtension).append("\n");
         }

@@ -16,6 +16,7 @@
 package openepcis.epc.eventhash.generator.resource;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import io.openepcis.constants.CBVVersion;
 import io.openepcis.epc.eventhash.DocumentWrapperSupport;
 import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.model.epcis.EPCISDocument;
@@ -157,6 +158,7 @@ public class EventHashGeneratorResource {
                         "sha3-256",
                         "sha3-512"
                       }))
+          @DefaultValue("sha-256")
           @QueryParam("hashAlgorithm")
           String hashAlgorithm,
       @Parameter(
@@ -182,7 +184,16 @@ public class EventHashGeneratorResource {
               schema = @Schema(description = "empty defaults to no fields ignored"))
           @DefaultValue("")
           @QueryParam("ignoreFields")
-          String ignoreFields)
+          String ignoreFields,
+      @Parameter(
+              description = "CBV version based on which Pre-Hash String and Hash-Id needs to be generated",
+              schema =
+              @Schema(
+                      description = "empty defaults to CBV version 2.0.0",
+                      enumeration = {"2.0.0", "2.1.0"}))
+      @DefaultValue("2.0.0")
+      @QueryParam("cbvVersion")
+      String cbvVersion)
       throws IOException {
     // List to store the parameters based on the user provided inputs.
     final List<String> hashParameters = new ArrayList<>();
@@ -207,9 +218,12 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
+    // Based on CBV version provided set the respective cbv version, default to 2.0.0
+    final CBVVersion targetCbvVersion = CBVVersion.VERSION_2_1_0.equals(CBVVersion.of(cbvVersion)) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
+
     return (contentType.contains("application/xml")
-            ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
-            : eventHashGenerator.fromJson(
+            ? eventHashGenerator.mapCbvVersion(targetCbvVersion).fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
+            : eventHashGenerator.mapCbvVersion(targetCbvVersion).fromJson(
                 inputDocumentStream, hashParameters.toArray(String[]::new)))
         .runSubscriptionOn(managedExecutor);
   }
@@ -302,18 +316,15 @@ public class EventHashGeneratorResource {
                   @Schema(
                       description = "empty defaults to sha-256",
                       enumeration = {
-                        "sha-1",
                         "sha-224",
                         "sha-256",
                         "sha-384",
                         "sha-512",
                         "sha3-224",
                         "sha3-256",
-                        "sha3-384",
-                        "sha3-512",
-                        "md2",
-                        "md5"
+                        "sha3-512"
                       }))
+          @DefaultValue("sha-256")
           @QueryParam("hashAlgorithm")
           String hashAlgorithm,
       @Parameter(
@@ -333,7 +344,16 @@ public class EventHashGeneratorResource {
                       enumeration = {"true", "false"}))
           @DefaultValue("false")
           @QueryParam("beautifyPreHash")
-          Boolean beautifyPreHash)
+          Boolean beautifyPreHash,
+      @Parameter(
+              description = "CBV version based on which Pre-Hash String and Hash-Id needs to be generated",
+              schema =
+              @Schema(
+                      description = "empty defaults to CBV version 2.0.0",
+                      enumeration = {"2.0.0", "2.1.0"}))
+      @DefaultValue("2.0.0")
+      @QueryParam("cbvVersion")
+      String cbvVersion)
       throws IOException {
     // List to store the parameters based on the user provided inputs.
     final List<String> hashParameters = new ArrayList<>();
@@ -353,9 +373,12 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
+    // Based on CBV version provided set the respective cbv version, default to 2.0.0
+    final CBVVersion targetCbvVersion = CBVVersion.VERSION_2_1_0.equals(CBVVersion.of(cbvVersion)) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
+
     return (contentType.contains("application/xml")
-            ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
-            : eventHashGenerator.fromJson(
+            ? eventHashGenerator.mapCbvVersion(targetCbvVersion).fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
+            : eventHashGenerator.mapCbvVersion(targetCbvVersion).fromJson(
                 documentWrapperSupport.generateJsonDocumentWrapper(inputDocumentStream),
                 hashParameters.toArray(String[]::new)))
         .runSubscriptionOn(managedExecutor);

@@ -32,18 +32,14 @@ import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-@NoArgsConstructor
 public class EventHashGenerator {
   private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
   private String prehashJoin = "";
-
-  @Getter
-  private static CBVVersion cbvVersion;
+  private final CBVVersion cbvVersion;
 
   static {
     try {
@@ -51,6 +47,30 @@ public class EventHashGenerator {
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
+  }
+
+  /**
+   *  Default constructor which generates the pre-hash string based on CBV 2.0
+   */
+  public EventHashGenerator(){
+    this.cbvVersion = CBVVersion.VERSION_2_0_0;
+  }
+
+  /**
+   *  Constructor which generates the pre-hash string based on provided CBV version
+   * @param cbvVersion required CBV version that needs to be used for pre-hash string generation.
+   */
+  public EventHashGenerator(final CBVVersion cbvVersion){
+    this.cbvVersion = cbvVersion != null ? cbvVersion : CBVVersion.VERSION_2_0_0;
+  }
+
+  /**
+   * Method to generate the instance of the EventHashGenerator based on provided CBV Version
+   * @param cbvVersion required CBV version that needs to be used for pre-hash string generation.
+   * @return EventHashGenerator with required CBV version
+   */
+  public final EventHashGenerator mapCbvVersion(final CBVVersion cbvVersion) {
+    return new EventHashGenerator(cbvVersion);
   }
 
   public void prehashJoin(final String s) {
@@ -260,13 +280,11 @@ public class EventHashGenerator {
       final ObjectNode objectNode,
       final Map<String, String> contextHeader,
       final String... hashAlgorithms) {
-    detectCBVVersion(hashAlgorithms); //Detect and store CBV version
-
     addToContextHeader(objectNode, contextHeader);
     if (!objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_DOCUMENT)
         && !objectNode.get(EPCIS.TYPE).asText().equalsIgnoreCase(EPCIS.EPCIS_QUERY_DOCUMENT)) {
       final ContextNode contextNode = new ContextNode(objectNode.fields(), contextHeader);
-      final String preHashString = contextNode.toShortenedString();
+      final String preHashString = contextNode.toShortenedString(this.cbvVersion);
 
       // Call the method generateHashId in HashIdGenerator to
       return generate(cls, preHashString, hashAlgorithms);
@@ -315,7 +333,7 @@ public class EventHashGenerator {
         if (hashAlgorithms.length != 1) {
           throw new EventHashException("only one single algorithm allowed for type String");
         }
-        return (T) HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithms[0]);
+        return (T) HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithms[0], this.cbvVersion);
       }
       final Map<String, String> map = new HashMap<>();
       for (final String hashAlgorithm : hashAlgorithms) {
@@ -324,7 +342,7 @@ public class EventHashGenerator {
         } else {
           map.put(
               hashAlgorithm,
-              HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithm));
+              HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithm, this.cbvVersion));
         }
       }
       return (T) map;
@@ -346,15 +364,12 @@ public class EventHashGenerator {
             contextNodeMultiEmitter.fail(e);
           }
         };
-
-    detectCBVVersion(hashAlgorithms); //Detect and store CBV version
-
     // After converting each XML event to ContextNode and storing information in rootNode, convert
     // it to pre-hash string and generate HashId out of it.
     return (Multi<T>)
         Multi.createFrom()
             .emitter(consumer)
-            .map(node -> generate(cls, node.toShortenedString(), hashAlgorithms))
+            .map(node -> generate(cls, node.toShortenedString(this.cbvVersion), hashAlgorithms))
             .filter(
                 m -> {
                   if (cls.isAssignableFrom(String.class)) {
@@ -389,20 +404,5 @@ public class EventHashGenerator {
   public Multi<Map<String, String>> fromXml(
       final InputStream xmlStream, final String... hashAlgorithms) {
     return internalFromXml(Map.class, xmlStream, hashAlgorithms);
-  }
-
-  /**
-   * Detect the CBV version based on the provided input in hashAlgorithms
-   * If not specified then default the CBV version to CBV 2.0.0 (latest)
-   *
-   * @param hashAlgorithms contains the CBV Version i.e VERSION_2_0_0 or VERSION_2_1_0
-   */
-  private void detectCBVVersion(final String... hashAlgorithms){
-    //Get the corresponding cbv version if provided else default to CBV 2.1
-    cbvVersion = Arrays.stream(hashAlgorithms)
-            .map(CBVVersion::fromString)
-            .flatMap(Optional::stream)
-            .findFirst()
-            .orElse(CBVVersion.VERSION_2_0_0);
   }
 }

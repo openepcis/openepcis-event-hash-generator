@@ -15,6 +15,7 @@
  */
 package openepcis.epc.eventhash.generator.servlet;
 
+import io.openepcis.constants.CBVVersion;
 import io.openepcis.epc.eventhash.DocumentWrapperSupport;
 import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.model.rest.servlet.ServletSupport;
@@ -70,6 +71,11 @@ public class EventHashGeneratorServlets {
                 // Add the Hash Algorithm type to the List.
                 final String hashAlgorithm = req.getParameter("hashAlgorithm");
                 hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
+
+                // Add provided CBV version else default to CBV 2.0.0
+                final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse(CBVVersion.VERSION_2_0_0.getVersion());
+                final CBVVersion targetCbvVersion = CBVVersion.of(cbvVersion);
+
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {
                     return;
@@ -80,8 +86,8 @@ public class EventHashGeneratorServlets {
                 }
                 resp.setContentType(MediaType.APPLICATION_JSON);
                 servletSupport.writeJson(resp, contentType.get().contains("application/xml")
-                        ? eventHashGenerator.fromXml(req.getInputStream(), hashParameters.toArray(String[]::new))
-                        : eventHashGenerator.fromJson(
+                        ? eventHashGenerator.mapCbvVersion(targetCbvVersion).fromXml(req.getInputStream(), hashParameters.toArray(String[]::new))
+                        : eventHashGenerator.mapCbvVersion(targetCbvVersion).fromJson(
                         req.getInputStream(), hashParameters.toArray(String[]::new)));
             } catch (Exception e) {
                 final WebApplicationException webApplicationException =
@@ -129,6 +135,11 @@ public class EventHashGeneratorServlets {
                 // Add the Hash Algorithm type to the List.
                 final String hashAlgorithm = req.getParameter("hashAlgorithm");
                 hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
+
+                // Add provided CBV version else default to CBV 2.0.0
+                final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse(CBVVersion.VERSION_2_0_0.getVersion());
+                final CBVVersion targetCbvVersion = CBVVersion.of(cbvVersion);
+
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {
                     return;
@@ -139,8 +150,8 @@ public class EventHashGeneratorServlets {
                 }
                 resp.setContentType(MediaType.APPLICATION_JSON);
                 servletSupport.writeJson(resp, contentType.get().contains("application/xml")
-                        ? eventHashGenerator.fromXml(req.getInputStream(), hashParameters.toArray(String[]::new))
-                        : eventHashGenerator.fromJson(
+                        ? eventHashGenerator.mapCbvVersion(targetCbvVersion).fromXml(req.getInputStream(), hashParameters.toArray(String[]::new))
+                        : eventHashGenerator.mapCbvVersion(targetCbvVersion).fromJson(
                         documentWrapperSupport.generateJsonDocumentWrapper(req.getInputStream()), hashParameters.toArray(String[]::new)));
             } catch (Exception e) {
                 final WebApplicationException webApplicationException =

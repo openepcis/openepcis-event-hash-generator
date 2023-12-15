@@ -219,7 +219,7 @@ public class EventHashGeneratorResource {
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
     // Based on CBV version provided set the respective cbv version, default to 2.0.0
-    final CBVVersion targetCbvVersion = CBVVersion.VERSION_2_1_0.equals(CBVVersion.toCbvVersion(cbvVersion)) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
+    final CBVVersion targetCbvVersion = CBVVersion.VERSION_2_1_0.equals(CBVVersion.of(cbvVersion)) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
 
     return (contentType.contains("application/xml")
             ? eventHashGenerator.mapCbvVersion(targetCbvVersion).fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
@@ -374,7 +374,7 @@ public class EventHashGeneratorResource {
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
     // Based on CBV version provided set the respective cbv version, default to 2.0.0
-    final CBVVersion targetCbvVersion = CBVVersion.VERSION_2_1_0.equals(CBVVersion.toCbvVersion(cbvVersion)) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
+    final CBVVersion targetCbvVersion = CBVVersion.VERSION_2_1_0.equals(CBVVersion.of(cbvVersion)) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
 
     return (contentType.contains("application/xml")
             ? eventHashGenerator.mapCbvVersion(targetCbvVersion).fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))

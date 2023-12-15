@@ -74,7 +74,7 @@ public class EventHashGeneratorServlets {
 
                 // Add provided CBV version else default to CBV 2.0.0
                 final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse(CBVVersion.VERSION_2_0_0.getVersion());
-                final CBVVersion targetCbvVersion = CBVVersion.toCbvVersion(cbvVersion);
+                final CBVVersion targetCbvVersion = CBVVersion.of(cbvVersion);
 
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {
@@ -138,7 +138,7 @@ public class EventHashGeneratorServlets {
 
                 // Add provided CBV version else default to CBV 2.0.0
                 final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse(CBVVersion.VERSION_2_0_0.getVersion());
-                final CBVVersion targetCbvVersion = CBVVersion.toCbvVersion(cbvVersion);
+                final CBVVersion targetCbvVersion = CBVVersion.of(cbvVersion);
 
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {

@@ -179,6 +179,10 @@
                     <name>native</name>
                 </property>
             </activation>
+            <properties>
+                <quarkus.native.additional-build-args>--initialize-at-run-time=io.openepcis.model.rest.servlet.ServletSupport</quarkus.native.additional-build-args>
+                <quarkus.package.type>native</quarkus.package.type>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -204,9 +208,6 @@
                     </plugin>
                 </plugins>
             </build>
-            <properties>
-                <quarkus.package.type>native</quarkus.package.type>
-            </properties>
         </profile>
     </profiles>
 

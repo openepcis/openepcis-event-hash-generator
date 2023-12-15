@@ -61,7 +61,7 @@ jobs:
           body: |
             Initial release
           draft: false
-          prerelease: true
+          prerelease: false
       - name: 'Upload Release Asset'
         if: contains(github.ref, 'v')
         id: upload-release-asset
@@ -89,22 +89,27 @@ jobs:
     needs: [build-jar-job]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'macos-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
         include:
           - os: 'ubuntu-latest'
-            label: 'linux'
+            label: 'linux-amd64'
+          - os: 'ubuntu-22.04-arm64'
+            label: 'linux-arm64'
           - os: 'macos-latest'
             label: 'mac'
     runs-on: ${{matrix.os}}
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
+
       - name: Set up GraalVM
-        uses: DeLaGuardo/setup-graalvm@2.0
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        uses: graalvm/setup-graalvm@v1
         with:
-          graalvm-version: '22.1.0.java17'
+          java-version: '17'
+          distribution: 'graalvm-community'
+          native-image-job-reports: 'true'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 'Install Native Image Plugin'
         run: |
           gu install native-image

@@ -68,6 +68,7 @@
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-test-resources</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Quarkus Service related dependency-->

@@ -29,6 +29,12 @@ quarkus:
     name: event-hash-generator-service
     additional-tags:
       - latest
+
+  native:
+    resources:
+      includes: "1.2/EPCIS/**,2.0/EPCIS/**"
+
 mp:
   openapi:
     filter: "io.openepcis.resources.oas.EPCISExampleOASFilter"
+

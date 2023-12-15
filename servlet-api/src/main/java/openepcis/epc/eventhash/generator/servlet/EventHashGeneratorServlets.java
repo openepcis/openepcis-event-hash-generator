@@ -73,8 +73,8 @@ public class EventHashGeneratorServlets {
                 hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
                 // Add provided CBV version else default to CBV 2.0.0
-                final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse("2.0.0");
-                final CBVVersion targetCbvVersion = "2.1.0".equals(cbvVersion) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
+                final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse(CBVVersion.VERSION_2_0_0.getVersion());
+                final CBVVersion targetCbvVersion = CBVVersion.toCbvVersion(cbvVersion);
 
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {
@@ -137,8 +137,8 @@ public class EventHashGeneratorServlets {
                 hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
                 // Add provided CBV version else default to CBV 2.0.0
-                final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse("2.0.0");
-                final CBVVersion targetCbvVersion = "2.1.0".equals(cbvVersion) ? CBVVersion.VERSION_2_1_0 : CBVVersion.VERSION_2_0_0;
+                final String cbvVersion = Optional.ofNullable(req.getParameter("cbvVersion")).orElse(CBVVersion.VERSION_2_0_0.getVersion());
+                final CBVVersion targetCbvVersion = CBVVersion.toCbvVersion(cbvVersion);
 
                 Optional<String> accept = servletSupport.accept(List.of(MediaType.APPLICATION_JSON, MediaType.WILDCARD), req, resp);
                 if (accept.isEmpty()) {

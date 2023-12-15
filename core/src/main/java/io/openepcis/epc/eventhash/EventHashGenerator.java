@@ -61,7 +61,7 @@ public class EventHashGenerator {
    * @param cbvVersion required CBV version that needs to be used for pre-hash string generation.
    */
   public EventHashGenerator(final CBVVersion cbvVersion){
-    this.cbvVersion = cbvVersion;
+    this.cbvVersion = cbvVersion != null ? cbvVersion : CBVVersion.VERSION_2_0_0;
   }
 
   /**

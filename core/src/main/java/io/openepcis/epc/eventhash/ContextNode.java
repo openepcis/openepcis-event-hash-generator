@@ -193,7 +193,7 @@ public class ContextNode {
       }
 
       return preHashBuilder.toString();
-    } else if (children.isEmpty() && getName() != null && getValue() != null && !TemplateNodeMap.isEpcisField(this) && cbvVersion.equals(CBVVersion.VERSION_2_1_0)) {
+    } else if (children.isEmpty() && getName() != null && getValue() != null && !TemplateNodeMap.isEpcisField(this) && CBVVersion.VERSION_2_1_0.equals(cbvVersion)) {
       return userExtensionsFormatter(this.getName(), this.getValue(), this.getNamespaces());
     } else {
       final StringBuilder sb = new StringBuilder();
@@ -207,7 +207,7 @@ public class ContextNode {
       // After sorting the child values loop through each of them and add values to pre-hash string
       for (ContextNode node : children) {
         String s = "";
-        if (node.getName() != null && !TemplateNodeMap.isEpcisField(node) && cbvVersion.equals(CBVVersion.VERSION_2_1_0)) {
+        if (node.getName() != null && !TemplateNodeMap.isEpcisField(node) && CBVVersion.VERSION_2_1_0.equals(cbvVersion)) {
           s = node.userExtensionsPreHashBuilder(cbvVersion);
         } else {
           s = node.epcisFieldsPreHashBuilder(cbvVersion);
@@ -236,7 +236,7 @@ public class ContextNode {
             && node.getChildren() != null
             && !node.getChildren().isEmpty()
             && node.getChildren().get(0).getName() != null
-            && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || cbvVersion.equals(CBVVersion.VERSION_2_1_0))
+            && (!node.getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(cbvVersion))
             && (node.getName().equals(EPCIS.SENSOR_ELEMENT)
             || !node.getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT))) {
       // If the name does not contain null values & part of EPCIS standard fields then append to
@@ -308,7 +308,7 @@ public class ContextNode {
     } else {
 
       if (getName() != null
-              && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || cbvVersion.equals(CBVVersion.VERSION_2_1_0))
+              && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || CBVVersion.VERSION_2_1_0.equals(cbvVersion))
               && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
               && !ConstantEventHashInfo.getContext().getFieldsToExcludeInPrehash().contains(getName())
               && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)

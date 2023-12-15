@@ -106,33 +106,6 @@
                     <finalName>${project.artifactId}-${project.version}-jar-with-dependencies</finalName>
                 </configuration>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>standalone</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>io.openepcis.epc.eventhash.main.HashGenerator</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            -->
         </plugins>
     </build>
     <profiles>
@@ -162,6 +135,8 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <imageName>epcis-event-hash</imageName>
+                            <mainClass>io.openepcis.epc.eventhash.main.HashGenerator</mainClass>
                             <buildArgs>
                                 <arg>--enable-all-security-services</arg>
                                 <arg>--enable-http</arg>

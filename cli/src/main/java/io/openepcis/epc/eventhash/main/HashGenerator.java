@@ -171,7 +171,7 @@ public class HashGenerator {
       EXECUTOR_SERVICE.execute(() -> {
         HttpEntity httpEntity = null;
         final Optional<Map<String, PrintStream>> printStreamMap =
-                createPrintWriterMap(path, batchMode);
+                createPrintWriterMap(path, batchMode, hashAlgorithms);
         try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
           httpEntity = httpClient.execute(new HttpGet(path)).getEntity();
           runHashGenerator(
@@ -195,7 +195,7 @@ public class HashGenerator {
           if (f.isFile()) {
             EXECUTOR_SERVICE.execute(() -> {
               final Optional<Map<String, PrintStream>> printStreamMap =
-                      createPrintWriterMap(f.getPath(), batchMode);
+                      createPrintWriterMap(f.getPath(), batchMode, hashAlgorithms);
               try {
                 runHashGenerator(
                         type, new FileInputStream(f), hashAlgorithms, createConsumer(printStreamMap));
@@ -216,20 +216,22 @@ public class HashGenerator {
   }
 
   private static Optional<Map<String, PrintStream>> createPrintWriterMap(
-      final String path, boolean batchMode) {
+      final String path, boolean batchMode, String[] hashAlgorithms) {
     try {
       if (batchMode) {
         final File hashesFile =
             path.matches("^(https?)://.*$")
                 ? new File(path.substring(path.lastIndexOf("/") + 1).concat(HASHES_SUFFIX))
                 : new File(path.concat(HASHES_SUFFIX));
-        final File prehashesFile =
-            path.matches("^(https?)://.*$")
-                ? new File(path.substring(path.lastIndexOf("/") + 1).concat(PREHASHES_SUFFIX))
-                : new File(path.concat(PREHASHES_SUFFIX));
         final Map<String, PrintStream> printStreamMap = new HashMap<>();
         printStreamMap.put(HASHES_SUFFIX, new PrintStream(hashesFile));
-        printStreamMap.put(PREHASHES_SUFFIX, new PrintStream(prehashesFile));
+        if (Arrays.asList(hashAlgorithms).contains(PREHASH)) {
+          final File prehashesFile =
+                  path.matches("^(https?)://.*$")
+                          ? new File(path.substring(path.lastIndexOf("/") + 1).concat(PREHASHES_SUFFIX))
+                          : new File(path.concat(PREHASHES_SUFFIX));
+          printStreamMap.put(PREHASHES_SUFFIX, new PrintStream(prehashesFile));
+        }
         return Optional.of(printStreamMap);
       }
     } catch (Exception e) {

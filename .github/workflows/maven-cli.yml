@@ -86,15 +86,16 @@ jobs:
 
   build-quarkus-container-images:
     name: "Build Container Images"
-    strategy:
-      matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
-        include:
-          - os: 'ubuntu-latest'
-            label: 'linux-amd64'
-          - os: 'ubuntu-22.04-arm64'
-            label: 'linux-arm64'
-    runs-on: ${{matrix.os}}
+    runs-on: 'ubuntu-latest'
+#    strategy:
+#      matrix:
+#        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
+#        include:
+#          - os: 'ubuntu-latest'
+#            label: 'linux-amd64'
+#          - os: 'ubuntu-22.04-arm64'
+#            label: 'linux-arm64'
+#    runs-on: ${{matrix.os}}
 
     steps:
       - name: checkout from git
@@ -127,16 +128,16 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn clean package -Pci-build
+          mvn --no-transfer-progress --batch-mode -Pci-build clean package 
 
       - name: "Build Linux Image"
         run: >
-          mvn clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
+          mvn
             --no-transfer-progress 
-            --batch-mode           
+            --batch-mode                     
+            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
             -Dquarkus.container-image.build=true
             -Dquarkus.container-image.group=openepcis
-            -Dquarkus.container-image.additional-tags=latest-${{matrix.label}}
             -Dquarkus.jib.base-jvm-image=openjdk:17-jdk
 
   build-quarkus-native-executable:
@@ -169,14 +170,14 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn clean package -Pci-build
+          mvn --no-transfer-progress --batch-mode -Pci-build clean package
 
       - name: "Build Native Quarkus Executable"
         run: >
-          mvn clean package -Pnative -Pci-build
+          mvn 
             --no-transfer-progress 
-            --batch-mode                     
-            -f ./quarkus-app/pom.xml
+            --batch-mode                               
+            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
 
 
   build-non-windows-image:

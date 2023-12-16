@@ -84,6 +84,90 @@ jobs:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
 
+  build-quarkus-container-images:
+    name: "Build Container Images"
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux-amd64'
+          - os: 'ubuntu-22.04-arm64'
+            label: 'linux-arm64'
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - name: checkout from git
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: builder
+        uses: docker/setup-buildx-action@v1
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+          distribution: 'graalvm-community'
+          native-image-job-reports: 'true'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+
+      - name: "Prepare Build"
+        run: >
+          mvn clean package
+
+      - name: "Build Linux Image"
+        run: >
+          mvn clean package -Pnative -f ./quarkus-app/pom.xml
+            -Dquarkus.container-image.build=true
+            -Dquarkus.container-image.group=openepcis
+            -Dquarkus.container-image.additional-tags=latest-${{matrix.label}}
+            -Dquarkus.jib.base-jvm-image=openjdk:17-jdk
+
+  build-quarkus-native-executable:
+    name: "Build Quarkus Native Executable"
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux-amd64'
+          - os: 'ubuntu-22.04-arm64'
+            label: 'linux-arm64'
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - name: checkout from git
+        uses: actions/checkout@v3
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+          distribution: 'graalvm-community'
+          native-image-job-reports: 'true'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+
+      - name: "Prepare Build"
+        run: >
+          mvn clean package
+
+      - name: "Build Native Quarkus Executable"
+        run: >
+          mvn clean package -Pnative -f ./quarkus-app/pom.xml
+
+
   build-non-windows-image:
     name: 'Build Non-Windows Image'
     needs: [build-jar-job]
@@ -136,13 +220,13 @@ jobs:
         run: |
           echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
-      - name: 'Build Native Image'
+      - name: 'Build Native CLI Image'
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run: |
           native-image --no-server --no-fallback  --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./cli/src/native/resources/reflect.json -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
 
-      - name: 'Publish Native Image'
+      - name: 'Publish Native CLI Image'
         if: success()
         uses: actions/upload-artifact@v3
         with:

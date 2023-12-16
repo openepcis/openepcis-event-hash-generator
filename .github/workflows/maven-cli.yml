@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-cli.jar'
+          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service.jar'
           asset_name: 'openepcis-event-hash-generator-service.jar'
           asset_content_type: application/java-archive
       - name: 'Upload Release CLI Asset'

@@ -140,6 +140,8 @@ jobs:
 
   build-quarkus-native-executable:
     name: "Build Quarkus Native Executable"
+    needs: [build-jar-job]
+
     strategy:
       matrix:
         os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
@@ -155,6 +157,19 @@ jobs:
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
+
+      - name: 'Download Release URL'
+        if: contains(github.ref, 'v')
+        uses: actions/download-artifact@v3
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        if: contains(github.ref, 'v')
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        run: |
+          echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
@@ -183,7 +198,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
+          upload_url: ${{env.UPLOAD_URL}}
           asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}'
           asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner'
           asset_content_type: application/octet-stream

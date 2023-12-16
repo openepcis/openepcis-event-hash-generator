@@ -100,6 +100,12 @@ jobs:
       - name: checkout from git
         uses: actions/checkout@v3
 
+      - name: docker hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.OPENEPCIS_DOCKER_USER }}
+          password: ${{ secrets.OPENEPCIS_DOCKER_TOKEN }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -121,11 +127,13 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn clean package
+          mvn clean package -Pci-build
 
       - name: "Build Linux Image"
         run: >
-          mvn clean package -Pnative -f ./quarkus-app/pom.xml
+          mvn clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
+            --no-transfer-progress 
+            --batch-mode           
             -Dquarkus.container-image.build=true
             -Dquarkus.container-image.group=openepcis
             -Dquarkus.container-image.additional-tags=latest-${{matrix.label}}
@@ -161,11 +169,14 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn clean package
+          mvn clean package -Pci-build
 
       - name: "Build Native Quarkus Executable"
         run: >
-          mvn clean package -Pnative -f ./quarkus-app/pom.xml
+          mvn clean package -Pnative -Pci-build
+            --no-transfer-progress 
+            --batch-mode                     
+            -f ./quarkus-app/pom.xml
 
 
   build-non-windows-image:

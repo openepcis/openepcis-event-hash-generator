@@ -35,7 +35,7 @@ jobs:
           mvn \
             -s .mvn/settings.xml \
             --no-transfer-progress \
-            --batch-mode \
+            --batch-mode -Pcli-build \
             clean package
       - name: 'Get Version Number'
         env:
@@ -81,7 +81,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: 'cli/target/openepcis-event-hash-generator-cli.jar'
+          asset_path: 'cli/target/openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
           asset_name: 'openepcis-event-hash-generator-cli.jar'
           asset_content_type: application/java-archive
       - name: 'Write Upload URL To File'

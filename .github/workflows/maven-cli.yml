@@ -193,9 +193,10 @@ jobs:
           native-image-job-reports: 'true'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Install Native Image Plugin'
-        run: |
-          gu install native-image
+# Probably not needed with new official github graalvm support
+#      - name: 'Install Native Image Plugin'
+#        run: |
+#          gu install native-image
 
       - name: "Prepare Build"
         run: |

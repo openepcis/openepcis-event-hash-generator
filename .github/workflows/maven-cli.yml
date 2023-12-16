@@ -64,7 +64,7 @@ jobs:
           prerelease: false
       - name: 'Upload Release Service Asset'
         if: contains(github.ref, 'v')
-        id: upload-release-asset
+        id: upload-service-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -75,7 +75,7 @@ jobs:
           asset_content_type: application/java-archive
       - name: 'Upload Release CLI Asset'
         if: contains(github.ref, 'v')
-        id: upload-release-asset
+        id: upload--cli-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

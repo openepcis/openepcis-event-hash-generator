@@ -131,13 +131,11 @@ jobs:
           mvn --no-transfer-progress --batch-mode -Pci-build clean package 
 
       - name: "Build Linux Image"
-        run: >
-          mvn
-            --no-transfer-progress 
-            --batch-mode                     
-            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
-            -Dquarkus.container-image.build=true
-            -Dquarkus.container-image.group=openepcis
+        run: |
+          mvn --no-transfer-progress --batch-mode \
+            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.group=openepcis \
             -Dquarkus.jib.base-jvm-image=openjdk:17-jdk
 
   build-quarkus-native-executable:
@@ -169,15 +167,12 @@ jobs:
           gu install native-image
 
       - name: "Prepare Build"
-        run: >
+        run: |
           mvn --no-transfer-progress --batch-mode -Pci-build clean package
 
       - name: "Build Native Quarkus Executable"
-        run: >
-          mvn 
-            --no-transfer-progress 
-            --batch-mode                               
-            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
+        run: |
+          mvn --no-transfer-progress --batch-mode clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
 
 
   build-non-windows-image:

@@ -44,7 +44,7 @@ jobs:
           echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
 
-      - name: 'Publish JAR'
+      - name: 'Publish CLI JAR'
         uses: actions/upload-artifact@v3
         with:
           name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
@@ -62,7 +62,7 @@ jobs:
             Initial release
           draft: false
           prerelease: false
-      - name: 'Upload Release Asset'
+      - name: 'Upload Release Service Asset'
         if: contains(github.ref, 'v')
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -70,8 +70,19 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: 'cli/target/openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
-          asset_name: 'openepcis-event-hash-generator-cli-jar-with-dependencies.jar'
+          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-cli.jar'
+          asset_name: 'openepcis-event-hash-generator-service.jar'
+          asset_content_type: application/java-archive
+      - name: 'Upload Release CLI Asset'
+        if: contains(github.ref, 'v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: 'cli/target/openepcis-event-hash-generator-cli.jar'
+          asset_name: 'openepcis-event-hash-generator-cli.jar'
           asset_content_type: application/java-archive
       - name: 'Write Upload URL To File'
         if: contains(github.ref, 'v')
@@ -144,7 +155,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
@@ -152,6 +163,8 @@ jobs:
             label: 'linux-arm64'
           - os: 'macos-latest'
             label: 'mac'
+          - os: 'windows-latest'
+            label: 'windows'
     runs-on: ${{matrix.os}}
 
     steps:

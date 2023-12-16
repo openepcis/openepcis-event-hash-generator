@@ -33,6 +33,8 @@ quarkus:
   native:
     resources:
       includes: "1.2/EPCIS/**,2.0/EPCIS/**"
+  banner:
+    path: "openepcis-banner.txt"
 
 mp:
   openapi:

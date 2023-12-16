@@ -204,7 +204,7 @@ jobs:
         with:
           upload_url: ${{env.UPLOAD_URL}}
           asset_name: 'openepcis-event-hash-generator-service-runner-${{env.VERSION}}-${{matrix.label}}'
-          asset_path: 'openepcis-event-hash-generator/quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner'
+          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner'
           asset_content_type: application/octet-stream
 
 # openepcis-event-hash-generator/quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner

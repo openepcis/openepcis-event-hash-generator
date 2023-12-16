@@ -86,6 +86,7 @@ jobs:
 
   build-quarkus-container-images:
     name: "Build Container Images"
+    needs: [build-jar-job]
     runs-on: 'ubuntu-latest'
 #    strategy:
 #      matrix:
@@ -140,6 +141,7 @@ jobs:
 
   build-quarkus-native-executable:
     name: "Build Quarkus Native Executable"
+    needs: [build-jar-job]
     strategy:
       matrix:
         os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
@@ -153,6 +155,19 @@ jobs:
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
+
+      - name: 'Download Release URL'
+        if: contains(github.ref, 'v')
+        uses: actions/download-artifact@v3
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        if: contains(github.ref, 'v')
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        run: |
+          echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
@@ -174,6 +189,25 @@ jobs:
         run: |
           mvn --no-transfer-progress --batch-mode clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
 
+      - name: 'Publish Native Quarkus Executable'
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'openepcis-event-hash-generator-service-runner-${{env.VERSION}}-${{matrix.label}}'
+          path: 'quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner'
+      - name: 'Release Native Quarkus Executable'
+        if: success() && contains(github.ref, 'v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{env.UPLOAD_URL}}
+          asset_name: 'openepcis-event-hash-generator-service-runner-${{env.VERSION}}-${{matrix.label}}'
+          asset_path: 'openepcis-event-hash-generator/quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner'
+          asset_content_type: application/octet-stream
+
+# openepcis-event-hash-generator/quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner
 
   build-non-windows-image:
     name: 'Build Non-Windows Image'

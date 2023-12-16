@@ -71,7 +71,7 @@ jobs:
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
           asset_path: 'cli/target/openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
-          asset_name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
+          asset_name: 'openepcis-event-hash-generator-cli-${{github.ref}}-jar-with-dependencies.jar'
           asset_content_type: application/java-archive
       - name: 'Write Upload URL To File'
         if: contains(github.ref, 'v')
@@ -194,7 +194,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: 'openepcis-event-hash-generator-service-runner-${{env.VERSION}}-${{matrix.label}}'
-          path: 'quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner'
+          path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner'
       - name: 'Release Native Quarkus Executable'
         if: success() && contains(github.ref, 'v')
         id: upload-release-asset
@@ -203,11 +203,9 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-service-runner-${{env.VERSION}}-${{matrix.label}}'
-          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner'
+          asset_name: 'openepcis-event-hash-generator-service-runner-${{github.ref}}-${{matrix.label}}'
+          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner'
           asset_content_type: application/octet-stream
-
-# openepcis-event-hash-generator/quarkus-app/target/openepcis-event-hash-generator-service-native-image-source-jar/openepcis-event-hash-generator-service-runner
 
   build-non-windows-image:
     name: 'Build Non-Windows Image'
@@ -281,7 +279,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-${{matrix.label}}'
+          asset_name: 'openepcis-event-hash-generator-cli-${{github.ref}}-${{matrix.label}}'
           asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies'
           asset_content_type: application/octet-stream
 
@@ -352,6 +350,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-windows.exe'
+          asset_name: 'openepcis-event-hash-generator-cli-${{github.ref}}-windows.exe'
           asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.exe'
           asset_content_type: application/octet-stream

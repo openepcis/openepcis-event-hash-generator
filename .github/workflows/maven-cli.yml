@@ -95,6 +95,82 @@ jobs:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
 
+  build-quarkus-native-container-images:
+    name: "Build Container Images"
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux-amd64'
+          - os: 'ubuntu-22.04-arm64'
+            label: 'linux-arm64'
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: checkout from git
+        uses: actions/checkout@v3
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Set up Docker Buildx
+        id: builder
+        uses: docker/setup-buildx-action@v1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: "Prepare Build"
+        run: >
+          mvn --no-transfer-progress --batch-mode -Pci-build clean package 
+
+      - name: "Build native Image"
+        run: |
+          mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -f ./quarkus-app/pom.xml \
+            -Dquarkus.native.container-build=true \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.name=event-hash-generator-service-native \
+            -Dquarkus.container-image.registry=ghcr.io \
+            -Dquarkus.container-image.group=openepcis \
+            -Dquarkus.container-image.additional-tags=latest-${{matrix.label}} \
+
+      - name: "push arch image"
+        run: |
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:latest-${{matrix.label}}
+
+  push-quarkus-native-container-images:
+    name: "Push Quarkus Service Native Container"
+    needs: [build-quarkus-native-container-images]
+    steps:
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Set up Docker Buildx
+        id: builder
+        uses: docker/setup-buildx-action@v1
+
+      - name: "push multi arch image"
+        run: |
+          export DOCKER_CLI_EXPERIMENTAL=enabled;
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:latest \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-linux-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-linux-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
+      
+  
+
   build-quarkus-container-images:
     name: "Build Container Images"
     runs-on: 'ubuntu-latest'
@@ -122,19 +198,18 @@ jobs:
         id: builder
         uses: docker/setup-buildx-action@v1
 
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'graalvm-community'
-          native-image-job-reports: 'true'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          distribution: 'temurin'
+          cache: maven
 
       - name: "Prepare Build"
         run: >
           mvn --no-transfer-progress --batch-mode -Pci-build clean package 
 
-      - name: "Build Native amd64 Linux Image"
+      - name: "Build linux/amd64 Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
             clean package -Pci-build -f ./quarkus-app/pom.xml \
@@ -142,11 +217,11 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
+            -Dquarkus.jib.base-jvm-image=eclipse-temurin:17-jre-ubi9-minimal \
             -Dquarkus.container-image.additional-tags=latest-amd64 \
             -Dquarkus.jib.platforms=linux/amd64 
 
-      - name: "Build Native arm64 Linux Image"
+      - name: "Build linux/arm64 Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
             clean package -Pci-build -f ./quarkus-app/pom.xml \
@@ -154,7 +229,7 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
+            -Dquarkus.jib.base-jvm-image=eclipse-temurin:17-jre-ubi9-minimal \
             -Dquarkus.container-image.additional-tags=latest-arm64 \
             -Dquarkus.jib.platforms=linux/arm64/v8
 

@@ -98,16 +98,6 @@ jobs:
   build-quarkus-container-images:
     name: "Build Container Images"
     runs-on: 'ubuntu-latest'
-#    strategy:
-#      matrix:
-#        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
-#        include:
-#          - os: 'ubuntu-latest'
-#            label: 'linux-amd64'
-#          - os: 'ubuntu-22.04-arm64'
-#            label: 'linux-arm64'
-#    runs-on: ${{matrix.os}}
-
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
@@ -133,11 +123,6 @@ jobs:
           native-image-job-reports: 'true'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-# Probably not needed with new official github graalvm support
-#      - name: 'Install Native Image Plugin'
-#        run: |
-#          gu install native-image
-
       - name: "Prepare Build"
         run: >
           mvn --no-transfer-progress --batch-mode -Pci-build clean package 
@@ -151,7 +136,7 @@ jobs:
             -Dquarkus.jib.base-jvm-image=openjdk:17-jdk
 
   build-quarkus-native-executable:
-    name: "Build Quarkus Native Executable"
+    name: "Build Quarkus Service Native Executable"
     needs: [build-jar-job]
 
     strategy:
@@ -160,12 +145,16 @@ jobs:
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
+            exe: ""
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
+            exe: ""
           - os: 'macos-latest'
             label: 'mac'
+            exe: ""
           - os: 'windows-latest'
             label: 'windows'
+            exe: ".exe"
     runs-on: ${{matrix.os}}
 
     steps:
@@ -193,11 +182,6 @@ jobs:
           native-image-job-reports: 'true'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-# Probably not needed with new official github graalvm support
-#      - name: 'Install Native Image Plugin'
-#        run: |
-#          gu install native-image
-
       - name: "Prepare Build"
         run: |
           mvn --no-transfer-progress --batch-mode -Pci-build clean package
@@ -215,11 +199,11 @@ jobs:
         with:
           upload_url: ${{env.UPLOAD_URL}}
           asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}'
-          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner'
+          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner${{matrix.exe}}'
           asset_content_type: application/octet-stream
 
-  build-non-windows-image:
-    name: 'Build Non-Windows Image'
+  build-cli-native-executable:
+    name: 'Build CLI Native Executable'
     needs: [build-jar-job]
     strategy:
       matrix:

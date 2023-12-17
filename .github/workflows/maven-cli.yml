@@ -141,7 +141,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'ubuntu-22.04-arm','macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
@@ -207,7 +207,7 @@ jobs:
     needs: [build-jar-job]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'ubuntu-22.04-arm','macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'

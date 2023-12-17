@@ -104,6 +104,7 @@ public class RestEndpointTest {
     final Response xmlResponse =
         given()
             .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
             .body(
                 IOUtils.toString(
                     Objects.requireNonNull(

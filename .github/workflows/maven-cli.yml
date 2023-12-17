@@ -127,13 +127,25 @@ jobs:
         run: >
           mvn --no-transfer-progress --batch-mode -Pci-build clean package 
 
-      - name: "Build Linux Image"
+      - name: "Build amd64 Linux Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
             clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.jib.base-jvm-image=openjdk:17-jdk
+            -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
+            -Dquarkus.container-image.additional-tags=latest-amd64 \
+            -Dquarkus.jib.platforms=linux/amd64 
+
+      - name: "Build arm64 Linux Image"
+        run: |
+          mvn --no-transfer-progress --batch-mode \
+            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.group=openepcis \
+            -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
+            -Dquarkus.container-image.additional-tags=latest-arm64 \
+            -Dquarkus.jib.platforms=linux/arm64/v8
 
   build-quarkus-native-executable:
     name: "Build Quarkus Service Native Executable"

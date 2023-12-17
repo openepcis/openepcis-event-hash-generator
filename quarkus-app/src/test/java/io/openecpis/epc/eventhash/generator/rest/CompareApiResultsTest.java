@@ -143,7 +143,7 @@ public class CompareApiResultsTest {
       throws IOException {
     final Response xmlResponse =
         given()
-            .contentType(ContentType.XML)
+            .contentType(ContentType.XML).accept(ContentType.JSON)
             .body(
                 IOUtils.toString(
                     Objects.requireNonNull(
@@ -160,7 +160,7 @@ public class CompareApiResultsTest {
     jsonArray.add(objectNode);
 
     final Response jsonResponse =
-        given().contentType(ContentType.JSON).body(jsonArray).when().post(eventListEventHashAPI());
+        given().contentType(ContentType.JSON).accept(ContentType.JSON).body(jsonArray).when().post(eventListEventHashAPI());
 
     // Compare response bodies
     xmlResponse.then().statusCode(200);

@@ -64,15 +64,6 @@ public class EventHashGenerator {
     this.cbvVersion = cbvVersion != null ? cbvVersion : CBVVersion.VERSION_2_0_0;
   }
 
-  /**
-   * Method to generate the instance of the EventHashGenerator based on provided CBV Version
-   * @param cbvVersion required CBV version that needs to be used for pre-hash string generation.
-   * @return EventHashGenerator with required CBV version
-   */
-  public final EventHashGenerator mapCbvVersion(final CBVVersion cbvVersion) {
-    return new EventHashGenerator(cbvVersion);
-  }
-
   public void prehashJoin(final String s) {
     prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
   }

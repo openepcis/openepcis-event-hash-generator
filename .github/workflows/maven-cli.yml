@@ -108,6 +108,13 @@ jobs:
           username: ${{ secrets.OPENEPCIS_DOCKER_USER }}
           password: ${{ secrets.OPENEPCIS_DOCKER_TOKEN }}
 
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -127,25 +134,40 @@ jobs:
         run: >
           mvn --no-transfer-progress --batch-mode -Pci-build clean package 
 
-      - name: "Build amd64 Linux Image"
+      - name: "Build Native amd64 Linux Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
-            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml \
+            clean package -Pci-build -f ./quarkus-app/pom.xml \
+            -Dquarkus.container-image.name=event-hash-generator-service \
             -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
             -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
             -Dquarkus.container-image.additional-tags=latest-amd64 \
             -Dquarkus.jib.platforms=linux/amd64 
 
-      - name: "Build arm64 Linux Image"
+      - name: "Build Native arm64 Linux Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
-            clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml \
+            clean package -Pci-build -f ./quarkus-app/pom.xml \
+            -Dquarkus.container-image.name=event-hash-generator-service \
             -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
             -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
             -Dquarkus.container-image.additional-tags=latest-arm64 \
             -Dquarkus.jib.platforms=linux/arm64/v8
+
+      - name: "push multi arch image"
+        run: |
+          docker push ghcr.io/openepcis/event-hash-generator-service:latest-amd64;
+          docker push ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
+          export DOCKER_CLI_EXPERIMENTAL=enabled;
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service:latest \
+            --amend ghcr.io/openepcis/event-hash-generator-service:latest-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
+          
 
   build-quarkus-native-executable:
     name: "Build Quarkus Service Native Executable"

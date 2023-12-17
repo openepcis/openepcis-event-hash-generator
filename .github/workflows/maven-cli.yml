@@ -149,9 +149,6 @@ jobs:
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
             exe: ""
-          - os: 'ubuntu-22.04-arm'
-            label: 'linux-arm'
-            exe: ""
           - os: 'macos-latest'
             label: 'mac'
             exe: ""
@@ -217,9 +214,6 @@ jobs:
             exe: ""
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
-            exe: ""
-          - os: 'ubuntu-22.04-arm'
-            label: 'linux-arm'
             exe: ""
           - os: 'macos-latest'
             label: 'mac'

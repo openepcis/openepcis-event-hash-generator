@@ -96,7 +96,7 @@ jobs:
           path: 'upload_url.txt'
 
   build-quarkus-native-container-images:
-    name: "Build Container Images"
+    name: "Build Native Container Images"
     runs-on: ubuntu-latest
     steps:
       - name: checkout from git

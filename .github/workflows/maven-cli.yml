@@ -127,7 +127,7 @@ jobs:
         run: >
           mvn --no-transfer-progress --batch-mode -Pci-build clean package 
 
-      - name: "Build native Image"
+      - name: "Build amd64 native Image"
         run: |
           mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -f ./quarkus-app/pom.xml \
             -Dquarkus.native.container-build=true \
@@ -135,12 +135,31 @@ jobs:
             -Dquarkus.container-image.name=event-hash-generator-service-native \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.container-image.additional-tags=latest \
-            -Dquarkus.docker.buildx.platform=linux/amd64,linux/arm64
+            -Dquarkus.container-image.additional-tags=latest-amd64 \
+            -Dquarkus.native.container-runtime-options="--platform linux/amd64" \
+            -Dquarkus.jib.platforms=linux/amd64
+
+      - name: "Build amd64 native Image"
+        run: |
+          mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -f ./quarkus-app/pom.xml \
+            -Dquarkus.native.container-build=true \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.name=event-hash-generator-service-native \
+            -Dquarkus.container-image.registry=ghcr.io \
+            -Dquarkus.container-image.group=openepcis \
+            -Dquarkus.container-image.additional-tags=latest-arm64 \
+            -Dquarkus.native.container-runtime-options="--platform linux/arm64" \
+            -Dquarkus.jib.platforms=linux/arm64
 
       - name: "push arch image"
         run: |
-          docker push ghcr.io/openepcis/event-hash-generator-service-native:latest
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:latest-amd64;
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:latest-arm64;
+          export DOCKER_CLI_EXPERIMENTAL=enabled;
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:latest \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:latest;
 
 
   build-quarkus-container-images:

@@ -141,13 +141,16 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'ubuntu-22.04-arm','macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
             exe: ""
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
+            exe: ""
+          - os: 'ubuntu-22.04-arm'
+            label: 'linux-arm'
             exe: ""
           - os: 'macos-latest'
             label: 'mac'
@@ -198,7 +201,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}'
+          asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}${{matrix.exe}}'
           asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner${{matrix.exe}}'
           asset_content_type: application/octet-stream
 
@@ -207,14 +210,23 @@ jobs:
     needs: [build-jar-job]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'ubuntu-22.04-arm','macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
+            exe: ""
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
+            exe: ""
+          - os: 'ubuntu-22.04-arm'
+            label: 'linux-arm'
+            exe: ""
           - os: 'macos-latest'
             label: 'mac'
+            exe: ""
+          - os: 'windows-latest'
+            label: 'windows'
+            exe: ".exe"
     runs-on: ${{matrix.os}}
     steps:
       - name: checkout from git
@@ -264,8 +276,8 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-${{matrix.label}}'
-          path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies'
+          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-${{matrix.label}}${{matrix.exe}}'
+          path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies${{matrix.exe}}'
       - name: 'Release Native Image Asset'
         if: success() && contains(github.ref, 'v')
         id: upload-release-asset
@@ -274,77 +286,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-cli-${{matrix.label}}'
-          asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies'
+          asset_name: 'openepcis-event-hash-generator-cli-${{matrix.label}}${{matrix.exe}}'
+          asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies${{matrix.exe}}'
           asset_content_type: application/octet-stream
 
-
-  build-windows-image:
-    needs: [build-jar-job]
-    name: 'Build Windows Image'
-    runs-on: windows-latest
-    steps:
-      - name: 'checkout from git'
-        uses: actions/checkout@v3
-      - name: 'Download GraalVM'
-        run: |
-          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.2.0/graalvm-ce-java17-windows-amd64-22.2.0.zip -OutFile 'graal.zip'
-      - name: 'Install GraalVM'
-        run: |
-          Expand-Archive -path 'graal.zip' -destinationpath '.'
-      - name: 'Install Native Image'
-        run: |
-          graalvm-ce-java17-22.2.0\bin\gu.cmd install native-image
-      - name: 'Set up Visual C Build Tools Workload for Visual Studio 2017 Build Tools'
-        run: |
-          choco install visualstudio2017-workload-vctools
-      - name: 'Get Version Number'
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-          JAVA_HOME: ./graalvm-ce-java17-22.2.0
-          GRAALVM_HOME: ./graalvm-ce-java17-22.2.0
-        run: |
-          echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-        shell: bash
-      - name: 'Get JAR Artifact'
-        uses: actions/download-artifact@v3
-        with:
-          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
-
-      - name: 'Download Release URL'
-        if: contains(github.ref, 'v')
-        uses: actions/download-artifact@v3
-        with:
-          name: 'upload_url.txt'
-
-      - name: 'Set Upload URL Env Var'
-        if: contains(github.ref, 'v')
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        run: |
-          echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
-      - name: 'Build Native Image'
-        shell: cmd
-        env:
-          JAVA_HOME: ./graalvm-ce-java17-22.2.0
-          GRAALVM_HOME: ./graalvm-ce-java17-22.2.0
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          ./graalvm-ce-java17-22.2.0/bin/native-image --no-server --no-fallback --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./cli/src/native/resources/reflect.json  -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
-      - name: 'Publish Windows Image'
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-windows.exe'
-          path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.exe'
-      - name: 'Release Windows Image Asset'
-        if: success() && contains(github.ref, 'v')
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-cli-windows.exe'
-          asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.exe'
-          asset_content_type: application/octet-stream

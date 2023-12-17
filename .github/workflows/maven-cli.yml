@@ -97,15 +97,7 @@ jobs:
 
   build-quarkus-native-container-images:
     name: "Build Container Images"
-    strategy:
-      matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
-        include:
-          - os: 'ubuntu-latest'
-            label: 'linux-amd64'
-          - os: 'ubuntu-22.04-arm64'
-            label: 'linux-arm64'
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
@@ -120,6 +112,9 @@ jobs:
       - name: Set up Docker Buildx
         id: builder
         uses: docker/setup-buildx-action@v1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -140,37 +135,13 @@ jobs:
             -Dquarkus.container-image.name=event-hash-generator-service-native \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.container-image.additional-tags=latest-${{matrix.label}} \
+            -Dquarkus.container-image.additional-tags=latest \
+            -Dquarkus.docker.buildx.platform=linux/amd64,linux/arm64
 
       - name: "push arch image"
         run: |
-          docker push ghcr.io/openepcis/event-hash-generator-service-native:latest-${{matrix.label}}
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:latest
 
-  push-quarkus-native-container-images:
-    name: "Push Quarkus Service Native Container"
-    needs: [build-quarkus-native-container-images]
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Login to GitHub Container Registry'
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{github.actor}}
-          password: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Set up Docker Buildx
-        id: builder
-        uses: docker/setup-buildx-action@v1
-
-      - name: "push multi arch image"
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL=enabled;
-          docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:latest \
-            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-linux-amd64 \
-            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-linux-arm64;
-          docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
-      
-  
 
   build-quarkus-container-images:
     name: "Build Container Images"

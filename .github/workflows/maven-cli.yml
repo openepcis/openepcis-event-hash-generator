@@ -234,9 +234,6 @@ jobs:
           native-image-job-reports: 'true'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Install Native Image Plugin'
-        run: |
-          gu install native-image
       - name: 'Get Version Number'
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true

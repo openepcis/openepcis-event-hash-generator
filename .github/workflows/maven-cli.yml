@@ -136,10 +136,10 @@ jobs:
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
             -Dquarkus.container-image.additional-tags=latest-amd64 \
-            -Dquarkus.native.container-runtime-options="--platform linux/amd64" \
+            -Dquarkus.native.container-runtime-options="--platform=linux/amd64" \
             -Dquarkus.jib.platforms=linux/amd64
 
-      - name: "Build amd64 native Image"
+      - name: "Build arm64 native Image"
         run: |
           mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -f ./quarkus-app/pom.xml \
             -Dquarkus.native.container-build=true \
@@ -148,8 +148,8 @@ jobs:
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
             -Dquarkus.container-image.additional-tags=latest-arm64 \
-            -Dquarkus.native.container-runtime-options="--platform linux/arm64" \
-            -Dquarkus.jib.platforms=linux/arm64
+            -Dquarkus.native.container-runtime-options="--platform=linux/arm64" \
+            -Dquarkus.jib.platforms=linux/arm64/v8
 
       - name: "push arch image"
         run: |

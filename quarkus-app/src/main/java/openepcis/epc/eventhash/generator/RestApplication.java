@@ -19,13 +19,17 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openepcis.epc.eventhash.EventHashGenerator;
 import io.openepcis.resources.oas.EPCISExampleOASFilter;
+import io.quarkus.vertx.web.Route;
+import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.info.License;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @OpenAPIDefinition(
     info =
@@ -51,5 +55,11 @@ public class RestApplication extends Application {
     final ObjectMapper objectMapper =
         new ObjectMapper(); // .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     return new JsonFactory().setCodec(objectMapper);
+  }
+
+  @Route(methods = Route.HttpMethod.GET, path = "/")
+  @Operation(hidden = true)
+  void hello(RoutingContext rc) {
+    rc.redirect("/q/swagger-ui/index.html");
   }
 }

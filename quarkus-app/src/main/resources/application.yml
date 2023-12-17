@@ -17,6 +17,9 @@
 quarkus:
   swagger-ui:
     always-include: true
+    title: "OpenAPI Event Hash Service"
+    footer: "&#169; 2020-2023 - benelog GmbH & Co KG"
+
   http:
     cors:
       ~: true
@@ -36,7 +39,21 @@ quarkus:
   banner:
     path: "openepcis-banner.txt"
 
+
 mp:
   openapi:
     filter: "io.openepcis.resources.oas.EPCISExampleOASFilter"
 
+    extensions:
+      smallrye:
+        info:
+          title: "OpenEPCIS Event Hash Service API"
+          version: "1.0.0"
+          description: "The EPCIS Event Hash is a unique digital fingerprint generated for supply chain events. It's based on the EPCIS (Electronic Product Code Information Services) standard, which tracks the movement and status of goods. The hash ensures data integrity and simplifies event verification and tracking in supply chains."
+          contact:
+            email: "info@openepcis.io"
+            name: "OpenEPCIS | benelog GmbH & Co. KG"
+            url: "https://openepcis.io"
+            license:
+              name: "Apache 2.0"
+              url: "http://www.apache.org/licenses/LICENSE-2.0.html"

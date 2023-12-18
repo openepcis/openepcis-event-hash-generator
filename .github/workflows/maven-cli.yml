@@ -132,11 +132,11 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn --no-transfer-progress --batch-mode -Pci-build clean package 
+          mvn --no-transfer-progress --batch-mode -Pci-build clean package -DskipTests
 
       - name: "Build ${{matrix.platform}} native Image"
         run: |
-          mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -f ./quarkus-app/pom.xml \
+          mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -DskipTests -f ./quarkus-app/pom.xml \
             -Dquarkus.native.container-build=true \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.name=event-hash-generator-service-native \
@@ -206,7 +206,7 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn --no-transfer-progress --batch-mode -Pci-build clean package 
+          mvn --no-transfer-progress --batch-mode -Pci-build clean package -DskipTests
 
       - name: "Build linux/amd64 Image"
         run: |
@@ -292,11 +292,11 @@ jobs:
 
       - name: "Prepare Build"
         run: |
-          mvn --no-transfer-progress --batch-mode -Pci-build clean package
+          mvn --no-transfer-progress --batch-mode -Pci-build clean package -DskipTests
 
       - name: "Build Native Quarkus Executable"
         run: |
-          mvn --no-transfer-progress --batch-mode clean package -Pnative -Pci-build -f ./quarkus-app/pom.xml
+          mvn --no-transfer-progress --batch-mode clean package -Pnative -Pci-build -DskipTests -f ./quarkus-app/pom.xml
 
       - name: 'Release Native Quarkus Executable'
         if: success() && contains(github.ref, 'v')

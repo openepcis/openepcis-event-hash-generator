@@ -155,8 +155,8 @@ jobs:
 
       - name: "push arch image"
         run: |
-          docker push ghcr.io/openepcis/event-hash-generator-service-native:${{matrix.tags}};
           docker push ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME}-${{matrix.label}};
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:${{matrix.tags}};
 
   push-quarkus-native-container-images:
     name: "Push Native Container Images"
@@ -180,14 +180,14 @@ jobs:
       - name: "push multi-arch image"
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled;
-          docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:latest \
-            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-amd64 \
-            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-arm64;
-          docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:latest;
           docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME} \
             --amend ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME}-linux-amd64 \
             --amend ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME}-linux-arm64;
           docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME};
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:latest \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:latest;
 
   build-quarkus-container-images:
     name: "Build Container Images"
@@ -260,19 +260,19 @@ jobs:
 
       - name: "push multi arch image"
         run: |
-          docker push ghcr.io/openepcis/event-hash-generator-service:latest-amd64;
-          docker push ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
           docker push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-amd64;
           docker push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-arm64;
+          docker push ghcr.io/openepcis/event-hash-generator-service:latest-amd64;
+          docker push ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
           export DOCKER_CLI_EXPERIMENTAL=enabled;
-          docker manifest create ghcr.io/openepcis/event-hash-generator-service:latest \
-            --amend ghcr.io/openepcis/event-hash-generator-service:latest-amd64 \
-            --amend ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
-          docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
           docker manifest create ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME} \
             --amend ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-amd64 \
             --amend ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-arm64;
           docker manifest push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME};
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service:latest \
+            --amend ghcr.io/openepcis/event-hash-generator-service:latest-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
           
 
   build-quarkus-native-executable:

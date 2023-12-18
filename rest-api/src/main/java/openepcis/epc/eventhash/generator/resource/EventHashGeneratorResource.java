@@ -234,7 +234,7 @@ public class EventHashGeneratorResource {
                 first.set(false);
                 return s;
               } else {
-                return ",\n".concat(s);
+                return "\n".concat(s);
               }
             }
     );
@@ -464,7 +464,7 @@ public class EventHashGeneratorResource {
                 first.set(false);
                 return s;
               } else {
-                return ",\n".concat(s);
+                return "\n".concat(s);
               }
             }
     );

@@ -116,6 +116,13 @@ jobs:
       - name: checkout from git
         uses: actions/checkout@v3
 
+      - name: 'Get Version from tag'
+        uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
+        with:
+          tagRegex: "v(.*)"
+          tagRegexGroup: 1
+
       - name: 'Login to GitHub Container Registry'
         uses: docker/login-action@v1
         with:
@@ -142,13 +149,14 @@ jobs:
             -Dquarkus.container-image.name=event-hash-generator-service-native \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.container-image.additional-tags=${{matrix.tags}} \
+            -Dquarkus.container-image.additional-tags=${{matrix.tags}},${GIT_TAG_NAME}-${{matrix.label}} \
             -Dquarkus.native.container-runtime-options="--platform=${{matrix.platform}}" \
             -Dquarkus.jib.platforms=${{matrix.jib-platforms}}
 
       - name: "push arch image"
         run: |
-          docker push ghcr.io/openepcis/event-hash-generator-service-native:${{matrix.tags}}
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:${{matrix.tags}};
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME}-${{matrix.label}};
 
   push-quarkus-native-container-images:
     name: "Push Native Container Images"
@@ -162,6 +170,13 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
+      - name: 'Get Version from tag'
+        uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
+        with:
+          tagRegex: "v(.*)"
+          tagRegexGroup: 1
+
       - name: "push multi-arch image"
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled;
@@ -169,6 +184,8 @@ jobs:
             --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-amd64 \
             --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-arm64;
           docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:latest;
+          docker tag ghcr.io/openepcis/event-hash-generator-service-native:latest ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME};
+          docker push ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME};
 
   build-quarkus-container-images:
     name: "Build Container Images"
@@ -176,6 +193,13 @@ jobs:
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
+
+      - name: 'Get Version from tag'
+        uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
+        with:
+          tagRegex: "v(.*)"
+          tagRegexGroup: 1
 
       - name: docker hub
         uses: docker/login-action@v1
@@ -217,7 +241,7 @@ jobs:
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
             -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
-            -Dquarkus.container-image.additional-tags=latest-amd64 \
+            -Dquarkus.container-image.additional-tags=latest-amd64,${GIT_TAG_NAME}-arm64 \
             -Dquarkus.jib.platforms=linux/amd64 
 
       - name: "Build linux/arm64 Image"
@@ -229,7 +253,7 @@ jobs:
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
             -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
-            -Dquarkus.container-image.additional-tags=latest-arm64 \
+            -Dquarkus.container-image.additional-tags=latest-arm64,${GIT_TAG_NAME}-arm64 \
             -Dquarkus.jib.platforms=linux/arm64/v8
 
       - name: "push multi arch image"
@@ -241,6 +265,8 @@ jobs:
             --amend ghcr.io/openepcis/event-hash-generator-service:latest-amd64 \
             --amend ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
           docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
+          docker tag ghcr.io/openepcis/event-hash-generator-service:latest ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME};
+          docker push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME};
           
 
   build-quarkus-native-executable:
@@ -268,6 +294,13 @@ jobs:
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
+
+      - name: 'Get Version from tag'
+        uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
+        with:
+          tagRegex: "v(.*)"
+          tagRegexGroup: 1
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
@@ -306,7 +339,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}${{matrix.exe}}'
+          asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}-${{env.GIT_TAG_NAME}}${{matrix.exe}}'
           asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner${{matrix.exe}}'
           asset_content_type: application/octet-stream
 
@@ -349,6 +382,13 @@ jobs:
           echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
         shell: bash
 
+      - name: 'Get Version from tag'
+        uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
+        with:
+          tagRegex: "v(.*)"
+          tagRegexGroup: 1
+
       - name: 'Get JAR Artifact'
         uses: actions/download-artifact@v3
         with:
@@ -387,7 +427,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-cli-${{matrix.label}}${{matrix.exe}}'
+          asset_name: 'openepcis-event-hash-generator-cli-${{matrix.label}}-${{env.GIT_TAG_NAME}}${{matrix.exe}}'
           asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies${{matrix.exe}}'
           asset_content_type: application/octet-stream
 

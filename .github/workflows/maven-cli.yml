@@ -260,13 +260,17 @@ jobs:
         run: |
           docker push ghcr.io/openepcis/event-hash-generator-service:latest-amd64;
           docker push ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
+          docker push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-amd64;
+          docker push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-arm64;
           export DOCKER_CLI_EXPERIMENTAL=enabled;
           docker manifest create ghcr.io/openepcis/event-hash-generator-service:latest \
             --amend ghcr.io/openepcis/event-hash-generator-service:latest-amd64 \
             --amend ghcr.io/openepcis/event-hash-generator-service:latest-arm64;
           docker manifest push ghcr.io/openepcis/event-hash-generator-service:latest;
-          docker tag ghcr.io/openepcis/event-hash-generator-service:latest ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME};
-          docker push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME};
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME} \
+            --amend ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME}-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service:${GIT_TAG_NAME};
           
 
   build-quarkus-native-executable:

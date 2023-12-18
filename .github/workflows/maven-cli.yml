@@ -184,8 +184,10 @@ jobs:
             --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-amd64 \
             --amend ghcr.io/openepcis/event-hash-generator-service-native:latest-arm64;
           docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:latest;
-          docker tag ghcr.io/openepcis/event-hash-generator-service-native:latest ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME};
-          docker push ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME};
+          docker manifest create ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME} \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME}-linux-amd64 \
+            --amend ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME}-linux-arm64;
+          docker manifest push ghcr.io/openepcis/event-hash-generator-service-native:${GIT_TAG_NAME};
 
   build-quarkus-container-images:
     name: "Build Container Images"

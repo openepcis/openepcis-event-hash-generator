@@ -15,7 +15,6 @@
  */
 package openepcis.epc.eventhash.generator.resource;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import io.openepcis.constants.CBVVersion;
 import io.openepcis.epc.eventhash.DocumentWrapperSupport;
 import io.openepcis.epc.eventhash.EventHashGenerator;
@@ -57,7 +56,6 @@ public class EventHashGeneratorResource {
 
   private static final String SHA_256 = "sha-256";
   private final ManagedExecutor managedExecutor;
-  private final JsonFactory jsonFactory;
   private final DocumentWrapperSupport documentWrapperSupport;
 
   // Method to convert the input XML/JSON EPCIS Document into Hash Ids based on the event
@@ -109,19 +107,27 @@ public class EventHashGeneratorResource {
                                           mediaType = MediaType.APPLICATION_JSON,
                                           example =
                                                   """
-                                                          [
-                                                           "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
-                                                           "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
-                                                          ]
-                                                           """,
-                                          schema = @Schema(type = SchemaType.ARRAY, implementation = String.class)),
+[
+  {
+    "sha-256": "ni:///sha-256;a8eb4ec50f76d2d5dd7bf64e86d0b4210315c8feaf3114ef9ccd6d7372e4473e?ver=CBV2.0",
+    "prehash": "eventType=ObjectEventeventTime=2021-05-27T13:00:00.000ZeventTimeZoneOffset=+01:00epcListepc=https://id.gs1.org/8003/030013450007718765action=OBSERVEbizStep=https://ref.gs1.org/cbv/BizStep-sensor_reportingreadPointid=https://id.gs1.org/414/4012345000054sensorElementsensorMetadatatime=2021-05-27T12:50:00.000ZsensorReporttype=https://gs1.org/voc/Lengthvalue=-477979.89component=cbv:Comp-northinguom=MTRcoordinateReferenceSystem=http://www.opengis.net/def/crs/EPSG/0/27700sensorReporttype=https://gs1.org/voc/Lengthvalue=2477583.57component=cbv:Comp-eastinguom=MTRcoordinateReferenceSystem=http://www.opengis.net/def/crs/EPSG/0/27700"
+  },
+  {
+    "sha-256": "ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?ver=CBV2.0",
+    "prehash": "eventType=AggregationEventeventTime=2020-06-08T18:11:16.000ZeventTimeZoneOffset=+02:00parentID=https://id.gs1.org/01/19520010123455/21/22222223333childEPCsepc=https://id.gs1.org/01/09520001123467/21/10000001001action=DELETEbizStep=https://ref.gs1.org/cbv/BizStep-unpackingdisposition=https://ref.gs1.org/cbv/Disp-in_progresspersistentDispositionset=https://ref.gs1.org/cbv/Disp-completeness_verifiedunset=https://ref.gs1.org/cbv/Disp-completeness_inferredreadPointid=https://id.gs1.org/414/9529999999993bizLocationid=https://id.gs1.org/414/9529999999993"
+  }
+]
+                                                  """,
+                                          schema = @Schema(type = SchemaType.ARRAY,
+                                                  implementation = Map.class,
+                                                  description = "array of algorithms mapped to hash value")),
                                   @Content(
                                           mediaType = MediaType.TEXT_PLAIN,
                                           example =
                                                   """
-                                                                  ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0,
-                                                                  ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0
-                                                          """
+ni:///sha-256;a8eb4ec50f76d2d5dd7bf64e86d0b4210315c8feaf3114ef9ccd6d7372e4473e?ver=CBV2.0
+ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?ver=CBV2.0
+                                                  """
                                   )
                           }),
                   @APIResponse(
@@ -149,7 +155,7 @@ public class EventHashGeneratorResource {
                                   "Internal Server Error: Unable to generate Hash-ID document as server encountered problem.",
                           content = @Content(schema = @Schema(implementation = ProblemResponseBody.class)))
           })
-  public Multi<String> generateHashIdJSON(
+  public Multi<Map<String, String>> generateHashIdJSON(
           @HeaderParam("Content-Type") final String contentType,
           @RequestBodySchema(EPCISDocument.class) final InputStream inputDocumentStream,
           @Parameter(
@@ -201,7 +207,7 @@ public class EventHashGeneratorResource {
                           enumeration = {"2.0.0", "2.1.0"}))
           @DefaultValue("2.0.0")
           @QueryParam("cbvVersion")
-          String cbvVersion)  {
+          String cbvVersion) throws IOException {
     return getMulti(contentType, inputDocumentStream, hashAlgorithm, prehash, beautifyPreHash, ignoreFields, cbvVersion);
   }
 
@@ -228,7 +234,15 @@ public class EventHashGeneratorResource {
           @QueryParam("cbvVersion")
           String cbvVersion) {
     final AtomicBoolean first = new AtomicBoolean(true);
-    return getMulti(contentType, inputDocumentStream, hashAlgorithm, prehash, beautifyPreHash, ignoreFields, cbvVersion).map(
+    return Multi.createFrom().<String>emitter(em -> {
+      try {
+        Multi<Map<String, String>> m = getMulti(contentType, inputDocumentStream, hashAlgorithm, prehash, beautifyPreHash, ignoreFields, cbvVersion);
+        m.onCompletion().invoke(em::complete)
+                .subscribe().with(item -> item.values().forEach(em::emit), em::fail);
+      } catch (IOException e) {
+        em.fail(e);
+      }
+    }).map(
             s -> {
               if (first.get()) {
                 first.set(false);
@@ -240,7 +254,7 @@ public class EventHashGeneratorResource {
     );
   }
 
-  private Multi<String> getMulti(String contentType, InputStream inputDocumentStream, String hashAlgorithm, Boolean prehash, Boolean beautifyPreHash, String ignoreFields, String cbvVersion) {
+  private Multi<Map<String, String>> getMulti(String contentType, InputStream inputDocumentStream, String hashAlgorithm, Boolean prehash, Boolean beautifyPreHash, String ignoreFields, String cbvVersion) throws IOException {
     // List to store the parameters based on the user provided inputs.
     final List<String> hashParameters = new ArrayList<>();
 
@@ -269,20 +283,11 @@ public class EventHashGeneratorResource {
     // Add the Hash Algorithm type to the List.
     hashParameters.add(hashAlgorithm != null && !hashAlgorithm.isEmpty() ? hashAlgorithm : SHA_256);
 
-    return Multi.createFrom().emitter(em -> {
-      Multi<Map<String, String>> m = null;
-      try {
-        m = (contentType.contains("application/xml")
-                ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
-                : eventHashGenerator.fromJson(
-                inputDocumentStream, hashParameters.toArray(String[]::new)))
-                .runSubscriptionOn(managedExecutor);
-        m.onCompletion().invoke(em::complete)
-                .subscribe().with(item -> item.values().forEach(em::emit), em::fail);
-      } catch (IOException e) {
-        em.fail(e);
-      }
-    });
+    return (contentType.contains("application/xml")
+            ? eventHashGenerator.fromXml(inputDocumentStream, hashParameters.toArray(String[]::new))
+            : eventHashGenerator.fromJson(
+            inputDocumentStream, hashParameters.toArray(String[]::new)))
+            .runSubscriptionOn(managedExecutor);
   }
 
 
@@ -335,11 +340,11 @@ public class EventHashGeneratorResource {
                                           mediaType = MediaType.APPLICATION_JSON,
                                           example =
                                                   """
-                                                          [
-                                                           "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0",
-                                                           "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0"
-                                                          ]
-                                                           """,
+                                                    [
+                                                     { "sha-256": "ni:///sha-256;995dc675f5bcf4300adc4c54a0a806371189b0cecdc214e47f0fb0947ec4e8cb?ver=CBV2.0" },
+                                                     { "sha-256": "ni:///sha-256;0f539071b76afacd62bd8dfd103fa3645237cb31fd55ceb574f179d646a5fd08?ver=CBV2.0" }
+                                                    ]
+                                                  """,
                                           schema = @Schema(type = SchemaType.ARRAY, implementation = String.class)),
                                   @Content(
                                           mediaType = MediaType.TEXT_PLAIN,
@@ -375,7 +380,7 @@ public class EventHashGeneratorResource {
                                   "Internal Server Error: Unable to generate Hash-ID as server encountered problem.",
                           content = @Content(schema = @Schema(implementation = ProblemResponseBody.class)))
           })
-  public Multi<String> generateEventHashIdsJSON(
+  public Multi<Map<String, String>> generateEventHashIdsJSON(
           @HeaderParam("Content-Type") final String contentType,
           @RequestBodySchema(EPCISDocument.class) final InputStream inputDocumentStream,
           @Parameter(
@@ -455,10 +460,17 @@ public class EventHashGeneratorResource {
           String ignoreFields,
           @DefaultValue("2.0.0")
           @QueryParam("cbvVersion")
-          String cbvVersion)
-          throws IOException {
+          String cbvVersion) {
     final AtomicBoolean first = new AtomicBoolean(true);
-    return getMulti(contentType, contentType.contains("application/xml")?inputDocumentStream:documentWrapperSupport.generateJsonDocumentWrapper(inputDocumentStream), hashAlgorithm, prehash, beautifyPreHash, ignoreFields, cbvVersion).map(
+    return Multi.createFrom().<String>emitter(em -> {
+      try {
+        Multi<Map<String, String>> m = getMulti(contentType, contentType.contains("application/xml")?inputDocumentStream:documentWrapperSupport.generateJsonDocumentWrapper(inputDocumentStream), hashAlgorithm, prehash, beautifyPreHash, ignoreFields, cbvVersion);
+        m.onCompletion().invoke(em::complete)
+                .subscribe().with(item -> item.values().forEach(em::emit), em::fail);
+      } catch (IOException e) {
+        em.fail(e);
+      }
+    }).map(
             s -> {
               if (first.get()) {
                 first.set(false);

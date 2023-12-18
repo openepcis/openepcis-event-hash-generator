@@ -343,7 +343,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-service-runner-${{matrix.label}}-${{env.GIT_TAG_NAME}}${{matrix.exe}}'
+          asset_name: 'openepcis-event-hash-generator-service-runner-${{env.GIT_TAG_NAME}}-${{matrix.label}}${{matrix.exe}}'
           asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner${{matrix.exe}}'
           asset_content_type: application/octet-stream
 
@@ -431,7 +431,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-cli-${{matrix.label}}-${{env.GIT_TAG_NAME}}${{matrix.exe}}'
+          asset_name: 'openepcis-event-hash-generator-cli-${{env.GIT_TAG_NAME}}-${{matrix.label}}${{matrix.exe}}'
           asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies${{matrix.exe}}'
           asset_content_type: application/octet-stream
 

@@ -39,6 +39,8 @@ quarkus:
   banner:
     path: "openepcis-banner.txt"
 
+  package:
+    type: "uber-jar"
 
 mp:
   openapi:

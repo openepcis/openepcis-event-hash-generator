@@ -222,14 +222,14 @@ public class HashGenerator {
         final File hashesFile =
             path.matches("^(https?)://.*$")
                 ? new File(path.substring(path.lastIndexOf("/") + 1).concat(HASHES_SUFFIX))
-                : new File(path.concat(HASHES_SUFFIX));
+                : new File(path.replaceAll("\\.[^.]*$", HASHES_SUFFIX));
         final Map<String, PrintStream> printStreamMap = new HashMap<>();
         printStreamMap.put(HASHES_SUFFIX, new PrintStream(hashesFile));
         if (Arrays.asList(hashAlgorithms).contains(PREHASH)) {
           final File prehashesFile =
                   path.matches("^(https?)://.*$")
                           ? new File(path.substring(path.lastIndexOf("/") + 1).concat(PREHASHES_SUFFIX))
-                          : new File(path.concat(PREHASHES_SUFFIX));
+                          : new File(path.replaceAll("\\.[^.]*$", PREHASHES_SUFFIX));
           printStreamMap.put(PREHASHES_SUFFIX, new PrintStream(prehashesFile));
         }
         return Optional.of(printStreamMap);

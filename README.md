@@ -1,7 +1,28 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Java CI](https://github.com/openepcis/openepcis-event-hash-generator/actions/workflows/maven-cli.yml/badge.svg)
 
 # openepcis-event-hash-generator
 Java library to generate event hash for EPCIS document/event in XML/JSON-LD format.
+
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Problem & Proposed Solution](#problem--proposed-solution)
+3. [Reactive Streams](#reactive-streams)
+4. [Hash Algorithm](#hash-algorithm)
+5. [CBV Versions](#cbv-versions)
+6. [Usage](#usage)
+    - [HashId Generation for XML document](#hashid-generation-for-xml-document)
+    - [HashId Generation for JSON/JSON-LD Document](#hashid-generation-for-jsonjson-ld-document)
+    - [Subscription logic](#subscription-logic)
+7. [Releases](#releases)
+    - [Release Builds](#release-builds)
+    - [Usage](#usage-1)
+8. [Related Projects for direct usage](#related-projects-for-direct-usage)
+    - [core library](#core-library)
+    - [command-line utility](#command-line-utility)
+    - [JARX-RS RESTful service bindings](#jarx-rs-restful-service-bindings)
+    - [Quarkus REST Application with OpenAPI support](#quarkus-rest-application-with-openapi-support)
+9. [References](#references)
 
 ### Introduction:
 

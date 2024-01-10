@@ -1,155 +1,171 @@
+# OpenEPCIS Event Hash Generator
+
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Java CI](https://github.com/openepcis/openepcis-event-hash-generator/actions/workflows/maven-cli.yml/badge.svg)
 
-# openepcis-event-hash-generator
-Java library to generate event hash for EPCIS document/event in XML/JSON-LD format.
+A Java library for generating event hashes for EPCIS documents/events in XML/JSON-LD format. EPCIS, a GS1 standard recognized by ISO, IEC, and GS1, enhances cooperation between trading partners by exchanging data on products. The OpenEPCIS Event Hash Generator helps avoid duplicate event storage due to issues like hardware malfunctions or human error, ensuring data uniqueness and integrity.
 
-# Table of Contents
-1. [Introduction](#introduction)
-2. [Problem & Proposed Solution](#problem--proposed-solution)
-3. [Reactive Streams](#reactive-streams)
-4. [Hash Algorithm](#hash-algorithm)
-5. [CBV Versions](#cbv-versions)
-6. [Usage](#usage)
-    - [HashId Generation for XML document](#hashid-generation-for-xml-document)
-    - [HashId Generation for JSON/JSON-LD Document](#hashid-generation-for-jsonjson-ld-document)
-    - [Subscription logic](#subscription-logic)
-7. [Releases](#releases)
-    - [Release Builds](#release-builds)
-    - [Usage](#usage-1)
-8. [Related Projects for direct usage](#related-projects-for-direct-usage)
-    - [core library](#core-library)
-    - [command-line utility](#command-line-utility)
-    - [JARX-RS RESTful service bindings](#jarx-rs-restful-service-bindings)
-    - [Quarkus REST Application with OpenAPI support](#quarkus-rest-application-with-openapi-support)
-9. [References](#references)
+## Table of Contents
+1. [Features](#features)
+2. [Running with Docker and Podman](#running-with-docker-and-podman)
+    - [JVM Variant](#jvm-variant)
+    - [Native Binary Variant](#native-binary-variant)
+3. [Running Native Binaries](#running-native-binaries)
+    - [Available Native Binaries](#available-native-binaries)
+        - [CLI Instructions](#1-cli-instructions)
+        - [REST Service Instructions](#2-rest-service-instructions)
+4. [Usage Examples](#usage-examples)
+    - [Generating Hash-Ids for XML Documents](#example-generating-hash-ids-for-xml-documents)
+    - [Generating Hash-Ids for JSON/JSON-LD Documents](#example-generating-hash-ids-for-jsonjson-ld-documents)
+    - [Using Subscription Logic with Reactive Streams](#example-using-subscription-logic-with-reactive-streams)
+5. [Releases](#releases)
+6. [Related Projects](#related-projects)
+7. [References](#references)
 
-### Introduction:
+## Features
 
-For various organizations to communicate with each other and control the flow of goods, there should be a common medium. EPCIS is a GS1 standard to improve cooperation between trading partners through a detailed exchange of data on physical or digital products. EPCIS is an ISO (International Organization for Standardization), IEC (International Electrotechnical Commission), and GS1 Standard that helps to generate and exchange the visibility data within an organization or across multiple organizations based on the business context. The organizations exchange information in the form of events. These events include information on what happened to object during that specific supply chain step.
+- **Reactive Streams**: Offers efficient processing of millions of events through non-blocking back pressure.
+- **Hash Algorithms**: Supports a wide range of algorithms including SHA, RSA, and MD5, catering to various security needs.
+- **CBV Versions**: Ensures compatibility with both CBV 2.0 and 2.1 versions, enhancing flexibility.
+- **Quarkus GraalVM Native Builds**: Dramatically reduces startup times and memory usage, ideal for cloud-native, microservices, and serverless architectures. Enables AOT compilation for creating lightweight, high-performance native executables.
 
-### Problem & Proposed Solution:
+## Running with Docker and Podman
 
-There are instances where the same events are transmitted to the repository more than once. This can be caused by malfunctioning hardware, poor implementations, or human mistake. Generally, organizations do not wish to store the same event within their repository, and they need a mechanism through which they can associate each event uniquely within the repository. Hence, the `OpenEPCIS Event Hash Generator` tool has been developed. This tool will generate unique Hash-IDs for each event using the information present within them.
+### JVM Variant
 
-The tool adheres to a predefined order for properties, and all data included in event is canonical. Therefore, it is always assured that the event will have the same Hash-Id and will be considered duplicate events even if they have the attributes in a different sequence or if they contain the information in URN/WebURI format. Organizations can benefit greatly from using this tool to maintain unique data in their repository and prevent confusion from several copies of the same event. Detailed information on the ordering of the elements and conversion of the value can be found here: https://github.com/RalphTro/epcis-event-hash-generator.
+Offers robust performance and portability across different platforms, harnessing the versatility of the Java Virtual Machine.
 
-### Reactive Streams:
+**Package URL:** [Event Hash Generator Service - JVM](https://github.com/openepcis/openepcis-event-hash-generator/pkgs/container/event-hash-generator-service)
 
-The tool makes use of the Reactive stream methodology. It is standard for asynchronous stream processing with a non-blocking back pressure approach which makes it simpler to
-navigate through hundreds of millions of events without degrading performance or memory. The Reactive stream technique, which is at the core of this application, allows us to
-handle hundreds of millions of events easily and effectively. It is crucial to process events along the entire supply chain as soon as possible while using the least amount of memory feasible. Using this approach, events in the EPCIS document are traversed one by one, and generated HashIds are returned to the calling function.
-
-### Hash Algorithm:
-
-Cryptographic hash functions are created via hashing algorithms. It is a mathematical formula that converts data of any size into a fixed-size hash. The goal of a hash function
-algorithm is to create a one-way function that is impossible to invert. Digital evolution has led to the development of a large number of hashing algorithms, some of the most
-well-known of which are as follows: Secure Hash Algorithm (SHA), Rivest-Shamir-Adleman (RSA), Message Digest 5 (MD5), etc. Currently, the tool supports the generation following Hash Ids: sha-224, 
-sha-256, sha-384, sha-512, sha3-224, sha3-256, and sha3-512.
-
-### CBV Versions:
-
-The current implementation facilitates the generation of Pre-Hash string and Hash-Id based on either `CBV 2.0` or `CBV 2.1` versions. CBV 2.1 introduces minor enhancements, including the immediate 
-appending of user extensions to the pre-hash string after the respective fields and the introduction of the sensorElementList keyword, etc. The resulting Hash ID indicates the corresponding CBV version, such as `ver=CBV2.0` or `ver=CBV2.1`. Users have the flexibility to specify the desired CBV version for Hash-Id generation. It is important to note that the generated Hash-Id may differ between CBV 2.0 and CBV 2.1 versions due to changes in ordering.
-
-### Usage:
-The Java methods for generating the HashIds are encapsulated within the class EventHashGenerator. The technique for XML documents is described below:
-
-If the users have EPCIS documents in XML format, then they can be provided as InputStream, which serves as the first parameter to the `fromXml` method, and the second parameter
-specifies the type of hash algorithm needed (by default sha-256 algorithm is used):
-
-#### HashId Generation for XML document
-```
-//Input EPCIS document/eventList as stream
-final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisDocument.xml");
-
-//Default constructor defaults to CBV 2.0: VERSION_2_0_0
-final EventHashGenerator eventHashGenerator = new EventHashGenerator();
-
-//Parameterized constructor for CBV 2.1: VERSION_2_1_0 or CBV 2.0: VERSION_2_0_0
-final EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
-
-//If only Hash-Ids are required
-final List<String> xmlHashIds = eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+#### Docker
+```bash
+docker pull ghcr.io/openepcis/event-hash-generator-service:latest
+docker run --rm -p 9000:9000 --name event-hash-generator-jvm ghcr.io/openepcis/event-hash-generator-service:latest
 ```
 
-If the users have the EPCIS documents in JSON/JSON-LD format, then they can be provided as InputStream, which serves as the first argument to the `fromJson` method, and the second
-parameter specifies the type of hash algorithm needed (by default sha-256 algorithm is used):
-
-#### HashId Generation for JSON/JSON-LD Document
-```
-//Input EPCIS document/eventList as stream
-final InputStream jsonStream  = getClass().getResourceAsStream("/JsonEpcisDocument.json");
-
-//Default constructor defaults to CBV 2.0: VERSION_2_0_0
-final EventHashGenerator eventHashGenerator = new EventHashGenerator();
-
-//Parameterized constructor for CBV 2.1: VERSION_2_1_0 or CBV 2.0: VERSION_2_0_0
-final EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
-
-//If only Hash-Ids are required
-final List<String> jsonHashIds = eventHashGenerator2_1.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+#### Podman
+```bash
+podman pull ghcr.io/openepcis/event-hash-generator-service:latest
+podman run --rm -p 9000:9000 --name event-hash-generator-jvm ghcr.io/openepcis/event-hash-generator-service:latest
 ```
 
-#### Subscription logic:
+### Native Binary Variant
 
-The generation of Hash Ids using the Reactive Streams approach is illustrated by the example below:
+Provides lightning-fast startup and reduced memory footprint, thanks to ahead-of-time compilation with GraalVM, perfect for high-performance and resource-constrained environments.
 
-If users have a large EPCIS document in XML or JSON/JSON-LD consisting of millions of events, they may supply it to the corresponding `fromXml` or `fromJson` of the EventHashGenerator class, as previously mentioned. Additionally, users can subscribe to the method so that they can print or utilize generated HashIds for additional processing as soon as they are generated and returned using the Reactive Stream approach. A simple illustration of how the HashIds may be printed using the subscription logic is shown in the following lines of code. In this simple example, when HashId is generated it is printed out to the console. By using this approach it is not required for the process to wait until all events are completed. Hence making this approach much faster and efficient.
+**Package URL:** [Event Hash Generator Service - Native](https://github.com/openepcis/openepcis-event-hash-generator/pkgs/container/event-hash-generator-service-native)
 
-#### HashId Generation using Subscription logic
+#### Docker
+```bash
+docker pull ghcr.io/openepcis/event-hash-generator-service-native:latest
+docker run --rm -p 9000:9000 --name event-hash-generator-native ghcr.io/openepcis/event-hash-generator-service-native:latest
 ```
-//Input EPCIS document/eventList as stream
-final InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisDocument.xml");
-final InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisDocument.json");
 
-//Default constructor defaults to CBV 2.0: VERSION_2_0_0
-final EventHashGenerator eventHashGenerator = new EventHashGenerator();
+#### Podman
+```bash
+podman pull ghcr.io/openepcis/event-hash-generator-service-native:latest
+podman run --rm -p 9000:9000 --name event-hash-generator-native ghcr.io/openepcis/event-hash-generator-service-native:latest
+```
 
-//Parameterized constructor for CBV 2.1: VERSION_2_1_0 or CBV 2.0: VERSION_2_0_0
-final EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);
+## Running Native Binaries
 
-//To beautify pre-hash string
-eventHashGenerator.prehashJoin("\\n");
+Native binaries are platform-specific compiled versions of software, optimized for enhanced performance on the designated operating system and architecture. The OpenEPCIS Event Hash Generator offers native binaries for various platforms, eliminating the need for a Java runtime environment.
 
-//Generate SHA-256 Hash-Ids and also pre-hash string
-final Multi<Map<String, String>> xmlEventHash = eventHashGenerator2_1.fromXml(xmlStream, "prehash", "sha-256");
+Find the latest versions of these binaries at: [Latest Release](https://github.com/openepcis/openepcis-event-hash-generator/releases/latest).
 
-//To display Pre-hash and Hash-Id
+### Available Native Binaries
+
+1. **CLI (Command Line Interface)**: Ideal for batch processing. It provides a range of command-line options for customized operation.
+2. **Service Runner**: Functions as a REST service on port 9000, with a Swagger UI accessible at `http://localhost:9000/q/swagger-ui/index.html`.
+
+### 1. CLI Instructions
+
+Replace `[platform]` and `[version]` with the appropriate platform (mac, windows, linux-amd64, linux-arm64) and version number:
+
+```bash
+# Usage example
+./openepcis-event-hash-generator-cli-[version]-[platform]
+```
+
+CLI Options:
+
+```bash
+usage: OpenEPCIS Event Hash Generator Utility: [options] file.. url.., -
+ -a,--algorithm <arg>        Hash Algorithm (e.g., sha-256).
+ -b,--batch                  Output hashes to a .hashes file.
+ -e,--enforce-format <arg>   Parse files as JSON or XML.
+ -h,--help                   Show options.
+ -j,--join <arg>             String to join the prehash string.
+ -p,--prehash                Output the prehash string.
+```
+
+### 2. REST Service Instructions
+
+Replace `[platform]` and `[version]` with the appropriate platform (mac, windows, linux-amd64, linux-arm64) and version number:
+
+```bash
+# Usage example
+./openepcis-event-hash-generator-service-runner-[version]-[platform]
+```
+![epcis-event-hash-generator-service-native.png](doc/epcis-event-hash-generator-service-native.png)
+
+The Swagger UI will be accessible at `http://localhost:9000/q/swagger-ui/index.html`.
+
+## Usage Examples
+
+Below are examples demonstrating how to integrate the OpenEPCIS Event Hash Generator into your Java application. These snippets illustrate the basic setup and usage for both XML and JSON/JSON-LD documents.
+
+### Example: Generating Hash-Ids for XML Documents
+
+```java
+// Initialize EventHashGenerator with the desired CBV version
+EventHashGenerator eventHashGenerator = new EventHashGenerator(); // Defaults to CBV 2.0
+EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0); // For CBV 2.1
+
+// Generate Hash-Ids from an XML document stream
+InputStream xmlStream = getClass().getResourceAsStream("/XmlEpcisDocument.xml");
+List<String> xmlHashIds = eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
+```
+
+### Example: Generating Hash-Ids for JSON/JSON-LD Documents
+
+```java
+// Initialize EventHashGenerator with the desired CBV version
+EventHashGenerator eventHashGenerator = new EventHashGenerator(); // Defaults to CBV 2.0
+EventHashGenerator eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0); // For CBV 2.1
+
+// Generate Hash-Ids from a JSON document stream
+InputStream jsonStream = getClass().getResourceAsStream("/JsonEpcisDocument.json");
+List<String> jsonHashIds = eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+```
+
+### Example: Using Subscription Logic with Reactive Streams
+
+This example shows how to utilize Reactive Streams for efficient and immediate processing of generated HashIds.
+
+```java
+// Use EventHashGenerator with Reactive Streams for on-the-fly processing of HashIds
+EventHashGenerator eventHashGenerator = new EventHashGenerator();
+Multi<Map<String, String>> xmlEventHash = eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256");
+
+// Subscribe to the stream to process each HashId as it's generated
 xmlEventHash.subscribe().with(xmlHash -> System.out.println(xmlHash.get("sha-256") + "\n" + xmlHash.get("prehash") + "\n\n"), failure -> System.out.println("XML HashId Generation Failed with " + failure));
-
-//Generate SHA-256 Hash-Ids and also pre-hash string
-final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256");
-
-//To display Pre-hash and Hash-Id
-jsonEventHash.subscribe().with(jsonHash -> System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash") + "\n\n"), failure -> System.out.println("JSON HashId Generation Failed with " + failure));
 ```
 
-### Releases
+## Releases
 
-#### Release Builds
+Stay updated with the newest features and improvements by downloading the latest version of the OpenEPCIS Event Hash Generator:
 
-The easiest and fastest way to try it out, is by downloading the jar or the native command line clients directly from the latest release:
+**Download the Latest Release**: [Click Here](https://github.com/openepcis/openepcis-event-hash-generator/releases/latest)
 
-[v0.9.4](https://github.com/openepcis/openepcis-event-hash-generator/releases/tag/v0.9.4)
+## Related Projects
 
-#### Usage
+- **Core Library**: [openepcis-event-hash-generator](core)
+- **Command-Line Utility**: [openepcis-event-hash-generator-cli](cli)
+- **RESTful Service Bindings**: [openepcis-event-hash-generator-rest-api](rest-api)
+- **Quarkus REST Application**: [openepcis-event-hash-generator-quarkus-app](quarkus-app)
 
-For a detailed description, check out the [command line client documentation](cli/README.md).
+## References
 
-### Related Projects for direct usage
+For detailed documentation on event hash generation and canonicalization, visit the [GitHub Repository](https://github.com/RalphTro/epcis-event-hash-generator).
 
-#### core library :
-[openepcis-event-hash-generator](core)
-
-#### command-line utility :
-[openepcis-event-hash-generator-cli](cli)
-
-#### JARX-RS RESTful service bindings
-[openepcis-event-hash-generator-rest-api](rest-api)
-
-#### Quarkus REST Application with OpenAPI support
-[openepcis-event-hash-generator-quarkus-app](quarkus-app)
-
-### References:
-For more information on Event Hash Generation, ordering of elements, or canonicalization, please refer to the detailed Documentation by Ralph Tröger: https://github.com/RalphTro/epcis-event-hash-generator.

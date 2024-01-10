@@ -68,7 +68,7 @@
         <dependency>
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-epc-digitallink-translator</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- Mutiny dependency for Reactive Streams -->

@@ -61,7 +61,7 @@ public class EventHashGeneratorResource {
   // Method to convert the input XML/JSON EPCIS Document into Hash Ids based on the event
   // information present in them.
   @Path("/generate/event-hash/document")
-  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
   @Produces({MediaType.APPLICATION_JSON})
   @RequestBody(
           description =
@@ -293,7 +293,7 @@ ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?v
 
   // API end point for the single/List of EPCIS event in JSON format.
   @Path("/generate/event-hash/events")
-  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
   @Produces({MediaType.APPLICATION_JSON})
   @RequestBody(
           description =
@@ -440,7 +440,7 @@ ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?v
 
 
   @Path("/generate/event-hash/events")
-  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
   @Produces({MediaType.TEXT_PLAIN})
   @POST
   public Multi<String> generateEventHashIdsText(

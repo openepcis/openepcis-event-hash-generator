@@ -145,7 +145,7 @@ public class EventHashGeneratorServlets {
                 if (accept.isEmpty()) {
                     return;
                 }
-                Optional<String> contentType = servletSupport.contentType(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML), accept.get(), req, resp);
+                Optional<String> contentType = servletSupport.contentType(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML), accept.get(), req, resp);
                 if (contentType.isEmpty()) {
                     return;
                 }

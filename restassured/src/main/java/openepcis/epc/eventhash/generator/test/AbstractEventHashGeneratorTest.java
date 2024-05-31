@@ -92,7 +92,7 @@ public abstract class AbstractEventHashGeneratorTest {
                             .assertThat()
                             .statusCode(200);
                     if (!INVALID_HASH_DOCS.stream().anyMatch(s -> xmlUrl.getFile().contains(s))) {
-                        Assertions.assertEquals(jsonResponse.body().asString(), xmlResponse.body().asString());
+                        Assertions.assertEquals(jsonResponse.body().asString(), xmlResponse.body().asString(), "JSON document" + url.getFile());
                     }
                 }
             } catch (IOException e) {

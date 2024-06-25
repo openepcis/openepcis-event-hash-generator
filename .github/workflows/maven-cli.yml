@@ -16,11 +16,11 @@ jobs:
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up GraalVM 21
+        uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '21'
+          distribution: 'graalvm-community'
           cache: maven
       - name: Install gpg secret key
         run: |
@@ -79,7 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner.jar'
+          asset_path: 'quarkus/quarkus-app/target/openepcis-event-hash-generator-service-runner.jar'
           asset_name: 'openepcis-event-hash-generator-service-${{env.GIT_TAG_NAME}}.jar'
           asset_content_type: application/java-archive
       - name: 'Upload Release CLI Asset'
@@ -139,11 +139,11 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up GraalVM 21
+        uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '21'
+          distribution: 'graalvm-community'
           cache: maven
 
       - name: "Prepare Build"
@@ -152,7 +152,7 @@ jobs:
 
       - name: "Build ${{matrix.platform}} native Image"
         run: |
-          mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -DskipTests -f ./quarkus-app/pom.xml \
+          mvn --no-transfer-progress --batch-mode -Pci-build package -Dnative -DskipTests -f ./quarkus/quarkus-app/pom.xml \
             -Dquarkus.native.container-build=true \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.name=event-hash-generator-service-native \
@@ -232,11 +232,11 @@ jobs:
         id: builder
         uses: docker/setup-buildx-action@v1
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up GraalVM 21
+        uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '21'
+          distribution: 'graalvm-community'
           cache: maven
 
       - name: "Prepare Build"
@@ -246,7 +246,7 @@ jobs:
       - name: "Build linux/amd64 Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
-            clean package -Pci-build -f ./quarkus-app/pom.xml \
+            clean package -Pci-build -f ./quarkus/quarkus-app/pom.xml \
             -Dquarkus.container-image.name=event-hash-generator-service \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.registry=ghcr.io \
@@ -258,7 +258,7 @@ jobs:
       - name: "Build linux/arm64 Image"
         run: |
           mvn --no-transfer-progress --batch-mode \
-            clean package -Pci-build -f ./quarkus-app/pom.xml \
+            clean package -Pci-build -f ./quarkus/quarkus-app/pom.xml \
             -Dquarkus.container-image.name=event-hash-generator-service \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.registry=ghcr.io \
@@ -290,7 +290,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', "macos-13", 'macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
@@ -298,8 +298,11 @@ jobs:
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
             exe: ""
+          - os: 'macos-13'
+            label: 'mac-x64'
+            exe: ""
           - os: 'macos-latest'
-            label: 'mac'
+            label: 'mac-arm'
             exe: ""
           - os: 'windows-latest'
             label: 'windows'
@@ -330,10 +333,10 @@ jobs:
         run: |
           echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
-      - name: Set up GraalVM
+      - name: Set up GraalVM 21
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'graalvm-community'
           native-image-job-reports: 'true'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -344,7 +347,7 @@ jobs:
 
       - name: "Build Native Quarkus Executable"
         run: |
-          mvn --no-transfer-progress --batch-mode clean package -Pnative -Pci-build -DskipTests -f ./quarkus-app/pom.xml
+          mvn --no-transfer-progress --batch-mode clean package -Pnative -Pci-build -DskipTests -f ./quarkus/quarkus-app/pom.xml
 
       - name: 'Release Native Quarkus Executable'
         if: success() && contains(github.ref, 'v')
@@ -355,7 +358,7 @@ jobs:
         with:
           upload_url: ${{env.UPLOAD_URL}}
           asset_name: 'openepcis-event-hash-generator-service-runner-${{env.GIT_TAG_NAME}}-${{matrix.label}}${{matrix.exe}}'
-          asset_path: 'quarkus-app/target/openepcis-event-hash-generator-service-runner${{matrix.exe}}'
+          asset_path: 'quarkus/quarkus-app/target/openepcis-event-hash-generator-service-runner${{matrix.exe}}'
           asset_content_type: application/octet-stream
 
   build-cli-native-executable:
@@ -363,7 +366,7 @@ jobs:
     needs: [build-jar-job]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', "macos-13", 'macos-latest', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
@@ -371,8 +374,11 @@ jobs:
           - os: 'ubuntu-22.04-arm64'
             label: 'linux-arm64'
             exe: ""
+          - os: 'macos-13'
+            label: 'mac-x64'
+            exe: ""
           - os: 'macos-latest'
-            label: 'mac'
+            label: 'mac-arm'
             exe: ""
           - os: 'windows-latest'
             label: 'windows'
@@ -382,13 +388,11 @@ jobs:
       - name: checkout from git
         uses: actions/checkout@v3
 
-      - name: Set up GraalVM
+      - name: Set up GraalVM 21
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'graalvm-community'
-          native-image-job-reports: 'true'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Get Version Number'
         env:

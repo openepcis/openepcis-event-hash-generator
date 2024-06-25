@@ -67,17 +67,16 @@
         <url>https://github.com/openepcis/openepcis-event-hash-generator/tree/main</url>
     </scm>
 
-    <properties>
-        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-    </properties>
-
     <modules>
         <module>core</module>
         <module>cli</module>
         <module>restassured</module>
         <module>rest-api</module>
         <module>servlet-api</module>
+        <module>quarkus</module>
+        <!--
         <module>quarkus-app</module>
+        -->
     </modules>
 
     <dependencyManagement>
@@ -86,6 +85,11 @@
             <dependency>
                 <groupId>io.openepcis</groupId>
                 <artifactId>openepcis-event-hash-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-event-hash-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -112,10 +116,32 @@
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
+
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-openepcis-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-openepcis-model-deployment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- Add test resources as dependencies -->
             <dependency>
                 <groupId>io.openepcis</groupId>
                 <artifactId>openepcis-test-resources</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-test-resources</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.openepcis.quarkus</groupId>
+                <artifactId>quarkus-test-resources-deployment</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

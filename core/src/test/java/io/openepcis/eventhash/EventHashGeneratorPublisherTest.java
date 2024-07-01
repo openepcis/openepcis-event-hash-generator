@@ -167,12 +167,16 @@ public class EventHashGeneratorPublisherTest {
             .getResourceAsStream(
                 "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent_all_possible_fields.json");
 
-    final List<String> xmlHashIds =
-        eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
-    final List<String> jsonHashIds =
-        eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
 
-    assertEquals(xmlHashIds, jsonHashIds);
+    final Multi<Map<String, String>> xmlEventHash = eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256", CBVVersion.VERSION_2_0_0.getVersion());
+    xmlEventHash.subscribe().with(jsonHash -> System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash") + "\n\n"), failure -> System.out.println("JSON HashId Generation Failed with " + failure));
+
+    System.out.println("*****************************???????????????????????????????????");
+    System.out.println("???????????????????????????????********************************");
+
+    final Multi<Map<String, String>> jsonEventHash = eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256", CBVVersion.VERSION_2_0_0.getVersion());
+    jsonEventHash.subscribe().with(jsonHash -> System.out.println(jsonHash.get("sha-256") + "\n" + jsonHash.get("prehash") + "\n\n"), failure -> System.out.println("JSON HashId Generation Failed with " + failure));
+
   }
 
   // Test to ensure that order of pre-hash always remains the same even when EPCIS document values

@@ -74,6 +74,7 @@ public class ConstantEventHashInfo {
               EPCIS.CORRECTIVE_EVENT_ID,
               EPCIS.RECORD_TIME,
               EPCIS.EVENT_ID,
+              EPCIS.CERTIFICATION_INFO,
               EPCIS.CONTEXT,
               "rdfs:comment",
               "#text",

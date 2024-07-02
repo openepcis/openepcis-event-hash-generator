@@ -58,7 +58,7 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       if (result == 0 && o1Index == -1 && o2Index == -1) {
         // Check if the element is of user extension
         if ((!TemplateNodeMap.isEpcisField(o1) && !TemplateNodeMap.isEpcisField(o2))
-            || (contextNode.isIlmdOrCertificationPath(o1) && contextNode.isIlmdOrCertificationPath(o2))) {
+            || (contextNode.isIlmdPath(o1) && contextNode.isIlmdPath(o2))) {
           // For user extensions consider the namespace and then sort
           return sortUserExtensions(o1, o2);
         } else if (o1.getChildren() != null && o2.getChildren() != null) {

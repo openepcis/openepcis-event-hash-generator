@@ -185,7 +185,7 @@ public class ContextNode {
 
       // For ILMD fields make call to userExtensions formatter and for all other fields make call to
       // normal field formatter.
-      if (Boolean.TRUE.equals(isIlmdPath(this))) {
+      if (Boolean.TRUE.equals(isIlmdOrCertificationPath(this)) || Boolean.TRUE.equals(isIlmdOrCertificationPath(this))) {
         preHashBuilder.append(userExtensionsFormatter(name, value, namespaces));
       } else {
         // Add the values for direct name and value based on the field
@@ -226,7 +226,7 @@ public class ContextNode {
     // normal field formatter.
     String fieldName = "";
 
-    if (Boolean.TRUE.equals(isIlmdPath(node))) {
+    if (Boolean.TRUE.equals(isIlmdOrCertificationPath(node))) {
       if(!isArrayNode(node)){
         fieldName = userExtensionsFormatter(node.getName(), node.getValue(), namespaces);
       }
@@ -258,7 +258,7 @@ public class ContextNode {
 
   // Private function to store the path of the elements including the parents. Added to find the
   // ilmd elements and accordingly add the formatted ILMD elements
-  protected Boolean isIlmdPath(final ContextNode node) {
+  protected Boolean isIlmdOrCertificationPath(final ContextNode node) {
     // Special handling for the ILMD fields as it contains User Extensions like elements but should
     // appear before User-Extensions as well known fields of EPCIS standard.
     final Deque<String> path = new ArrayDeque<>();
@@ -269,7 +269,7 @@ public class ContextNode {
       path.push(fieldParent.getName());
       fieldParent = fieldParent.getParent();
     }
-    return path.contains(EPCIS.ILMD);
+    return path.contains(EPCIS.ILMD) || path.contains(EPCIS.CERTIFICATION_INFO);
   }
 
   // private method to find the parent of the element which can be later used to convert the Bare

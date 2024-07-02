@@ -157,6 +157,7 @@ public class EventHashGenerator {
     if (item.get(EPCIS.CONTEXT) != null) {
       final Iterator<JsonNode> contextElements = item.get(EPCIS.CONTEXT).elements();
       contextHeader.put(EPCIS.CBV_MDA, EPCIS.CBV_MDA_URN);
+      contextHeader.put(EPCIS.GS1, EPCIS.GS1_VOC_DOMAIN);
       while (contextElements.hasNext()) {
         final Iterator<Map.Entry<String, JsonNode>> contextFields = contextElements.next().fields();
         while (contextFields.hasNext()) {

@@ -185,7 +185,7 @@ public class ContextNode {
 
       // For ILMD fields make call to userExtensions formatter and for all other fields make call to
       // normal field formatter.
-      if (Boolean.TRUE.equals(isIlmdOrCertificationPath(this)) || Boolean.TRUE.equals(isIlmdOrCertificationPath(this))) {
+      if (Boolean.TRUE.equals(isIlmdOrCertificationPath(this))) {
         preHashBuilder.append(userExtensionsFormatter(name, value, namespaces));
       } else {
         // Add the values for direct name and value based on the field

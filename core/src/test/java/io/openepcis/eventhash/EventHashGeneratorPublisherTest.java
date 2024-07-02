@@ -158,20 +158,20 @@ public class EventHashGeneratorPublisherTest {
 
     final InputStream xmlStream =
         getClass()
-                .getClassLoader()
-                .getResourceAsStream(
-                        "2.0/EPCIS/XML/Capture/Documents/AggregationEvent_all_possible_fields.xml");
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/XML/Capture/Documents/AggregationEvent_all_possible_fields.xml");
     final InputStream jsonStream =
-            getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(
-                            "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent_all_possible_fields.json");
-
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+                "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent_all_possible_fields.json");
 
     final List<String> xmlHashIds =
             eventHashGenerator.fromXml(xmlStream, "sha-256").subscribe().asStream().toList();
     final List<String> jsonHashIds =
             eventHashGenerator.fromJson(jsonStream, "sha-256").subscribe().asStream().toList();
+
     assertEquals(xmlHashIds, jsonHashIds);
   }
 

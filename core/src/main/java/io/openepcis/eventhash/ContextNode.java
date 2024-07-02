@@ -190,7 +190,7 @@ public class ContextNode {
 
       // For ILMD fields make call to userExtensions formatter and for all other fields make call to
       // normal field formatter.
-      if (Boolean.TRUE.equals(isIlmdPath(this)) || Boolean.TRUE.equals(isIlmdPath(this))) {
+      if (Boolean.TRUE.equals(isIlmdPath(this))) {
         preHashBuilder.append(userExtensionsFormatter(name, value, namespaces));
       } else {
         // Add the values for direct name and value based on the field
@@ -274,7 +274,7 @@ public class ContextNode {
       path.push(fieldParent.getName());
       fieldParent = fieldParent.getParent();
     }
-    return path.contains(EPCIS.ILMD) || path.contains(EPCIS.CERTIFICATION_INFO);
+    return path.contains(EPCIS.ILMD);
   }
 
   // private method to find the parent of the element which can be later used to convert the Bare

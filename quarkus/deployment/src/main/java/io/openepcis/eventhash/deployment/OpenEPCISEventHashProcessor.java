@@ -41,7 +41,7 @@ public class OpenEPCISEventHashProcessor {
   @BuildStep
   HealthBuildItem addHealthCheck(OpenEPCISBuildTimeConfig buildTimeConfig) {
     return new HealthBuildItem(EventHashHealthCheck.class.getName(),
-            buildTimeConfig.healthEnabled);
+            buildTimeConfig.healthEnabled());
   }
 
 }

@@ -45,7 +45,7 @@
         <!-- REST assured as dependencies for testing -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

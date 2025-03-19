@@ -23,5 +23,4 @@ public class EventHashException extends RuntimeException {
   public EventHashException(String msg) {
     super(msg);
   }
-
 }

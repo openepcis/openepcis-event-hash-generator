@@ -30,7 +30,6 @@ import java.util.*;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import javax.xml.parsers.SAXParserFactory;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,18 +47,17 @@ public class EventHashGenerator {
     }
   }
 
-  /**
-   *  Default constructor which generates the pre-hash string based on CBV 2.0
-   */
-  public EventHashGenerator(){
+  /** Default constructor which generates the pre-hash string based on CBV 2.0 */
+  public EventHashGenerator() {
     this.cbvVersion = CBVVersion.VERSION_2_0_0;
   }
 
   /**
-   *  Constructor which generates the pre-hash string based on provided CBV version
+   * Constructor which generates the pre-hash string based on provided CBV version
+   *
    * @param cbvVersion required CBV version that needs to be used for pre-hash string generation.
    */
-  public EventHashGenerator(final CBVVersion cbvVersion){
+  public EventHashGenerator(final CBVVersion cbvVersion) {
     this.cbvVersion = cbvVersion != null ? cbvVersion : CBVVersion.VERSION_2_0_0;
   }
 
@@ -149,7 +147,7 @@ public class EventHashGenerator {
    * @throws IOException reading of JSON file may throw exception
    */
   public Multi<Map<String, String>> fromJson(
-    final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
+      final InputStream jsonStream, final String... hashAlgorithms) throws IOException {
     return fromJson(jsonStream, new HashMap<>(), hashAlgorithms);
   }
 
@@ -253,6 +251,7 @@ public class EventHashGenerator {
       final String hashAlgorithm) {
     return internalFromObjectNode(String.class, objectNode, contextHeader, hashAlgorithm);
   }
+
   /**
    * Generate reactive Multi stream of mapped hashes from single ObjectNode
    *
@@ -311,8 +310,7 @@ public class EventHashGenerator {
       final Map<String, String> contextHeader,
       final String... hashAlgorithms)
       throws IOException {
-    final Publisher publisher =
-        new ObjectNodePublisher(jsonStream);
+    final Publisher publisher = new ObjectNodePublisher(jsonStream);
     return internalFromPublisher(cls, publisher, contextHeader, hashAlgorithms);
   }
 
@@ -324,7 +322,9 @@ public class EventHashGenerator {
         if (hashAlgorithms.length != 1) {
           throw new EventHashException("only one single algorithm allowed for type String");
         }
-        return (T) HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithms[0], this.cbvVersion);
+        return (T)
+            HashIdGenerator.generateHashId(
+                s.replaceAll("[\n\r]", ""), hashAlgorithms[0], this.cbvVersion);
       }
       final Map<String, String> map = new HashMap<>();
       for (final String hashAlgorithm : hashAlgorithms) {
@@ -333,7 +333,8 @@ public class EventHashGenerator {
         } else {
           map.put(
               hashAlgorithm,
-              HashIdGenerator.generateHashId(s.replaceAll("[\n\r]", ""), hashAlgorithm, this.cbvVersion));
+              HashIdGenerator.generateHashId(
+                  s.replaceAll("[\n\r]", ""), hashAlgorithm, this.cbvVersion));
         }
       }
       return (T) map;

@@ -90,6 +90,10 @@
             <groupId>io.openepcis</groupId>
             <artifactId>openepcis-event-hash-generator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
 
     </dependencies>
 

@@ -162,54 +162,60 @@ public class HashGenerator {
     System.exit(0);
   }
 
-  private static void process(String path, CommandLine cmd, boolean batchMode, String[] hashAlgorithms) throws IOException {
-    final String type = !cmd.hasOption("e") && path.toLowerCase().endsWith(".xml")?TYPE_XML:cmd.hasOption("e") ? cmd.getOptionValue("e").toLowerCase() : TYPE_JSON;
+  private static void process(
+      String path, CommandLine cmd, boolean batchMode, String[] hashAlgorithms) throws IOException {
+    final String type =
+        !cmd.hasOption("e") && path.toLowerCase().endsWith(".xml")
+            ? TYPE_XML
+            : cmd.hasOption("e") ? cmd.getOptionValue("e").toLowerCase() : TYPE_JSON;
 
     // Check if the path contains the http/https if so then make remote request call
     if (path.matches("^(https?)://.*$")) {
-      EXECUTOR_SERVICE.execute(() -> {
-        HttpEntity httpEntity = null;
-        final Optional<Map<String, PrintStream>> printStreamMap =
+      EXECUTOR_SERVICE.execute(
+          () -> {
+            HttpEntity httpEntity = null;
+            final Optional<Map<String, PrintStream>> printStreamMap =
                 createPrintWriterMap(path, batchMode, hashAlgorithms);
-        try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
-          httpEntity = httpClient.execute(new HttpGet(path)).getEntity();
-          runHashGenerator(
+            try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
+              httpEntity = httpClient.execute(new HttpGet(path)).getEntity();
+              runHashGenerator(
                   type, httpEntity.getContent(), hashAlgorithms, createConsumer(printStreamMap));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        } finally {
-          if (httpEntity != null) {
-            EntityUtils.consumeQuietly(httpEntity);
-          }
-          if (printStreamMap.isPresent()) {
-            for (PrintStream printStream : printStreamMap.get().values()) {
-              printStream.flush();
-              printStream.close();
-            }
-          }
-        }
-      });
-    } else {
-      for (final File f : locateFiles(path)) {
-          if (f.isFile()) {
-            EXECUTOR_SERVICE.execute(() -> {
-              final Optional<Map<String, PrintStream>> printStreamMap =
-                      createPrintWriterMap(f.getPath(), batchMode, hashAlgorithms);
-              try {
-                runHashGenerator(
-                        type, new FileInputStream(f), hashAlgorithms, createConsumer(printStreamMap));
-              } catch (IOException e) {
-                throw new RuntimeException(e);
-              } finally {
-                if (printStreamMap.isPresent()) {
-                  for (PrintStream printStream : printStreamMap.get().values()) {
-                    printStream.flush();
-                    printStream.close();
-                  }
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            } finally {
+              if (httpEntity != null) {
+                EntityUtils.consumeQuietly(httpEntity);
+              }
+              if (printStreamMap.isPresent()) {
+                for (PrintStream printStream : printStreamMap.get().values()) {
+                  printStream.flush();
+                  printStream.close();
                 }
               }
-            });
-          }
+            }
+          });
+    } else {
+      for (final File f : locateFiles(path)) {
+        if (f.isFile()) {
+          EXECUTOR_SERVICE.execute(
+              () -> {
+                final Optional<Map<String, PrintStream>> printStreamMap =
+                    createPrintWriterMap(f.getPath(), batchMode, hashAlgorithms);
+                try {
+                  runHashGenerator(
+                      type, new FileInputStream(f), hashAlgorithms, createConsumer(printStreamMap));
+                } catch (IOException e) {
+                  throw new RuntimeException(e);
+                } finally {
+                  if (printStreamMap.isPresent()) {
+                    for (PrintStream printStream : printStreamMap.get().values()) {
+                      printStream.flush();
+                      printStream.close();
+                    }
+                  }
+                }
+              });
+        }
       }
     }
   }
@@ -226,9 +232,9 @@ public class HashGenerator {
         printStreamMap.put(HASHES_SUFFIX, new PrintStream(hashesFile));
         if (Arrays.asList(hashAlgorithms).contains(PREHASH)) {
           final File prehashesFile =
-                  path.matches("^(https?)://.*$")
-                          ? new File(path.substring(path.lastIndexOf("/") + 1).concat(PREHASHES_SUFFIX))
-                          : new File(path.replaceAll("\\.[^.]*$", PREHASHES_SUFFIX));
+              path.matches("^(https?)://.*$")
+                  ? new File(path.substring(path.lastIndexOf("/") + 1).concat(PREHASHES_SUFFIX))
+                  : new File(path.replaceAll("\\.[^.]*$", PREHASHES_SUFFIX));
           printStreamMap.put(PREHASHES_SUFFIX, new PrintStream(prehashesFile));
         }
         return Optional.of(printStreamMap);
@@ -292,10 +298,10 @@ public class HashGenerator {
       final InputStream xmlStream,
       final String[] hashAlgorithms,
       Consumer<? super Map<String, String>> consumer) {
-      createEventHashGenerator()
-              .fromXml(xmlStream, hashAlgorithms)
-              .subscribe()
-              .with(consumer, HashGenerator::fail);
+    createEventHashGenerator()
+        .fromXml(xmlStream, hashAlgorithms)
+        .subscribe()
+        .with(consumer, HashGenerator::fail);
   }
 
   // Private method to generate Hash Ids for the EPCIS events in JSON/JSON-LD format.
@@ -304,10 +310,10 @@ public class HashGenerator {
       final String[] hashAlgorithms,
       Consumer<? super Map<String, String>> consumer)
       throws IOException {
-        createEventHashGenerator()
-                .fromJson(jsonStream, hashAlgorithms)
-                .subscribe()
-                .with(consumer, HashGenerator::fail);
+    createEventHashGenerator()
+        .fromJson(jsonStream, hashAlgorithms)
+        .subscribe()
+        .with(consumer, HashGenerator::fail);
   }
 
   private static EventHashGenerator createEventHashGenerator() {

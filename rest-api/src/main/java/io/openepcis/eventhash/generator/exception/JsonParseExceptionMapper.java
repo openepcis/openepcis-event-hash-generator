@@ -25,10 +25,12 @@ import org.jboss.resteasy.reactive.RestResponse;
 @Provider
 public class JsonParseExceptionMapper implements ExceptionMapper<JsonParseException> {
 
-    @Override
-    public Response toResponse(JsonParseException exception) {
-        return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
-                .entity(ProblemResponseBody.fromException(exception, RestResponse.Status.UNSUPPORTED_MEDIA_TYPE))
-                .build();
-    }
+  @Override
+  public Response toResponse(JsonParseException exception) {
+    return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+        .entity(
+            ProblemResponseBody.fromException(
+                exception, RestResponse.Status.UNSUPPORTED_MEDIA_TYPE))
+        .build();
+  }
 }

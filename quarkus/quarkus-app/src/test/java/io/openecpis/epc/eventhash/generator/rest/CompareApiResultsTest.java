@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.equalTo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.openepcis.eventhash.generator.resource.EventHashGeneratorResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -31,8 +32,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
-
-import io.openepcis.eventhash.generator.resource.EventHashGeneratorResource;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -57,45 +56,45 @@ public class CompareApiResultsTest {
     return basePath() + "/generate/event-hash/events";
   }
 
-
-  private static final String[][] DOCUMENT_TEST_DATA = new String[][] {
-      {
-        "2.0/EPCIS/XML/Capture/Documents/AggregationEvent.xml",
-        "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent.json"
-      },
-      {
-        "2.0/EPCIS/XML/Capture/Documents/Combination_of_different_event.xml",
-        "2.0/EPCIS/JSON/Capture/Documents/Combination_of_different_event.json"
-      },
-      {
-        "2.0/EPCIS/XML/Capture/Documents/SensorData_with_combined_events.xml",
-        "2.0/EPCIS/JSON/Capture/Documents/SensorData_with_combined_events.json"
-      },
-      {
-        "2.0/EPCIS/XML/Capture/Documents/TransformationEvent.xml",
-        "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent.json"
-      },
-      {
-        "2.0/EPCIS/XML/Capture/Documents/Namespaces_at_different_level.xml",
-        "2.0/EPCIS/JSON/Capture/Documents/Namespaces_at_different_level.json"
-      }
-    };
+  private static final String[][] DOCUMENT_TEST_DATA =
+      new String[][] {
+        {
+          "2.0/EPCIS/XML/Capture/Documents/AggregationEvent.xml",
+          "2.0/EPCIS/JSON/Capture/Documents/AggregationEvent.json"
+        },
+        {
+          "2.0/EPCIS/XML/Capture/Documents/Combination_of_different_event.xml",
+          "2.0/EPCIS/JSON/Capture/Documents/Combination_of_different_event.json"
+        },
+        {
+          "2.0/EPCIS/XML/Capture/Documents/SensorData_with_combined_events.xml",
+          "2.0/EPCIS/JSON/Capture/Documents/SensorData_with_combined_events.json"
+        },
+        {
+          "2.0/EPCIS/XML/Capture/Documents/TransformationEvent.xml",
+          "2.0/EPCIS/JSON/Capture/Documents/TransformationEvent.json"
+        },
+        {
+          "2.0/EPCIS/XML/Capture/Documents/Namespaces_at_different_level.xml",
+          "2.0/EPCIS/JSON/Capture/Documents/Namespaces_at_different_level.json"
+        }
+      };
 
   private static final String[][] EVENTS_TEST_DATA =
-    new String[][] {
-      {
-        "2.0/EPCIS/XML/Capture/Events/AggregationEvent.xml",
-        "2.0/EPCIS/JSON/Capture/Events/AggregationEvent.json"
-      },
-      {
-        "2.0/EPCIS/XML/Capture/Events/AssociationEvent.xml",
-        "2.0/EPCIS/JSON/Capture/Events/AssociationEvent.json"
-      },
-      {
-        "2.0/EPCIS/XML/Capture/Events/TransformationEvent.xml",
-        "2.0/EPCIS/JSON/Capture/Events/TransformationEvent.json"
-      }
-    };
+      new String[][] {
+        {
+          "2.0/EPCIS/XML/Capture/Events/AggregationEvent.xml",
+          "2.0/EPCIS/JSON/Capture/Events/AggregationEvent.json"
+        },
+        {
+          "2.0/EPCIS/XML/Capture/Events/AssociationEvent.xml",
+          "2.0/EPCIS/JSON/Capture/Events/AssociationEvent.json"
+        },
+        {
+          "2.0/EPCIS/XML/Capture/Events/TransformationEvent.xml",
+          "2.0/EPCIS/JSON/Capture/Events/TransformationEvent.json"
+        }
+      };
 
   @Test
   void testDocuments() throws IOException {
@@ -143,7 +142,8 @@ public class CompareApiResultsTest {
       throws IOException {
     final Response xmlResponse =
         given()
-            .contentType(ContentType.XML).accept(ContentType.JSON)
+            .contentType(ContentType.XML)
+            .accept(ContentType.JSON)
             .body(
                 IOUtils.toString(
                     Objects.requireNonNull(
@@ -160,7 +160,12 @@ public class CompareApiResultsTest {
     jsonArray.add(objectNode);
 
     final Response jsonResponse =
-        given().contentType(ContentType.JSON).accept(ContentType.JSON).body(jsonArray).when().post(eventListEventHashAPI());
+        given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .body(jsonArray)
+            .when()
+            .post(eventListEventHashAPI());
 
     // Compare response bodies
     xmlResponse.then().statusCode(200);

@@ -25,16 +25,19 @@ import org.eclipse.microprofile.health.Readiness;
 @ApplicationScoped
 public class EventHashHealthCheck implements HealthCheck {
 
-    private final EventHashGeneratorProducer eventHashGeneratorProducer;
+  private final EventHashGeneratorProducer eventHashGeneratorProducer;
 
-    public EventHashHealthCheck(final EventHashGeneratorProducer eventHashGeneratorProducer) {
-        this.eventHashGeneratorProducer = eventHashGeneratorProducer;
-    }
+  public EventHashHealthCheck(final EventHashGeneratorProducer eventHashGeneratorProducer) {
+    this.eventHashGeneratorProducer = eventHashGeneratorProducer;
+  }
 
-    @Override
-    public HealthCheckResponse call() {
-        HealthCheckResponseBuilder builder = HealthCheckResponse.named("OpenEPCIS Event Hash Generator health check").up();
-        builder.up().withData("eventHashGeneratorProducer", eventHashGeneratorProducer.getClass().getName());
-        return builder.build();
-    }
+  @Override
+  public HealthCheckResponse call() {
+    HealthCheckResponseBuilder builder =
+        HealthCheckResponse.named("OpenEPCIS Event Hash Generator health check").up();
+    builder
+        .up()
+        .withData("eventHashGeneratorProducer", eventHashGeneratorProducer.getClass().getName());
+    return builder.build();
+  }
 }

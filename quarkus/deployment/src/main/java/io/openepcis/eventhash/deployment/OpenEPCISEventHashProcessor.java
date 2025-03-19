@@ -27,7 +27,6 @@ public class OpenEPCISEventHashProcessor {
 
   private static final String FEATURE = "openepcis-event-hash";
 
-
   @BuildStep
   FeatureBuildItem feature() {
     return new FeatureBuildItem(FEATURE);
@@ -40,8 +39,7 @@ public class OpenEPCISEventHashProcessor {
 
   @BuildStep
   HealthBuildItem addHealthCheck(OpenEPCISBuildTimeConfig buildTimeConfig) {
-    return new HealthBuildItem(EventHashHealthCheck.class.getName(),
-            buildTimeConfig.healthEnabled());
+    return new HealthBuildItem(
+        EventHashHealthCheck.class.getName(), buildTimeConfig.healthEnabled());
   }
-
 }

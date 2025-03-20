@@ -72,7 +72,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-health-deployment</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-swagger-ui-deployment</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.openepcis.quarkus</groupId>
             <artifactId>quarkus-event-hash-generator</artifactId>

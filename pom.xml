@@ -145,19 +145,6 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- Eclipse microprofile OpenAPI support -->
-            <dependency>
-                <groupId>org.eclipse.microprofile.openapi</groupId>
-                <artifactId>microprofile-openapi-api</artifactId>
-                <version>4.0.2</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.microprofile.context-propagation</groupId>
-                <artifactId>microprofile-context-propagation-api</artifactId>
-                <version>1.3</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>

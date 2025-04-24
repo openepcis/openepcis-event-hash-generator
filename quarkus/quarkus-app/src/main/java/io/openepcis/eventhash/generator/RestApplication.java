@@ -41,7 +41,7 @@ public class RestApplication extends Application {
   @Produces
   public JsonFactory createJsonFactory() {
     final ObjectMapper objectMapper =
-            new ObjectMapper(); // .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+        new ObjectMapper(); // .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     return new JsonFactory().setCodec(objectMapper);
   }
 

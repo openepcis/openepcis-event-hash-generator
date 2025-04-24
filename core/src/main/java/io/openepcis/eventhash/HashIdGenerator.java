@@ -29,7 +29,8 @@ import lombok.NoArgsConstructor;
 public class HashIdGenerator {
 
   // Method which accepts the pre-hash string for which SHA-256 hash-id needs to be created.
-  public static String generateHashId(final String preHashString, final String hashAlgorithm, final CBVVersion cbvVersion)
+  public static String generateHashId(
+      final String preHashString, final String hashAlgorithm, final CBVVersion cbvVersion)
       throws NoSuchAlgorithmException {
     // Create the StringBuilder to append prefix, hash and suffix according to required EPCIS
     // standard.
@@ -115,8 +116,9 @@ public class HashIdGenerator {
       }
     }
 
-    return hashId.append("?ver=")
-            .append(CBVVersion.VERSION_2_0_0.equals(cbvVersion) ? "CBV2.0" : "CBV2.1")
-            .toString();
+    return hashId
+        .append("?ver=")
+        .append(CBVVersion.VERSION_2_0_0.equals(cbvVersion) ? "CBV2.0" : "CBV2.1")
+        .toString();
   }
 }

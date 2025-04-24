@@ -22,23 +22,22 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 
 public class CDITestProvider {
-    final ObjectMapper objectMapper =
-            new ObjectMapper(); // .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+  final ObjectMapper objectMapper =
+      new ObjectMapper(); // .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
 
-    @Produces
-    @RequestScoped
-    public EventHashGenerator createEventHashGenerator() {
-        return new EventHashGenerator();
-    }
+  @Produces
+  @RequestScoped
+  public EventHashGenerator createEventHashGenerator() {
+    return new EventHashGenerator();
+  }
 
-    @Produces
-    public JsonFactory createJsonFactory() {
-        return new JsonFactory().setCodec(objectMapper);
-    }
+  @Produces
+  public JsonFactory createJsonFactory() {
+    return new JsonFactory().setCodec(objectMapper);
+  }
 
-    @Produces
-    ObjectMapper objectMapper() {
-        return objectMapper;
-    }
-
+  @Produces
+  ObjectMapper objectMapper() {
+    return objectMapper;
+  }
 }

@@ -18,6 +18,7 @@ package io.openecpis.epc.eventhash.generator.rest;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.openepcis.eventhash.generator.resource.EventHashGeneratorResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -28,8 +29,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-
-import io.openepcis.eventhash.generator.resource.EventHashGeneratorResource;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.Test;
@@ -48,6 +47,7 @@ public class RestEndpointTest {
   private String documentEventHashAPI() {
     return basePath() + "/generate/event-hash/document";
   }
+
   @Test
   public void swaggerUITest() {
     RestAssured.when()
@@ -104,7 +104,7 @@ public class RestEndpointTest {
     final Response xmlResponse =
         given()
             .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+            .accept(ContentType.JSON)
             .body(
                 IOUtils.toString(
                     Objects.requireNonNull(

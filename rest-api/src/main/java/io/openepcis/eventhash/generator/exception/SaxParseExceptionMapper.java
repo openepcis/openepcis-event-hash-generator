@@ -25,10 +25,12 @@ import org.xml.sax.SAXParseException;
 @Provider
 public class SaxParseExceptionMapper implements ExceptionMapper<SAXParseException> {
 
-    @Override
-    public Response toResponse(SAXParseException exception) {
-        return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
-            .entity(ProblemResponseBody.fromException(exception, RestResponse.Status.UNSUPPORTED_MEDIA_TYPE))
-                .build();
-    }
+  @Override
+  public Response toResponse(SAXParseException exception) {
+    return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+        .entity(
+            ProblemResponseBody.fromException(
+                exception, RestResponse.Status.UNSUPPORTED_MEDIA_TYPE))
+        .build();
+  }
 }

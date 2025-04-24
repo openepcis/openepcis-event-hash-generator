@@ -23,7 +23,7 @@
     <parent>
         <groupId>io.openepcis.quarkus</groupId>
         <artifactId>quarkus-event-hash-generator-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>999-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -72,6 +72,14 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-health-deployment</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-swagger-ui-deployment</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.openepcis.quarkus</groupId>
@@ -85,7 +93,6 @@
             <groupId>io.openepcis.quarkus</groupId>
             <artifactId>quarkus-test-resources-deployment</artifactId>
         </dependency>
-
 
         <!-- Test dependencies -->
         <dependency>

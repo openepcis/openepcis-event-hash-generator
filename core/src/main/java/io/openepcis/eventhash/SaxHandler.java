@@ -23,13 +23,13 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Setter;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class SaxHandler extends DefaultHandler {
-
   // Variables needed to store the required information during the parsing of the XML document for
   // every EPCIS event.
   private final Deque<String> path = new ArrayDeque<>();
@@ -54,14 +54,12 @@ public class SaxHandler extends DefaultHandler {
       currentAttributes = new HashMap<>();
 
       // If the XML tag contains the Namespaces or attributes then add to respective Namespaces Map
-      // or
-      // Attributes Map.
+      // or Attributes Map.
       if (attributes.getLength() > 0) {
         // Loop over every attribute and add them to respective Map.
         for (int att = 0; att < attributes.getLength(); att++) {
           // If the attributes contain the : then consider them as namespaces otherwise as the
-          // fields
-          // such as type, source, etc. of the EPCIS event
+          // fields such as type, source, etc. of the EPCIS event
           if (attributes.getQName(att).startsWith("xmlns:")) {
             contextHeader.put(
                 attributes.getQName(att).substring(attributes.getQName(att).indexOf(":") + 1),
@@ -121,21 +119,22 @@ public class SaxHandler extends DefaultHandler {
       }
 
       // At the end of the every event in the document same the rootNode with the rootNodes and
-      // assign
-      // the rootNode with null for subsequent event.
+      // assign the rootNode with null for subsequent event.
       if (ConstantEventHashInfo.EPCIS_EVENT_TYPES.contains(qName)) {
         // After reading each XML event and converting it to ContextNode store the information in
         // rootNodes.
         emitter.emit(rootNode);
 
         // After creating the pre-hash string and generating Hash-ID discard the rootNode
-        // information
-        // for subsequent event.
+        // information for subsequent event.
         rootNode = null;
       }
 
       // At the end of the XML element tag reset the value for next element.
       currentValue.setLength(0);
+
+      // Reset the attributes map at the end of every element
+      currentAttributes = new HashMap<>();
 
       // After completing the particular element reading, remove that element from the stack.
       path.pop();
@@ -154,30 +153,40 @@ public class SaxHandler extends DefaultHandler {
     // Store the value of the current xml tag if available.
     final String value = !StringUtils.isBlank(currentValue) ? currentValue.toString().trim() : null;
 
-    // For complex fields add the values to its children
+    // Handle WHAT dimension: Add to children for complex fields.
     if (ConstantEventHashInfo.WHAT_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)) {
       currentNode.children.add(new ContextNode(currentNode, path.peek(), value));
     } else {
-
-      // If the current XML tag is part of WHY or HOW dimension then set the value for the
-      // currentNode.
+      // Handle WHY and HOW dimensions.
       if (ConstantEventHashInfo.WHY_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)
           || ConstantEventHashInfo.HOW_DIMENSION_XML_PATH.stream().anyMatch(p::startsWith)) {
-
         // If the attribute values are present within the XML then add them to attributes variable
         // in context node as childrens
-        if (currentAttributes.size() > 0) {
-          for (Map.Entry<String, String> attribute : currentAttributes.entrySet()) {
-            currentNode.children.add(
-                new ContextNode(currentNode, attribute.getKey(), attribute.getValue()));
-          }
+        if (MapUtils.isNotEmpty(currentAttributes)) {
+          currentAttributes.forEach(
+              (attrKey, attrValue) ->
+                  currentNode.children.add(new ContextNode(currentNode, attrKey, attrValue)));
           currentNode.children.add(new ContextNode(currentNode, qName, value));
         } else if (value != null) {
           currentNode.children.add(new ContextNode(currentNode, qName, value));
         }
         currentNode = currentNode.parent;
       } else if (currentNode != null) {
+        // Set value for the current node.
         currentNode.setValue(value);
+
+        // Add filtered attributes to children for userExtensions and other fields wherever
+        // attributes present
+        if (MapUtils.isNotEmpty(currentAttributes)) {
+          currentAttributes.entrySet().stream()
+              .filter(
+                  attr -> !attr.getKey().startsWith("xsi:") && !attr.getValue().startsWith("xsd:"))
+              .forEach(
+                  attr ->
+                      currentNode.children.add(
+                          new ContextNode(currentNode, attr.getKey(), attr.getValue())));
+        }
+
         currentNode = currentNode.parent;
       }
     }

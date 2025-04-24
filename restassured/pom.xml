@@ -22,7 +22,7 @@
     <parent>
         <groupId>io.openepcis</groupId>
         <artifactId>openepcis-event-hash-generator-build</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>999-SNAPSHOT</version>
     </parent>
 
     <artifactId>openepcis-event-hash-generator-restassured</artifactId>
@@ -45,7 +45,7 @@
         <!-- REST assured as dependencies for testing -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

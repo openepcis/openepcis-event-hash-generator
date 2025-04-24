@@ -15,28 +15,27 @@
  */
 package io.openepcis.eventhash.generator.resource.test;
 
+import io.openepcis.eventhash.generator.resource.EventHashGeneratorResource;
+import io.openepcis.eventhash.generator.test.AbstractEventHashGeneratorTest;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.openepcis.eventhash.generator.resource.EventHashGeneratorResource;
-import io.openepcis.eventhash.generator.test.AbstractEventHashGeneratorTest;
-
 import java.net.URL;
 
 @QuarkusTest
 public class EventHashGeneratorResourceTest extends AbstractEventHashGeneratorTest {
 
-    @TestHTTPEndpoint(EventHashGeneratorResource.class)
-    @TestHTTPResource
-    URL url;
+  @TestHTTPEndpoint(EventHashGeneratorResource.class)
+  @TestHTTPResource
+  URL url;
 
-    @Override
-    protected String documentApi() {
-        return url + "/generate/event-hash/document";
-    }
+  @Override
+  protected String documentApi() {
+    return url + "/generate/event-hash/document";
+  }
 
-    @Override
-    protected String eventsApi() {
-        return url + "/generate/event-hash/events";
-    }
+  @Override
+  protected String eventsApi() {
+    return url + "/generate/event-hash/events";
+  }
 }

@@ -28,5 +28,4 @@ public class EventHashGeneratorProducer {
   public EventHashGenerator createEventHashGenerator() {
     return new EventHashGenerator();
   }
-
 }

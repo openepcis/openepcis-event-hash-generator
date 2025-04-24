@@ -54,7 +54,7 @@ jobs:
 
 
       - name: 'Publish CLI JAR'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
           path: 'cli/target/openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
@@ -99,7 +99,7 @@ jobs:
           echo "${{steps.create_release.outputs.upload_url}}" > upload_url.txt
       - name: 'Publish Upload URL'
         if: contains(github.ref, 'v')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
@@ -434,7 +434,7 @@ jobs:
 
       - name: 'Publish Native CLI Image'
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-${{matrix.label}}${{matrix.exe}}'
           path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies${{matrix.exe}}'

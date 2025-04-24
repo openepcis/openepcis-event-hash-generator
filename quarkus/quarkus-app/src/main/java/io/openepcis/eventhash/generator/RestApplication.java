@@ -48,6 +48,6 @@ public class RestApplication extends Application {
   @Route(methods = Route.HttpMethod.GET, path = "/")
   @Operation(hidden = true)
   void index(RoutingContext rc) {
-    rc.redirect("/q/swagger-ui/index.html");
+    rc.redirect("q/swagger-ui/index.html");
   }
 }

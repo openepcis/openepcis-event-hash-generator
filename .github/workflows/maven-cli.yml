@@ -322,7 +322,7 @@ jobs:
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'upload_url.txt'
 
@@ -409,13 +409,13 @@ jobs:
           tagRegexGroup: 1
 
       - name: 'Get JAR Artifact'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'upload_url.txt'
 

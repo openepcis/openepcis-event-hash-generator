@@ -21,11 +21,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
-import io.openepcis.epc.translator.util.ConverterUtil;
 import io.openepcis.eventhash.constant.ConstantEventHashInfo;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import io.openepcis.identifiers.converter.util.ConverterUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

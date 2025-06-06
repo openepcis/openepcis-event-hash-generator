@@ -15,26 +15,26 @@
  */
 package io.openepcis.eventhash;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 import io.openepcis.constants.CBVVersion;
 import io.smallrye.mutiny.Multi;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EventHashGeneratorPublisherTest {
 
   private EventHashGenerator eventHashGenerator;
   private EventHashGenerator eventHashGenerator2_1;
 
-  @Before
+  @BeforeEach
   public void before() {
     eventHashGenerator = new EventHashGenerator();
     eventHashGenerator2_1 = new EventHashGenerator(CBVVersion.VERSION_2_1_0);

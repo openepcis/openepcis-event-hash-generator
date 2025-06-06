@@ -126,6 +126,11 @@
             <artifactId>openepcis-test-resources</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Common snippets dependencies -->
         <dependency>
@@ -137,11 +142,6 @@
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>mutiny-zero-flow-adapters</artifactId>
             <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

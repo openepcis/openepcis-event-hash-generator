@@ -56,7 +56,7 @@ public class DocumentWrapperSupport {
                     """
                                                     {
                                                       "@context": [
-                                                        "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"
+                                                        "https://ref.gs1.org/standards/epcis/epcis-context.jsonld"
                                                       ],
                                                       "type": "EPCISDocument",
                                                       "schemaVersion": "2.0",

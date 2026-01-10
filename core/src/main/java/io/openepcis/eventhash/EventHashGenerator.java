@@ -310,7 +310,7 @@ public class EventHashGenerator {
       final Map<String, String> contextHeader,
       final String... hashAlgorithms)
       throws IOException {
-    final Publisher publisher = new ObjectNodePublisher(jsonStream);
+    final Publisher publisher = ObjectNodePublisher.fromInputStream(jsonStream);
     return internalFromPublisher(cls, publisher, contextHeader, hashAlgorithms);
   }
 

@@ -131,6 +131,12 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Required for Reader-based tests (optional in openepcis-reactive-event-publisher) -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Common snippets dependencies -->
         <dependency>

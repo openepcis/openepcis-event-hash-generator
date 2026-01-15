@@ -199,17 +199,5 @@
             </build>
         </profile>
     </profiles>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <configuration>
-                        <skip>true</skip>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <!-- deploy plugin skip removed from parent - specific submodules (cli, restassured, quarkus-app) configure skip individually -->
 </project>

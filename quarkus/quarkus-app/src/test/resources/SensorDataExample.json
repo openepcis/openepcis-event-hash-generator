@@ -699,10 +699,10 @@
         "eventTime": "2021-05-27T11:00:00+01:00",
         "eventTimeZoneOffset": "+01:00",
         "epcList": [
-          "https://id.example.com/8003/040123450007718765"
+          "https://id.example.com/8003/952012200000001004"
         ],
         "action": "OBSERVE",
-        "bizStep": "https://ref.gs1.org/cbv/Bizstep-sensor_reporting",
+        "bizStep": "https://ref.gs1.org/cbv/BizStep-sensor_reporting",
         "readPoint": {
           "id": "https://id.example.com/414/4012345000054"
         },

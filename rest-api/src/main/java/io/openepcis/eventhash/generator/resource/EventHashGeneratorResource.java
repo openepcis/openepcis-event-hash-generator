@@ -108,7 +108,7 @@ public class EventHashGeneratorResource {
 [
   {
     "sha-256": "ni:///sha-256;a8eb4ec50f76d2d5dd7bf64e86d0b4210315c8feaf3114ef9ccd6d7372e4473e?ver=CBV2.0",
-    "prehash": "eventType=ObjectEventeventTime=2021-05-27T13:00:00.000ZeventTimeZoneOffset=+01:00epcListepc=https://id.gs1.org/8003/030013450007718765action=OBSERVEbizStep=https://ref.gs1.org/cbv/BizStep-sensor_reportingreadPointid=https://id.gs1.org/414/4012345000054sensorElementsensorMetadatatime=2021-05-27T12:50:00.000ZsensorReporttype=https://gs1.org/voc/Lengthvalue=-477979.89component=cbv:Comp-northinguom=MTRcoordinateReferenceSystem=http://www.opengis.net/def/crs/EPSG/0/27700sensorReporttype=https://gs1.org/voc/Lengthvalue=2477583.57component=cbv:Comp-eastinguom=MTRcoordinateReferenceSystem=http://www.opengis.net/def/crs/EPSG/0/27700"
+    "prehash": "eventType=ObjectEventeventTime=2021-05-27T13:00:00.000ZeventTimeZoneOffset=+01:00epcListepc=https://id.gs1.org/8003/030013450007718765action=OBSERVEbizStep=https://ref.gs1.org/cbv/BizStep-sensor_reportingreadPointid=https://id.gs1.org/414/4012345000054sensorElementsensorMetadatatime=2021-05-27T12:50:00.000ZsensorReporttype=https://ref.gs1.org/voc/Lengthvalue=-477979.89component=cbv:Comp-northinguom=MTRcoordinateReferenceSystem=http://www.opengis.net/def/crs/EPSG/0/27700sensorReporttype=https://ref.gs1.org/voc/Lengthvalue=2477583.57component=cbv:Comp-eastinguom=MTRcoordinateReferenceSystem=http://www.opengis.net/def/crs/EPSG/0/27700"
   },
   {
     "sha-256": "ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?ver=CBV2.0",
@@ -204,7 +204,7 @@ ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?v
               schema =
                   @Schema(
                       description = "empty defaults to CBV version 2.0.0",
-                      enumeration = {"2.0.0", "2.1.0"}))
+                      enumeration = {"2.0.0", "2.0.1", "2.1.0"}))
           @DefaultValue("2.0.0")
           @QueryParam("cbvVersion")
           String cbvVersion)
@@ -448,7 +448,7 @@ ni:///sha-256;2615bc5627c3b3611e3df868aca2312882370ee78af44bcc20433ec028ebfc99?v
               schema =
                   @Schema(
                       description = "empty defaults to CBV version 2.0.0",
-                      enumeration = {"2.0.0", "2.1.0"}))
+                      enumeration = {"2.0.0", "2.0.1", "2.1.0"}))
           @DefaultValue("2.0.0")
           @QueryParam("cbvVersion")
           String cbvVersion)

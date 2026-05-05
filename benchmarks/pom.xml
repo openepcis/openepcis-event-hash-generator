@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.openepcis</groupId>
+        <artifactId>openepcis-event-hash-generator-build</artifactId>
+        <version>999-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>openepcis-event-hash-generator-benchmarks</artifactId>
+    <name>openepcis-event-hash-generator-benchmarks</name>
+    <description>JMH microbenchmarks for the event-hash hot paths. NOT part of the default build (benchmarks profile only).</description>
+
+
+    <properties>
+        <jmh.version>1.37</jmh.version>
+        <!-- Never deploy benchmarks to a repository -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <!-- The library under benchmark; resolved from the reactor when -Pbenchmarks builds core too -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-event-hash-generator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- JMH runtime: the benchmark framework itself -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+
+        <!-- JMH annotation processor: generates the benchmark runner classes at compile time -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- EPCIS fixture documents. Compile scope (not test) so the shade plugin bundles -->
+        <dependency>
+            <groupId>io.openepcis</groupId>
+            <artifactId>openepcis-test-resources</artifactId>
+        </dependency>
+
+        <!-- slf4j-api holds org.slf4j.LoggerFactory, which EventHashGenerator's @Slf4j static logger needs. -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- slf4j backend so the static logger initializes without the "no providers found" warning. -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- commons-io provides ReaderInputStream, needed by the JSON path (ObjectNodePublisher). -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiler: enable JMH's annotation processor so @Benchmark methods get runner code generated -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.openjdk.jmh</groupId>
+                            <artifactId>jmh-generator-annprocess</artifactId>
+                            <version>${jmh.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- Shade: bundle everything into one runnable jar whose main class is JMH's launcher -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Produces benchmarks/target/benchmarks.jar -->
+                            <finalName>benchmarks</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <!-- Running `java -jar benchmarks.jar` invokes JMH's command-line launcher -->
+                                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <!-- Strip signature files from shaded deps, otherwise the uber-jar won't run -->
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

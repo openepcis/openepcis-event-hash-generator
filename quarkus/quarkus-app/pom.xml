@@ -107,6 +107,12 @@
             <artifactId>quarkus-reactive-routes</artifactId>
         </dependency>
 
+        <!-- Micrometer + Prometheus registry: exposes HTTP, JVM, and custom metrics at /q/metrics. -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!-- Quarkus Test Dependency-->
         <dependency>
             <groupId>io.quarkus</groupId>

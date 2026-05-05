@@ -15,6 +15,8 @@
  */
 package io.openepcis.eventhash.runtime;
 
+import io.openepcis.constants.CBVVersion;
+import io.openepcis.eventhash.HashIdGenerator;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
@@ -25,19 +27,36 @@ import org.eclipse.microprofile.health.Readiness;
 @ApplicationScoped
 public class EventHashHealthCheck implements HealthCheck {
 
-  private final EventHashGeneratorProducer eventHashGeneratorProducer;
+    // Known SHA-256 of the empty string, with CBV 2.0 URI envelope. A mismatch means hashing is broken
+    private static final String EXPECTED_HASH = "ni:///sha-256;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855?ver=CBV2.0";
 
-  public EventHashHealthCheck(final EventHashGeneratorProducer eventHashGeneratorProducer) {
-    this.eventHashGeneratorProducer = eventHashGeneratorProducer;
-  }
+    @Override
+    public HealthCheckResponse call() {
+        final HealthCheckResponseBuilder builder = HealthCheckResponse.named("OpenEPCIS Event Hash Generator health check").up();
 
-  @Override
-  public HealthCheckResponse call() {
-    HealthCheckResponseBuilder builder =
-        HealthCheckResponse.named("OpenEPCIS Event Hash Generator health check").up();
-    builder
-        .up()
-        .withData("eventHashGeneratorProducer", eventHashGeneratorProducer.getClass().getName());
-    return builder.build();
-  }
+        try {
+            // Compute a known hash via the production code
+            final String actual = HashIdGenerator.generateHashId("", "sha-256", CBVVersion.VERSION_2_0_0);
+
+            // Match: report UP with a PASS marker
+            if (EXPECTED_HASH.equals(actual)) {
+                return builder.up()
+                        .withData("smokeTest", "PASS")
+                        .build();
+            }
+
+            // Mismatch: report DOWN and surface both values so operators can diagnose without code dive.
+            return builder.down()
+                    .withData("smokeTest", "FAIL")
+                    .withData("expected", EXPECTED_HASH)
+                    .withData("actual", actual)
+                    .build();
+        } catch (Exception e) {
+            // Any Exception: DOWN with the error message attached.
+            return builder.down()
+                    .withData("smokeTest", "ERROR")
+                    .withData("error", e.getClass().getSimpleName() + ": " + e.getMessage())
+                    .build();
+        }
+    }
 }

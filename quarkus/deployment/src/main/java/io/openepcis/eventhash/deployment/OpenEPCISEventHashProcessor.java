@@ -25,21 +25,20 @@ import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
 public class OpenEPCISEventHashProcessor {
 
-  private static final String FEATURE = "openepcis-event-hash";
+    private static final String FEATURE = "openepcis-event-hash";
 
-  @BuildStep
-  FeatureBuildItem feature() {
-    return new FeatureBuildItem(FEATURE);
-  }
+    @BuildStep
+    FeatureBuildItem feature() {
+        return new FeatureBuildItem(FEATURE);
+    }
 
-  @BuildStep()
-  AdditionalBeanBuildItem buildOpenEPCISJAXBContext() {
-    return AdditionalBeanBuildItem.unremovableOf(EventHashGeneratorProducer.class);
-  }
+    @BuildStep()
+    AdditionalBeanBuildItem buildOpenEPCISJAXBContext() {
+        return AdditionalBeanBuildItem.unremovableOf(EventHashGeneratorProducer.class);
+    }
 
-  @BuildStep
-  HealthBuildItem addHealthCheck(OpenEPCISBuildTimeConfig buildTimeConfig) {
-    return new HealthBuildItem(
-        EventHashHealthCheck.class.getName(), buildTimeConfig.healthEnabled());
-  }
+    @BuildStep
+    HealthBuildItem addHealthCheck(OpenEPCISBuildTimeConfig buildTimeConfig) {
+        return new HealthBuildItem(EventHashHealthCheck.class.getName(), buildTimeConfig.healthEnabled());
+    }
 }

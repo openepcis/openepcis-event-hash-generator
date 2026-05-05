@@ -74,6 +74,7 @@
         <module>rest-api</module>
         <module>servlet-api</module>
         <module>quarkus</module>
+        <module>benchmarks</module>
         <!--
         <module>quarkus-app</module>
         -->
@@ -197,6 +198,14 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <!-- Benchmarks are opt-in: only built when -Pbenchmarks is passed. Default builds never touch them. -->
+        <profile>
+            <id>benchmarks</id>
+            <modules>
+                <module>benchmarks</module>
+            </modules>
         </profile>
     </profiles>
     <!-- deploy plugin skip removed from parent - specific submodules (cli, restassured, quarkus-app) configure skip individually -->

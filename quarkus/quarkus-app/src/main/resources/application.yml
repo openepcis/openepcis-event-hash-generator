@@ -14,6 +14,12 @@
 #     limitations under the License.
 #
 
+openepcis:
+  event-hash:
+    # Default CBV version applied to @Inject EventHashGenerator consumers.
+    # Per-request REST callers still override via the cbvVersion query parameter.
+    cbv-version: "2.0.0"
+
 quarkus:
   swagger-ui:
     always-include: true

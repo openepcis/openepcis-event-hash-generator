@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +39,20 @@ public class SaxHandler extends DefaultHandler {
     private ContextNode rootNode = null;                                            // per-event root; reset to null after emit
     private Map<String, String> currentAttributes;                                  // attributes of the open element
     private final HashMap<String, String> contextHeader = new HashMap<>();          // xmlns:* bindings seen so far
+    private final Collection<String> fieldsToExclude;                               // default + per-run fields omitted from the pre-hash
 
     @Setter
     private MultiEmitter<? super ContextNode> emitter;
+
+    // Default handler: excludes the always-on default fields only.
+    public SaxHandler() {
+        this(ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+    }
+
+    // Handler with an explicit (default + per-run) set of fields to exclude from the pre-hash string.
+    public SaxHandler(final Collection<String> fieldsToExclude) {
+        this.fieldsToExclude = fieldsToExclude;
+    }
 
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
@@ -135,7 +147,7 @@ public class SaxHandler extends DefaultHandler {
     // True when the current XML path matches one of the always-excluded fields (errorDeclaration, recordTime, etc.).
     private boolean isExcludePath() {
         final String xmlPath = getXMLPath();
-        return ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH.stream().anyMatch(xmlPath::contains);
+        return fieldsToExclude.stream().anyMatch(xmlPath::contains);
     }
 
     // True if the path is inside one of the WHAT-dimension lists (epcList, childEPCs, etc.).
@@ -178,7 +190,7 @@ public class SaxHandler extends DefaultHandler {
 
     // Begin a new EPCIS event: allocate a fresh root tree and add the event-type child.
     private void enterEpcisEvent(final String qName) {
-        rootNode = new ContextNode(contextHeader);
+        rootNode = new ContextNode(contextHeader, fieldsToExclude);
         currentNode = rootNode;
         rootNode.children.add(new ContextNode(rootNode, EPCIS.TYPE, qName));
     }

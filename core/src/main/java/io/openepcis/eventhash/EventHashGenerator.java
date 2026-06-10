@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
+import io.openepcis.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.eventhash.exception.EventHashException;
 import io.openepcis.reactive.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
@@ -29,18 +30,26 @@ import lombok.extern.slf4j.Slf4j;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 /**
  * Generates canonical EPCIS 2.0 event hash IDs from XML or JSON/JSON-LD via reactive {@link Multi}.
- * Thread-safe; backpressure-bounded (override with {@code -Dopenepcis.eventhash.maxPendingEvents=N}); {@code contextHeader} maps are defensively copied.
+ * Backpressure-bounded (override with {@code -Dopenepcis.eventhash.maxPendingEvents=N}); {@code contextHeader} maps are defensively copied.
  * Pass {@code "prehash"} as the algorithm name to get the pre-hash string itself.
+ * <p>
+ * The {@link #prehashJoin(String)} and {@link #excludeFieldsInPreHash(String)} mutators set per-instance
+ * configuration that is read when a {@code from*} method is invoked; configure the instance before hashing
+ * and do not mutate it concurrently with, or share it across, in-flight hash operations.
  */
 
 @Slf4j
@@ -48,6 +57,9 @@ public class EventHashGenerator {
     private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
     private String prehashJoin = "";
     private final CBVVersion cbvVersion;
+
+    // User-supplied fields to omit from the pre-hash string, in addition to the always-on defaults. Per-instance config.
+    private final Set<String> additionalExcludedFields = new LinkedHashSet<>();
 
     // Pre-compiled once and reused; avoids per-event Pattern.compile on the hot path.
     private static final Pattern NEWLINE = Pattern.compile("[\n\r]");
@@ -86,6 +98,31 @@ public class EventHashGenerator {
      */
     public void prehashJoin(final String s) {
         prehashJoin = s.replace("\\n", "\n").replace("\\r", "\r");
+    }
+
+    /**
+     * Registers additional event fields to omit from the pre-hash string, on top of the always-on defaults
+     * (recordTime, eventID, errorDeclaration, …). Accepts a comma-separated list of field names; blank or
+     * empty entries are ignored. Calls accumulate. Set this before invoking a {@code from*} method.
+     *
+     * @param excludeFields comma-separated field names to exclude, e.g. {@code "bizStep,disposition"}
+     */
+    public void excludeFieldsInPreHash(final String excludeFields) {
+        if (excludeFields == null || excludeFields.isBlank()) {
+            return;
+        }
+        Arrays.stream(excludeFields.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .forEach(additionalExcludedFields::add);
+    }
+
+    /**
+     * Snapshot of the fields to exclude for the next hash run: the defaults plus any registered extras.
+     * Returned as an immutable list and captured per {@code from*} call so a single run stays consistent.
+     */
+    private List<String> effectiveExcludedFields() {
+        return ConstantEventHashInfo.effectiveFieldsToExcludeInPreHash(additionalExcludedFields);
     }
 
     // ---------------------------------------------------------------------------
@@ -133,10 +170,11 @@ public class EventHashGenerator {
      */
     public Multi<String> fromJson(final InputStream jsonStream, final Map<String, String> contextHeader, final String hashAlgorithm) throws IOException {
         final Map<String, String> owned = new HashMap<>(contextHeader);
+        final List<String> excluded = effectiveExcludedFields();
         final Publisher<ObjectNode> publisher = ObjectNodePublisher.fromInputStream(jsonStream);
         return Multi.createFrom()
                 .publisher(publisher)
-                .map(item -> singleEventAsString(item, owned, hashAlgorithm))
+                .map(item -> singleEventAsString(item, owned, excluded, hashAlgorithm))
                 .filter(s -> !s.isEmpty())
                 .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
@@ -160,10 +198,11 @@ public class EventHashGenerator {
      */
     public Multi<Map<String, String>> fromJson(final InputStream jsonStream, final Map<String, String> contextHeader, final String... hashAlgorithms) throws IOException {
         final Map<String, String> owned = new HashMap<>(contextHeader);
+        final List<String> excluded = effectiveExcludedFields();
         final Publisher<ObjectNode> publisher = ObjectNodePublisher.fromInputStream(jsonStream);
         return Multi.createFrom()
                 .publisher(publisher)
-                .map(item -> singleEventAsMap(item, owned, hashAlgorithms))
+                .map(item -> singleEventAsMap(item, owned, excluded, hashAlgorithms))
                 .filter(m -> !m.isEmpty())
                 .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
@@ -195,9 +234,10 @@ public class EventHashGenerator {
      */
     public Multi<String> fromPublisher(final Publisher<ObjectNode> publisher, final Map<String, String> contextHeader, final String hashAlgorithm) {
         final Map<String, String> owned = new HashMap<>(contextHeader);
+        final List<String> excluded = effectiveExcludedFields();
         return Multi.createFrom()
                 .publisher(publisher)
-                .map(item -> singleEventAsString(item, owned, hashAlgorithm))
+                .map(item -> singleEventAsString(item, owned, excluded, hashAlgorithm))
                 .filter(s -> !s.isEmpty());
     }
 
@@ -206,9 +246,10 @@ public class EventHashGenerator {
      */
     public Multi<Map<String, String>> fromPublisher(final Publisher<ObjectNode> publisher, final Map<String, String> contextHeader, final String... hashAlgorithms) {
         final Map<String, String> owned = new HashMap<>(contextHeader);
+        final List<String> excluded = effectiveExcludedFields();
         return Multi.createFrom()
                 .publisher(publisher)
-                .map(item -> singleEventAsMap(item, owned, hashAlgorithms))
+                .map(item -> singleEventAsMap(item, owned, excluded, hashAlgorithms))
                 .filter(m -> !m.isEmpty());
     }
 
@@ -234,7 +275,7 @@ public class EventHashGenerator {
      * Synchronously hash a single ObjectNode event with a caller-supplied {@code @context} header (defensively copied).
      */
     public String fromObjectNode(final ObjectNode objectNode, final Map<String, String> contextHeader, final String hashAlgorithm) {
-        return singleEventAsString(objectNode, new HashMap<>(contextHeader), hashAlgorithm);
+        return singleEventAsString(objectNode, new HashMap<>(contextHeader), effectiveExcludedFields(), hashAlgorithm);
     }
 
     /**
@@ -242,8 +283,9 @@ public class EventHashGenerator {
      * Result map is keyed by algorithm name; "prehash" returns the pre-hash string.
      */
     public Multi<Map<String, String>> fromObjectNode(final ObjectNode objectNode, final String... hashAlgorithms) {
+        final List<String> excluded = effectiveExcludedFields();
         return Multi.createFrom()
-                .item(() -> singleEventAsMap(objectNode, new HashMap<>(), hashAlgorithms))
+                .item(() -> singleEventAsMap(objectNode, new HashMap<>(), excluded, hashAlgorithms))
                 .filter(m -> !m.isEmpty());
     }
 
@@ -280,7 +322,7 @@ public class EventHashGenerator {
      * Shared SAX setup for both String and Map output variants of fromXml(...).
      */
     private Multi<ContextNode> parseXmlEvents(final InputStream xmlStream) {
-        final SaxHandler saxHandler = new SaxHandler();
+        final SaxHandler saxHandler = new SaxHandler(effectiveExcludedFields());
         final Consumer<MultiEmitter<? super ContextNode>> consumer =
                 emitter -> {
                     saxHandler.setEmitter(emitter);
@@ -302,24 +344,24 @@ public class EventHashGenerator {
     /**
      * Build the pre-hash string for a single ObjectNode event, then hash with one algorithm.
      */
-    private String singleEventAsString(final ObjectNode item, final Map<String, String> contextHeader, final String hashAlgorithm) {
+    private String singleEventAsString(final ObjectNode item, final Map<String, String> contextHeader, final List<String> excludedFields, final String hashAlgorithm) {
         addToContextHeader(item, contextHeader);
         if (isDocumentWrapper(item)) {
             return "";
         }
-        final ContextNode tree = new ContextNode(item.properties().iterator(), contextHeader);
+        final ContextNode tree = new ContextNode(item.properties().iterator(), contextHeader, excludedFields);
         return generateString(tree.toShortenedString(this.cbvVersion), hashAlgorithm);
     }
 
     /**
      * Build the pre-hash string for a single ObjectNode event, then hash with N algorithms.
      */
-    private Map<String, String> singleEventAsMap(final ObjectNode item, final Map<String, String> contextHeader, final String... hashAlgorithms) {
+    private Map<String, String> singleEventAsMap(final ObjectNode item, final Map<String, String> contextHeader, final List<String> excludedFields, final String... hashAlgorithms) {
         addToContextHeader(item, contextHeader);
         if (isDocumentWrapper(item)) {
             return Collections.emptyMap();
         }
-        final ContextNode tree = new ContextNode(item.properties().iterator(), contextHeader);
+        final ContextNode tree = new ContextNode(item.properties().iterator(), contextHeader, excludedFields);
         return generateMap(tree.toShortenedString(this.cbvVersion), hashAlgorithms);
     }
 

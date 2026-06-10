@@ -23,6 +23,8 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,9 @@ public class ConstantEventHashInfo {
                     EPCIS.SRC_DEST_URN_PREFIX,
                     EPCIS.ERROR_REASON_URN_PREFIX);
     /**
-     * Fields always omitted from the pre-hash string (recordTime, eventID, errorDeclaration, @context, etc.); intentionally immutable — no public API to override.
+     * Fields always omitted from the pre-hash string (recordTime, eventID, errorDeclaration, @context, etc.).
+     * Immutable; callers that need extra fields excluded for a single hash run pass them to
+     * {@link #effectiveFieldsToExcludeInPreHash(Collection)} rather than mutating this list.
      */
     public static final List<String> DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH =
             List.of(
@@ -74,6 +78,25 @@ public class ConstantEventHashInfo {
                     "rdfs:comment",
                     "#text",
                     "comment");
+
+    /**
+     * Build the effective set of fields to exclude from the pre-hash string for a single hash run:
+     * the always-on {@link #DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH} plus any caller-supplied fields.
+     * When no extra fields are supplied the shared default list is returned unchanged (no allocation,
+     * identical behaviour to before per-run exclusion existed).
+     *
+     * @param additionalFields extra field names to omit, or {@code null}/empty for defaults only
+     * @return an immutable list combining the defaults with the additional fields
+     */
+    public static List<String> effectiveFieldsToExcludeInPreHash(final Collection<String> additionalFields) {
+        if (additionalFields == null || additionalFields.isEmpty()) {
+            return DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH;
+        }
+        final List<String> effective = new ArrayList<>(DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+        effective.addAll(additionalFields);
+        return List.copyOf(effective);
+    }
+
     public static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
     // Variables to read XML and store the relevant information within the Context Node.

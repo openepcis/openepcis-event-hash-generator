@@ -44,6 +44,9 @@ public class ContextNode {
     protected ArrayList<ContextNode> children = new ArrayList<>();
     protected ContextNode parent;
     protected Map<String, String> namespaces;
+    // Fields omitted from the pre-hash string: the always-on defaults, optionally augmented per hash run.
+    // Propagated unchanged to every child node so the whole event tree shares one exclusion view.
+    protected Collection<String> fieldsToExclude = ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH;
 
     // Constructor 1: To store the simple event field information such as type, eventTime, bizStep.
     public ContextNode(final ContextNode parent, final String name, final String value) {
@@ -51,18 +54,19 @@ public class ContextNode {
         this.name = name;
         this.value = value;
         this.namespaces = parent.namespaces;
+        this.fieldsToExclude = parent.fieldsToExclude;
     }
 
     // Constructor 2: To store the complex field which has inner elements such as errorDeclaration, readPoint.
     public ContextNode(final ContextNode parent, final String name, final Iterator<Map.Entry<String, JsonNode>> fields) {
-        this(fields, parent.namespaces);
+        this(fields, parent.namespaces, parent.fieldsToExclude);
         this.parent = parent;
         this.name = name;
     }
 
     // Constructor 3: To store the objects contains within array such as SourceList, DestinationList.
     public ContextNode(final ContextNode parent, final Iterator<Map.Entry<String, JsonNode>> fields) {
-        this(fields, parent.namespaces);
+        this(fields, parent.namespaces, parent.fieldsToExclude);
         this.parent = parent;
         this.namespaces = parent.namespaces;
     }
@@ -72,6 +76,7 @@ public class ContextNode {
         this.parent = parent;
         this.name = name;
         this.namespaces = parent.namespaces;
+        this.fieldsToExclude = parent.fieldsToExclude;
         final Iterator<JsonNode> iterator = node.elements();
 
         // For event fields with values in Array, loop over the array and add the elements one by one to child based on type of value.
@@ -103,15 +108,21 @@ public class ContextNode {
         }
     }
 
-    // Constructor 5: Constructor called by the EventReader class to extract all event fields and values
+    // Constructor 5: extract all event fields and values, excluding the default fields only.
     public ContextNode(final Iterator<Map.Entry<String, JsonNode>> fields, final Map<String, String> namespaces) {
+        this(fields, namespaces, ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH);
+    }
+
+    // Constructor 5b: as above, but with an explicit (default + per-run) set of fields to exclude.
+    public ContextNode(final Iterator<Map.Entry<String, JsonNode>> fields, final Map<String, String> namespaces, final Collection<String> fieldsToExclude) {
         this.namespaces = namespaces;
+        this.fieldsToExclude = fieldsToExclude;
 
         while (fields.hasNext()) {
             var n = fields.next();
 
             // Ignore reading the fields which are not required for Event Pre-Hash
-            if (ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH.contains(n.getKey())) {
+            if (fieldsToExclude.contains(n.getKey())) {
                 continue;
             }
 
@@ -132,6 +143,12 @@ public class ContextNode {
     // Constructor 6: To store the namespaces during the reading of EPCIS XML document.
     public ContextNode(final Map<String, String> namespaces) {
         this.namespaces = namespaces;
+    }
+
+    // Constructor 6b: as above, but carrying the (default + per-run) set of fields to exclude for the event tree.
+    public ContextNode(final Map<String, String> namespaces, final Collection<String> fieldsToExclude) {
+        this.namespaces = namespaces;
+        this.fieldsToExclude = fieldsToExclude;
     }
 
     private void sort(final Boolean standardFieldSort) {
@@ -195,7 +212,7 @@ public class ContextNode {
                 && node.getChildren() != null
                 && !node.getChildren().isEmpty()
                 && node.getChildren().get(0).getName() == null
-                && ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH.stream().noneMatch(getName()::equals)) {
+                && fieldsToExclude.stream().noneMatch(getName()::equals)) {
             fieldName = node.getName();
         }
 
@@ -240,7 +257,7 @@ public class ContextNode {
     // Event value formatter method to format the EPCIS event fields as per the event hash requirement like to add substring or convert sub string.
     protected String epcisFieldFormatter(final String name, final String value, final ContextNode currentNode) {
         // If the field matches to ignore field then do not include them within the event pre hash. Ex: recordTime
-        if (ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH.stream().anyMatch(name::startsWith)) {
+        if (fieldsToExclude.stream().anyMatch(name::startsWith)) {
             return null;
         }
 
@@ -414,7 +431,7 @@ public class ContextNode {
                 && getName() != null
                 && getValue() != null
                 && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-                && !ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH.contains(getName())
+                && !fieldsToExclude.contains(getName())
                 && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT);
     }
 
@@ -442,7 +459,7 @@ public class ContextNode {
         return getName() != null
                 && (!getName().equals(EPCIS.SENSOR_ELEMENT_LIST) || behavior.keepSensorElementList())
                 && (!TemplateNodeMap.isEpcisField(this) || TemplateNodeMap.addExtensionWrapperTag(this))
-                && !ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH.contains(getName())
+                && !fieldsToExclude.contains(getName())
                 && !findParent(this).equalsIgnoreCase(EPCIS.CONTEXT)
                 && (getName().equals(EPCIS.SENSOR_ELEMENT)
                 || (!children.isEmpty()

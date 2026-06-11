@@ -12,6 +12,7 @@
     <artifactId>openepcis-event-hash-generator-benchmarks</artifactId>
     <name>openepcis-event-hash-generator-benchmarks</name>
     <description>JMH microbenchmarks for the event-hash hot paths. NOT part of the default build (benchmarks profile only).</description>
+    <url>https://github.com/openepcis/openepcis-event-hash-generator</url>
 
 
     <properties>

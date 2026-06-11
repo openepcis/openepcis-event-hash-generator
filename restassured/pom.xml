@@ -28,6 +28,7 @@
     <artifactId>openepcis-event-hash-generator-restassured</artifactId>
     <name>openepcis-event-hash-generator-restassured</name>
     <description>restassured tests for converter-services</description>
+    <url>https://github.com/openepcis/openepcis-event-hash-generator</url>
 
     <dependencies>
         <!-- Add constants as test dependencies -->

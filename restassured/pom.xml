@@ -30,6 +30,11 @@
     <description>restassured tests for converter-services</description>
     <url>https://github.com/openepcis/openepcis-event-hash-generator</url>
 
+    <properties>
+        <!-- Integration-test harness — not published to Maven Central -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+    </properties>
+
     <dependencies>
         <!-- Add constants as test dependencies -->
         <dependency>

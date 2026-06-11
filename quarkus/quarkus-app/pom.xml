@@ -31,6 +31,11 @@
     <description>Quarkus REST API Application to generate Hash-Ids based on XML/JSON EPCIS document provided by user.</description>
     <url>https://github.com/openepcis/openepcis-event-hash-generator</url>
 
+    <properties>
+        <!-- Runnable Quarkus app (shipped as a Docker image) — not published to Maven Central -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+    </properties>
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>

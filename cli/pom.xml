@@ -61,6 +61,8 @@
     </scm>
 
     <properties>
+        <!-- CLI binary (shipped as native executables) — not published to Maven Central -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <native.maven.plugin.version>0.9.13</native.maven.plugin.version>
     </properties>

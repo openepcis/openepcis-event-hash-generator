@@ -22,7 +22,7 @@
     <parent>
         <groupId>io.openepcis.quarkus</groupId>
         <artifactId>quarkus-event-hash-generator-parent</artifactId>
-        <version>0.9.3</version>
+        <version>999-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

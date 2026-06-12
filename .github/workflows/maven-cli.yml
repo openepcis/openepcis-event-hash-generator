@@ -108,14 +108,14 @@ jobs:
     name: "Build Native Container Image"
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64']
+        os: ['ubuntu-latest', 'ubuntu-24.04-arm']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
             platform: "linux/amd64"
             tags: "latest-amd64"
             jib-platforms: "linux/amd64"
-          - os: 'ubuntu-22.04-arm64'
+          - os: 'ubuntu-24.04-arm'
             label: 'linux-arm64'
             platform: "linux/arm64"
             tags: "latest-arm64"
@@ -290,19 +290,13 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', "macos-13", 'macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
             exe: ""
-          - os: 'ubuntu-22.04-arm64'
+          - os: 'ubuntu-24.04-arm'
             label: 'linux-arm64'
-            exe: ""
-          - os: 'macos-13'
-            label: 'mac-x64'
-            exe: ""
-          - os: 'macos-latest'
-            label: 'mac-arm'
             exe: ""
           - os: 'windows-latest'
             label: 'windows'
@@ -366,19 +360,13 @@ jobs:
     needs: [build-jar-job]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-22.04-arm64', "macos-13", 'macos-latest', 'windows-latest']
+        os: ['ubuntu-latest', 'ubuntu-24.04-arm', 'windows-latest']
         include:
           - os: 'ubuntu-latest'
             label: 'linux-amd64'
             exe: ""
-          - os: 'ubuntu-22.04-arm64'
+          - os: 'ubuntu-24.04-arm'
             label: 'linux-arm64'
-            exe: ""
-          - os: 'macos-13'
-            label: 'mac-x64'
-            exe: ""
-          - os: 'macos-latest'
-            label: 'mac-arm'
             exe: ""
           - os: 'windows-latest'
             label: 'windows'

@@ -148,7 +148,7 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn --no-transfer-progress --batch-mode -Pci-build clean package -DskipTests
+          mvn --no-transfer-progress --batch-mode -Pci-build clean install -DskipTests
 
       - name: "Build ${{matrix.platform}} native Image"
         run: |
@@ -241,7 +241,7 @@ jobs:
 
       - name: "Prepare Build"
         run: >
-          mvn --no-transfer-progress --batch-mode -Pci-build clean package -DskipTests
+          mvn --no-transfer-progress --batch-mode -Pci-build clean install -DskipTests
 
       - name: "Build linux/amd64 Image"
         run: |
@@ -343,7 +343,7 @@ jobs:
 
       - name: "Prepare Build"
         run: |
-          mvn --no-transfer-progress --batch-mode -Pci-build clean package -DskipTests
+          mvn --no-transfer-progress --batch-mode -Pci-build clean install -DskipTests
 
       - name: "Build Native Quarkus Executable"
         run: |

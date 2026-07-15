@@ -41,13 +41,17 @@ public record CbvBehavior(boolean inlineUserExtensions, boolean keepSensorElemen
     //  Behaviour configuration for CBV 2.1.
     public static final CbvBehavior CBV_2_1 = new CbvBehavior(true, true, "?ver=CBV2.1");
 
-    // Default: Behaviour applied when a caller passes an unknown CBV version — Always the latest known version
-    public static final CbvBehavior DEFAULT = CBV_2_1;
+    // Default value for the CBV for hash generation current default: 2.0; change only this line to promote to 2.1 / 2.2 later.
+    public static final CBVVersion DEFAULT_VERSION = CBVVersion.VERSION_2_0_0;
 
     /**
      * New CBV versions should be added here explicitly rather than relying on the {@link #DEFAULT} fallback.
      */
     private static final Map<CBVVersion, CbvBehavior> REGISTRY = Map.of(CBVVersion.VERSION_2_0_0, CBV_2_0, CBVVersion.VERSION_2_1_0, CBV_2_1);
+
+    // Default: Behaviour applied when a caller passes an unknown CBV version — Always the latest known version
+    public static final CbvBehavior DEFAULT = REGISTRY.get(DEFAULT_VERSION);
+
 
     /**
      * Returns the behaviour configuration for a given CBV version, or {@link #DEFAULT} when the version is not registered.

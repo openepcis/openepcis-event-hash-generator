@@ -284,7 +284,7 @@ public class ContextNode {
             return formatSensorField(name, value);
         } else if (TIME_ATTRIBUTE_LIST.contains(name)) {
             // For all the date time information within the event convert the information to UTC time
-            return name + "=" + DATE_FORMATTER.format(Instant.parse(value));
+            return name + "=" + formatCanonicalTime(value);
         } else if (GS1_ATTRIBUTES_PREFIX.stream().anyMatch(value::startsWith)) {
             // If the field is of bizStep, disposition, bizTransaction/source type then convert the URN to WebURI vocabulary.
             return name + "=" + ConverterUtil.toWebURIVocabulary(value);
@@ -466,5 +466,14 @@ public class ContextNode {
                 && children.get(0).getName() != null
                 && !getName().equals(getChildren().get(0).getName())
                 && !getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT)));
+    }
+
+    /**
+     * Timestamp at millisecond precision. Sub-millisecond digits are rounded half-up (CBV rule 9); values with 3 or fewer decimals are returned unchanged.
+     */
+    private String formatCanonicalTime(final String value) {
+        final Instant parsed = Instant.parse(value);
+        final long millis = Math.round(parsed.getNano() / 1_000_000.0);
+        return DATE_FORMATTER.format(Instant.ofEpochSecond(parsed.getEpochSecond()).plusMillis(millis));
     }
 }

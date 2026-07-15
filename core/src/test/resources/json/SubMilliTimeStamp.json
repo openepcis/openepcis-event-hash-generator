@@ -1,0 +1,21 @@
+{
+    "@context": [
+	"https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"
+    ],
+    "type": "EPCISDocument",
+    "schemaVersion": "2.0",
+    "creationDate": "2023-01-18T11:04:03.000Z",
+    "epcisBody": {
+	"eventList": [
+	    {
+		"type": "ObjectEvent",
+		"eventTime": "2023-01-18T11:04:03.1415Z",
+		"eventTimeZoneOffset": "+00:00",
+		"epcList": [
+		    "urn:epc:id:sgtin:0614141.107346.2017"
+		],
+		"action": "OBSERVE"
+	    }
+	]
+    }
+}

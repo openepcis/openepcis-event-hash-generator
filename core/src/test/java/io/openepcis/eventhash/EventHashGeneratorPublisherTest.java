@@ -783,4 +783,43 @@ public class EventHashGeneratorPublisherTest {
         .subscribe().asStream()
         .forEach(h -> System.out.println(h.get("sha-256") + "\n" + h.get("prehash")));
   }
+
+  @Test
+   void subMilliTimestampRoundsAndStaysInParity() throws IOException {
+      // eventTime has a 4th decimal (…03.1415Z); rule 9 rounds the 3rd decimal up -> .142Z.
+      final InputStream xmlStream = getClass().getResourceAsStream("/xml/SubMilliTimeStamp.xml");
+      final InputStream jsonStream = getClass().getResourceAsStream("/json/SubMilliTimeStamp.json");
+
+      final Map<String, String> xmlOut = eventHashGenerator2_1.fromXml(xmlStream, "prehash", "sha-256")
+              .subscribe().asStream().toList().get(0);
+      final Map<String, String> jsonOut = eventHashGenerator2_1.fromJson(jsonStream, "prehash", "sha-256")
+              .subscribe().asStream().toList().get(0);
+
+      assertTrue(xmlOut.get("prehash").contains("eventTime=2023-01-18T11:04:03.142Z"), "sub-ms should round up: " + xmlOut.get("prehash"));
+      assertTrue(jsonOut.get("prehash").contains("eventTime=2023-01-18T11:04:03.142Z"), "sub-ms should round up: " + jsonOut.get("prehash"));
+      assertEquals(xmlOut.get("prehash"), jsonOut.get("prehash"));
+      assertEquals(xmlOut.get("sha-256"), jsonOut.get("sha-256"));
+  }
+
+  @Test
+  void sensorReportGs1CurieExpandsToVocUri() throws IOException {
+    final InputStream jsonStream = getClass().getResourceAsStream("/json/SensorReportGs1Curie.json");
+    final Map<String, String> jsonOut = eventHashGenerator2_1.fromJson(jsonStream, "prehash", "sha-256")
+            .subscribe().asStream().toList().get(0);
+    // rule 15: gs1:Temperature -> https://ref.gs1.org/voc/Temperature (expanded, not stripped to bare)
+    assertTrue(jsonOut.get("prehash").contains("type=https://ref.gs1.org/voc/Temperature"), "gs1: CURIE should expand: " + jsonOut.get("prehash"));
+  }
+
+  @Test
+  void defaultAndUnknownVersionsBothStampCbv2_0() throws IOException {
+    // no-arg default, explicit null, and an UNREGISTERED version must all stamp ?ver=CBV2.0
+    for(final EventHashGenerator g : List.of(
+            new EventHashGenerator(),
+            new EventHashGenerator(CBVVersion.VERSION_1_2_2))){
+      final InputStream jsonStream = getClass().getResourceAsStream("/json/DefaultVersionStamp.json");
+      final Map<String, String> jsonHash = g.fromJson(jsonStream, "prehash", "sha-256").subscribe().asStream().toList().get(0);
+      final String hash = jsonHash.get("sha-256");
+      assertTrue(hash.endsWith("?ver=CBV2.0"), "expected CBV2.0 suffix, got: " + hash);
+    }
+  }
 }

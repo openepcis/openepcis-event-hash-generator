@@ -78,10 +78,11 @@ public class EventHashGenerator {
     }
 
     /**
-     * Default constructor which generates the pre-hash string based on CBV 2.0
+     * Default constructor; uses the library default CBV version ({@link CbvBehavior#DEFAULT_VERSION}).
      */
     public EventHashGenerator() {
-        this.cbvVersion = CBVVersion.VERSION_2_0_0;
+        // delegate based on default version
+        this(CbvBehavior.DEFAULT_VERSION);
     }
 
     /**
@@ -90,7 +91,7 @@ public class EventHashGenerator {
      * @param cbvVersion required CBV version that needs to be used for pre-hash string generation.
      */
     public EventHashGenerator(final CBVVersion cbvVersion) {
-        this.cbvVersion = cbvVersion != null ? cbvVersion : CBVVersion.VERSION_2_0_0;
+        this.cbvVersion = cbvVersion != null ? cbvVersion : CbvBehavior.DEFAULT_VERSION;
     }
 
     /**

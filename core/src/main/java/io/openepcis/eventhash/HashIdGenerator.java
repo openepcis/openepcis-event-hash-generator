@@ -81,8 +81,7 @@ public class HashIdGenerator {
      * Generates the EPCIS hash-id for a pre-hash string.
      *
      * <p>Returned URI form: {@code ni:///<algo>;<hex-digest>?ver=CBV<version>}.
-     * Unknown {@code hashAlgorithm} falls back to sha-256; unknown {@code cbvVersion} falls back to
-     * CBV2.1 — both behaviors preserved from the previous implementation.
+     * Unknown {@code hashAlgorithm} falls back to sha-256; unknown {@code cbvVersion} falls back to the default version behaviour (see {@link CbvBehavior#DEFAULT_VERSION}).
      */
     public static String generateHashId(final String preHashString,
                                         final String hashAlgorithm,

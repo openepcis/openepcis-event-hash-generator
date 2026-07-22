@@ -24,6 +24,7 @@ import io.openepcis.identifiers.converter.util.ConverterUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.util.*;
@@ -397,8 +398,14 @@ public class ContextNode {
     }
 
     // Format a leaf EPCIS field; ILMD fields go through the user-extensions formatter, everything else through epcisFieldFormatter.
-    private String formatLeafEpcisField() {
+    String formatLeafEpcisField() {
         return Boolean.TRUE.equals(isIlmdPath(this)) ? userExtensionsFormatter(name, value, namespaces) : epcisFieldFormatter(getName(), getValue(), this);
+    }
+
+    // Canonical, post-normalization key used for ordering, sort identifiers after the Canonical
+    String canonicalComparisonKey(){
+        final String formatted = formatLeafEpcisField();
+        return StringUtils.isNotBlank(formatted) ? formatted : (StringUtils.isNotBlank(getName()) ? getValue() : getName());
     }
 
     // Emit the parent's name, sort its children, then recursively append each child's contribution.

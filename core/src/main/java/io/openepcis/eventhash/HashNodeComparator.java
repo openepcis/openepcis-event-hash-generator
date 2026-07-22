@@ -81,7 +81,7 @@ public class HashNodeComparator implements Comparator<ContextNode> {
         // If the outer event fields are equal then sort the inner elements of the fields' ex:
         // errorDeclaration. If the inner fields have the value then compare them and return.
         if (o1.getValue() != null && o2.getValue() != null) {
-          return o1.getValue().compareTo(o2.getValue());
+          return o1.canonicalComparisonKey().compareTo(o2.canonicalComparisonKey());
         } else if (o1.getChildren() != null && o2.getChildren() != null) {
           return findChildren(o1).compareTo(findChildren(o2));
         }

@@ -343,6 +343,8 @@ public class ContextNode {
     private String formatSensorField(final String name, String value) {
         if (value.startsWith(EPCIS.GS1_PREFIX)) {
             value = SENSOR_REPORT_FORMAT.get(name) + value.substring(4);
+        } else if (value.startsWith(EPCIS.DEFAULT_CURIE_PREFIX)) {
+            value = EPCIS.GS1_CBV_DOMAIN + value.substring(EPCIS.DEFAULT_CURIE_PREFIX.length());
         } else if (!value.contains(":")) {
             value = SENSOR_REPORT_FORMAT.get(name) + value;
         }

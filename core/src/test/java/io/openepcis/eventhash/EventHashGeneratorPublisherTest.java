@@ -815,9 +815,7 @@ public class EventHashGeneratorPublisherTest {
     final InputStream jsonStream = getClass().getResourceAsStream("/json/epclist_normalisation.jsonld");
     final Map<String, String> jsonOut = eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256").subscribe().asStream().toList().get(0);
 
-
     // rule 16: epcList should be normalized to a single string with comma-separated EPCs
-    System.out.println("JSON prehash: \n" + jsonOut.get("prehash"));
     assertTrue(jsonOut.get("prehash").contains("epc=https://id.gs1.org/8010/061414111111111111111-A%23%2F/8011/1234"), "CPI identifier should be normalized");
     assertTrue(jsonOut.get("prehash").contains("epc=https://id.gs1.org/01/80614141123458/21/6789%2F%26%25%22!%3F()"),  "SGTIN identifier should be normalized");
     //assertEquals("ni:///sha-256;40744f32beff53a4bf5bb5956d465cb52de5bbcc9f131409d8efb903b04d9351?ver=CBV2.0", jsonOut.get("sha-256"));
@@ -845,6 +843,18 @@ public class EventHashGeneratorPublisherTest {
 
     assertEquals(xmlOut.get("sha-256"), jsonOut.get("sha-256"));
   }
+
+  @Test
+  void allPossibleFieldsOrdering() throws IOException{
+    final InputStream xmlStream = getClass().getClassLoader().getResourceAsStream("2.0/EPCIS/XML/Capture/Documents/ObjectEvent_all_possible_fields.xml");
+    final InputStream jsonStream = getClass().getClassLoader().getResourceAsStream("2.0/EPCIS/JSON/Capture/Documents/ObjectEvent_all_possible_fields.json");
+
+    final Map<String, String> xmlOut = eventHashGenerator.fromXml(xmlStream, "prehash", "sha-256").subscribe().asStream().toList().get(0);
+    final Map<String, String> jsonOut = eventHashGenerator.fromJson(jsonStream, "prehash", "sha-256").subscribe().asStream().toList().get(0);
+
+    assertEquals(xmlOut.get("sha-256"), jsonOut.get("sha-256"));
+  }
+
 
   @Test
   void defaultAndUnknownVersionsBothStampCbv2_0() throws IOException {

@@ -136,7 +136,15 @@ public class ContextNode {
                 children.add(new ContextNode(this, n.getKey(), arrayNode));
             } else if (!n.getKey().equals(EPCIS.ERROR_DECLARATION)) {
                 // all other fields which may have complex structure, add the field values from it to children via Constructor 2. Eg: readPoint, etc. skip errorDeclaration
-                children.add(new ContextNode(this, n.getKey(), n.getValue().properties().iterator()));
+                final JsonNode fieldValue = n.getValue();
+
+                if (isAttributedLeaf(fieldValue)) {
+                    // Attributed extension leaf: canonicalize to the XML/spec shape (value inline + attribute, no "@", no "value" token)
+                    children.add(attributedLeafToContextNode(this, n.getKey(), fieldValue));
+                } else {
+                    // all other complex fields: unchanged behaviour (readPoint, nested extension objects, etc.)
+                    children.add(new ContextNode(this, n.getKey(), n.getValue().properties().iterator()));
+                }
             }
         }
     }
@@ -405,7 +413,7 @@ public class ContextNode {
     }
 
     // Canonical, post-normalization key used for ordering, sort identifiers after the Canonical
-    String canonicalComparisonKey(){
+    String canonicalComparisonKey() {
         final String formatted = formatLeafEpcisField();
         return StringUtils.isNotBlank(formatted) ? formatted : (StringUtils.isNotBlank(getName()) ? getValue() : getName());
     }
@@ -484,5 +492,45 @@ public class ContextNode {
         final Instant parsed = Instant.parse(value);
         final long millis = Math.round(parsed.getNano() / 1_000_000.0);
         return DATE_FORMATTER.format(Instant.ofEpochSecond(parsed.getEpochSecond()).plusMillis(millis));
+    }
+
+    /**
+     * A JSON "attributed leaf" is how an XML element with attributes + simple text is encoded: e.g. {"@measurementUnitCode":"KGM","value":"3.5"}
+     * exactly one "value" key (the text) plus zero or more "@"-prefixed attribute keys, and nothing else.
+     **/
+    private boolean isAttributedLeaf(final JsonNode obj) {
+        if (obj == null || !obj.isObject() || !obj.has("value")) {
+            return false;
+        }
+
+        final Iterator<String> keys = obj.fieldNames();
+        while (keys.hasNext()) {
+            final String key = keys.next();
+
+            // a non-attribute, non-value key -> not a leaf (e.g. sensorReport)
+            if (!key.equals("value") && !key.startsWith("@")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Build the same ContextNode shape the XML SaxHandler produces for such an element:
+     * the element carries its value inline ({ns}name=3.5), attributes become children with the JSON "@" stripped.
+     */
+    private ContextNode attributedLeafToContextNode(final ContextNode parent, final String name, final JsonNode obj) {
+        // value inline -> {ns}drainedWeight=3.5
+        final ContextNode node = new ContextNode(parent, name, obj.get("value").asText());
+
+        // add attributes as children
+        for (final Map.Entry<String, JsonNode> attr : obj.properties()) {
+            final String attrKey = attr.getKey();
+            if (attrKey.startsWith("@")) {
+                node.getChildren().add(new ContextNode(node, attrKey.substring(1), attr.getValue().asText()));
+            }
+        }
+
+        return node;
     }
 }

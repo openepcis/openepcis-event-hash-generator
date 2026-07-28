@@ -20,13 +20,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.eventhash.constant.ConstantEventHashInfo;
+import io.openepcis.eventhash.utils.PreHashStringGeneratorUtil;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -138,9 +138,9 @@ public class ContextNode {
                 // all other fields which may have complex structure, add the field values from it to children via Constructor 2. Eg: readPoint, etc. skip errorDeclaration
                 final JsonNode fieldValue = n.getValue();
 
-                if (isAttributedLeaf(fieldValue)) {
+                if (PreHashStringGeneratorUtil.isAttributedLeaf(fieldValue)) {
                     // Attributed extension leaf: canonicalize to the XML/spec shape (value inline + attribute, no "@", no "value" token)
-                    children.add(attributedLeafToContextNode(this, n.getKey(), fieldValue));
+                    children.add(PreHashStringGeneratorUtil.attributedLeafToContextNode(this, n.getKey(), fieldValue));
                 } else {
                     // all other complex fields: unchanged behaviour (readPoint, nested extension objects, etc.)
                     children.add(new ContextNode(this, n.getKey(), n.getValue().properties().iterator()));
@@ -274,16 +274,16 @@ public class ContextNode {
         if (EPC_LISTS.contains(name)) {
             // if instance identifiers are in URN format then change it to WebURI format
             if (value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX)) {
-                return EPCIS.EPC + "=" + ConverterUtil.toURI(value);
+                return EPCIS.EPC + "=" + PreHashStringGeneratorUtil.toUri(value);
             } else {
-                return EPCIS.EPC + "=" + ConverterUtil.shortNameReplacer(value);
+                return EPCIS.EPC + "=" + PreHashStringGeneratorUtil.shortName(value);
             }
         } else if ((value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX)) || (CLASS_IDENTIFIER_URN_PREFIX.stream().anyMatch(value::startsWith))) {
             // If element value is in URN format then change it to WebURI format
             return name + "=" + gs1IdentifierFormat(value);
         } else if (SHORTNAME_FIELDS.stream().anyMatch(name::equals)) {
             // For instance/class identifier fields or sensor related fields replace the short names with corresponding identifier keys and/or replace custom gs1 domain
-            return name + "=" + ConverterUtil.shortNameReplacer(value);
+            return name + "=" + PreHashStringGeneratorUtil.shortName(value);
         } else if ((name.equals(EPCIS.TYPE) || name.equals(EPCIS.EXCEPTION) || name.equals(EPCIS.COMPONENT))
                 && (currentNode != null
                 && currentNode.getParent() != null
@@ -293,7 +293,7 @@ public class ContextNode {
             return formatSensorField(name, value);
         } else if (TIME_ATTRIBUTE_LIST.contains(name)) {
             // For all the date time information within the event convert the information to UTC time
-            return name + "=" + formatCanonicalTime(value);
+            return name + "=" + PreHashStringGeneratorUtil.formatCanonicalTime(value);
         } else if (GS1_ATTRIBUTES_PREFIX.stream().anyMatch(value::startsWith)) {
             // If the field is of bizStep, disposition, bizTransaction/source type then convert the URN to WebURI vocabulary.
             return name + "=" + ConverterUtil.toWebURIVocabulary(value);
@@ -304,10 +304,10 @@ public class ContextNode {
             return name + "=" + ConverterUtil.toCbvVocabulary(value, findParent(currentNode), EPCIS.WEBURI);
         } else if (SOURCE_DESTINATION_URN_PREFIX.stream().anyMatch(value::startsWith)) {
             // If the field is of Source/Destination SGLN type then convert the value from URN to WebURI.
-            return name + "=" + ConverterUtil.toURI(value);
+            return name + "=" + PreHashStringGeneratorUtil.toUri(value);
         } else if (value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX) || CLASS_IDENTIFIER_URN_PREFIX.stream().anyMatch(value::startsWith)) {
             // If the field is of Identifiers type then convert the value to WebURI type
-            return name + "=" + ConverterUtil.toURI(value);
+            return name + "=" + PreHashStringGeneratorUtil.toUri(value);
         } else if (value.startsWith(EPCIS.GS1_PREFIX)) {
             // For sensorReport elements if value contains gs1:Pressure etc. then strip the starting gs1:
             return name + "=" + value.substring(value.indexOf(EPCIS.GS1_PREFIX) + 4);
@@ -328,10 +328,10 @@ public class ContextNode {
     private String gs1IdentifierFormat(final String value) {
         if (value.startsWith(EPCIS.INSTANCE_IDENTIFIER_URN_PREFIX)) {
             // If element value is in URN format then change it to WebURI format
-            return ConverterUtil.toURI(value);
+            return PreHashStringGeneratorUtil.toUri(value);
         } else if (CLASS_IDENTIFIER_URN_PREFIX.stream().anyMatch(value::startsWith)) {
             // If quantity element class identifiers are in URN format then change it to WebURI format
-            return ConverterUtil.toURIForClassLevelIdentifier(value);
+            return PreHashStringGeneratorUtil.toUriClass(value);
         } else if (value.matches(DIGIT_CHECKER)) {
             // If value contains numbers then format them accordingly 25.0 -> 25, 25.6 -> 25.6 etc.
             final double interimValue = Double.parseDouble(value);
@@ -344,7 +344,7 @@ public class ContextNode {
                 return value;
             }
         }
-        return ConverterUtil.shortNameReplacer(value);
+        return PreHashStringGeneratorUtil.shortName(value);
     }
 
     // Method to format sensor element fields such as type, exception
@@ -368,7 +368,7 @@ public class ContextNode {
         if (nameSpace != null && value != null && !value.equals("")) {
             return "{" + nameSpace + "}" + name.substring(name.indexOf(":") + 1) + "=" + gs1IdentifierFormat(value) + "\n";
         } else if (nameSpace != null) {
-            return "{" + nameSpace + "}" + name.substring(name.indexOf(":") + 1);
+            return "{" + nameSpace + "}" + name.substring(name.indexOf(":") + 1) + "\n";
         } else if (value != null && !value.equals("")) {
             return name + "=" + gs1IdentifierFormat(value) + "\n";
         } else {
@@ -378,11 +378,15 @@ public class ContextNode {
 
     // Check if the parent is array if not do not add the user extension namespace twice
     private boolean isArrayNode(final ContextNode node) {
-        return node.getName() != null
-                && !node.getChildren().isEmpty()
-                && node.getChildren().get(0).getName() != null
-                && (node.getName().equals(node.getChildren().get(0).getName())
-                && node.getChildren().get(0).getValue() != null);
+        if (node.getName() == null || node.getChildren().isEmpty()) return false;
+
+        long sameName = node.getChildren().stream().filter(c -> node.getName().equals(c.getName())).count();
+        if (sameName >= 2) return true; // 2+ same-name children => JSON array wrapper (scalars or objects)
+        if (sameName == 0) return false; // not a wrapper
+
+        // exactly one same-name child: array-of-one-scalar has a value; a nested same-name object does not
+        final ContextNode only = node.getChildren().stream().filter(c -> node.getName().equals(c.getName())).findFirst().get();
+        return only.getValue() != null;
     }
 
     // Get the parent and their subsequent children (test purpose only)
@@ -481,56 +485,7 @@ public class ContextNode {
                 && (getName().equals(EPCIS.SENSOR_ELEMENT)
                 || (!children.isEmpty()
                 && children.get(0).getName() != null
-                && !getName().equals(getChildren().get(0).getName())
+                && !isArrayNode(this)
                 && !getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT)));
-    }
-
-    /**
-     * Timestamp at millisecond precision. Sub-millisecond digits are rounded half-up (CBV rule 9); values with 3 or fewer decimals are returned unchanged.
-     */
-    private String formatCanonicalTime(final String value) {
-        final Instant parsed = Instant.parse(value);
-        final long millis = Math.round(parsed.getNano() / 1_000_000.0);
-        return DATE_FORMATTER.format(Instant.ofEpochSecond(parsed.getEpochSecond()).plusMillis(millis));
-    }
-
-    /**
-     * A JSON "attributed leaf" is how an XML element with attributes + simple text is encoded: e.g. {"@measurementUnitCode":"KGM","value":"3.5"}
-     * exactly one "value" key (the text) plus zero or more "@"-prefixed attribute keys, and nothing else.
-     **/
-    private boolean isAttributedLeaf(final JsonNode obj) {
-        if (obj == null || !obj.isObject() || !obj.has("value")) {
-            return false;
-        }
-
-        final Iterator<String> keys = obj.fieldNames();
-        while (keys.hasNext()) {
-            final String key = keys.next();
-
-            // a non-attribute, non-value key -> not a leaf (e.g. sensorReport)
-            if (!key.equals("value") && !key.startsWith("@")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Build the same ContextNode shape the XML SaxHandler produces for such an element:
-     * the element carries its value inline ({ns}name=3.5), attributes become children with the JSON "@" stripped.
-     */
-    private ContextNode attributedLeafToContextNode(final ContextNode parent, final String name, final JsonNode obj) {
-        // value inline -> {ns}drainedWeight=3.5
-        final ContextNode node = new ContextNode(parent, name, obj.get("value").asText());
-
-        // add attributes as children
-        for (final Map.Entry<String, JsonNode> attr : obj.properties()) {
-            final String attrKey = attr.getKey();
-            if (attrKey.startsWith("@")) {
-                node.getChildren().add(new ContextNode(node, attrKey.substring(1), attr.getValue().asText()));
-            }
-        }
-
-        return node;
     }
 }

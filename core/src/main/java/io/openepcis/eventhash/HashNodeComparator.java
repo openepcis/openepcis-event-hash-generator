@@ -15,6 +15,8 @@
  */
 package io.openepcis.eventhash;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -101,38 +103,38 @@ public class HashNodeComparator implements Comparator<ContextNode> {
   private int sortUserExtensions(final ContextNode o1, final ContextNode o2) {
     // Ensure only user extensions are sorted
     if (o1.getName().contains(":") && o2.getName().contains(":")) {
-      final String o1Namespace =
-          o1.getName() != null
+      final String o1Namespace = StringUtils.isNotBlank(o1.getName())
               ? o1.getNamespaces().get(o1.getName().substring(0, o1.getName().indexOf(":")))
               : null;
-      final String o2Namespace =
-          o2.getName() != null
+      final String o2Namespace = StringUtils.isNotBlank(o2.getName())
               ? o2.getNamespaces().get(o2.getName().substring(0, o2.getName().indexOf(":")))
               : null;
-      final String o1String =
-          o1Namespace != null
-              ? o1Namespace
-                  + o1.getName().substring(o1.getName().indexOf(":") + 1)
-                  + "="
-                  + o1.getValue()
+
+      final String o1String = StringUtils.isNotBlank(o1Namespace)
+              ? o1Namespace + o1.getName().substring(o1.getName().indexOf(":") + 1) + extValueOrChildren(o1)
               : o1.getName();
-      final String o2String =
-          o2Namespace != null
-              ? o2Namespace
-                  + o2.getName().substring(o2.getName().indexOf(":") + 1)
-                  + "="
-                  + o2.getValue()
+      final String o2String = StringUtils.isNotBlank(o2Namespace)
+              ? o2Namespace + o2.getName().substring(o2.getName().indexOf(":") + 1) + extValueOrChildren(o2)
               : o2.getName();
+
       return o1String.compareTo(o2String);
     }
+
     return o1.getName().compareTo(o2.getName());
   }
 
+  // CBV 2.0 rule 19 / CBV 2.1 rule 20: sort by the substring as appended to the pre-hash string.
+  // Leaf -> "=value". Nested (value-less, has children) -> "{": the appended form is "{ns}childName..."
+  // which starts with '{' (0x7B), so a nested holder sorts AFTER every "=value" sibling of the same name.
+  // Stateless on purpose (no findChildren): keeps the comparator deterministic so XML/JSON parity holds.
+  private String extValueOrChildren(final ContextNode node){
+    return (node.getChildren() != null && !node.getChildren().isEmpty()) ? "{" : "=" + node.getValue();
+  }
+
+
   // For nested hashnode values loop over its children and get values.
   private String findChildren(final ContextNode node) {
-
-    // Sort the children elements as per standard before building single string for sorting from
-    // children elements
+    // Sort the children elements as per standard before building single string for sorting from children elements
     this.sortMap = TemplateNodeMap.findSortList(node);
     final HashNodeComparator comparator = new HashNodeComparator(node, standardFieldSort);
     if (!node.getChildren().isEmpty()) {
@@ -151,9 +153,7 @@ public class HashNodeComparator implements Comparator<ContextNode> {
       }
     }
 
-    return Boolean.TRUE.equals(standardFieldSort)
-        ? childrenString.toString()
-        : extensionString.toString();
+    return Boolean.TRUE.equals(standardFieldSort) ? childrenString.toString() : extensionString.toString();
   }
 
   // Method to append the values to children

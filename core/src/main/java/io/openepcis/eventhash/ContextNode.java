@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.openepcis.constants.CBVVersion;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.eventhash.constant.ConstantEventHashInfo;
-import io.openepcis.eventhash.utils.PreHashStringGeneratorUtil;
+import io.openepcis.eventhash.util.PreHashStringGeneratorUtil;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -138,9 +138,9 @@ public class ContextNode {
                 // all other fields which may have complex structure, add the field values from it to children via Constructor 2. Eg: readPoint, etc. skip errorDeclaration
                 final JsonNode fieldValue = n.getValue();
 
-                if (PreHashStringGeneratorUtil.isAttributedLeaf(fieldValue)) {
+                if (isAttributedLeaf(fieldValue)) {
                     // Attributed extension leaf: canonicalize to the XML/spec shape (value inline + attribute, no "@", no "value" token)
-                    children.add(PreHashStringGeneratorUtil.attributedLeafToContextNode(this, n.getKey(), fieldValue));
+                    children.add(attributedLeafToContextNode(this, n.getKey(), fieldValue));
                 } else {
                     // all other complex fields: unchanged behaviour (readPoint, nested extension objects, etc.)
                     children.add(new ContextNode(this, n.getKey(), n.getValue().properties().iterator()));
@@ -487,5 +487,45 @@ public class ContextNode {
                 && children.get(0).getName() != null
                 && !isArrayNode(this)
                 && !getChildren().get(0).getName().equalsIgnoreCase(EPCIS.SENSOR_REPORT)));
+    }
+
+    /**
+     * A JSON "attributed leaf" is how an XML element with attributes + simple text is encoded: e.g. {"@measurementUnitCode":"KGM","value":"3.5"}
+     * exactly one "value" key (the text) plus zero or more "@"-prefixed attribute keys, and nothing else.
+     **/
+    public static boolean isAttributedLeaf(final JsonNode obj) {
+        if (obj == null || !obj.isObject() || !obj.has("value")) {
+            return false;
+        }
+
+        final Iterator<String> keys = obj.fieldNames();
+        while (keys.hasNext()) {
+            final String key = keys.next();
+
+            // a non-attribute, non-value key -> not a leaf (e.g. sensorReport)
+            if (!key.equals("value") && !key.startsWith("@")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Build the same ContextNode shape the XML SaxHandler produces for such an element:
+     * the element carries its value inline ({ns}name=3.5), attributes become children with the JSON "@" stripped.
+     */
+    public static ContextNode attributedLeafToContextNode(final ContextNode parent, final String name, final JsonNode obj) {
+        // value inline -> {ns}drainedWeight=3.5
+        final ContextNode node = new ContextNode(parent, name, obj.get("value").asText());
+
+        // add attributes as children
+        for (final Map.Entry<String, JsonNode> attr : obj.properties()) {
+            final String attrKey = attr.getKey();
+            if (attrKey.startsWith("@")) {
+                node.getChildren().add(new ContextNode(node, attrKey.substring(1), attr.getValue().asText()));
+            }
+        }
+
+        return node;
     }
 }

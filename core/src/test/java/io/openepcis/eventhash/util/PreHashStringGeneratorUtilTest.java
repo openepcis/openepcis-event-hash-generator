@@ -1,10 +1,10 @@
-package io.openepcis.eventhash.utils;
+package io.openepcis.eventhash.util;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PreHashStringGeneratorUtiTest {
+public class PreHashStringGeneratorUtilTest {
 
     @Test
     void stripsQueryFromCanonicalDl() {

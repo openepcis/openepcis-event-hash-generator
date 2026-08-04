@@ -40,8 +40,6 @@ import java.util.Set;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Generates canonical EPCIS 2.0 event hash IDs from XML or JSON/JSON-LD via reactive {@link Multi}.
@@ -55,7 +53,8 @@ import java.util.logging.Logger;
 
 public class EventHashGenerator {
 
-    private static final Logger log = Logger.getLogger(EventHashGenerator.class.getName());
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(EventHashGenerator.class);
 
     private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
     private String prehashJoin = "";
@@ -76,7 +75,7 @@ public class EventHashGenerator {
         try {
             SAX_PARSER_FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 

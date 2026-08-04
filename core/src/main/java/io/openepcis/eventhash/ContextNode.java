@@ -22,9 +22,6 @@ import io.openepcis.constants.EPCIS;
 import io.openepcis.eventhash.constant.ConstantEventHashInfo;
 import io.openepcis.eventhash.util.PreHashStringGeneratorUtil;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -36,9 +33,6 @@ import static io.openepcis.eventhash.constant.ConstantEventHashInfo.*;
  * This class is utilized by EventHash and SaxHandler during the parsing of XML/JSON EPCIS document to read the events. Event information are converted to ContextNode class form.
  * The EPCIS event information in the form of ContextNode are used for creating the pre-hash string by sorting and modifying as per the EPCIS standard.
  */
-@Getter
-@Setter
-@NoArgsConstructor
 public class ContextNode {
     protected String name;
     protected String value;
@@ -48,6 +42,9 @@ public class ContextNode {
     // Fields omitted from the pre-hash string: the always-on defaults, optionally augmented per hash run.
     // Propagated unchanged to every child node so the whole event tree shares one exclusion view.
     protected Collection<String> fieldsToExclude = ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH;
+
+    public ContextNode() {
+    }
 
     // Constructor 1: To store the simple event field information such as type, eventTime, bizStep.
     public ContextNode(final ContextNode parent, final String name, final String value) {
@@ -527,5 +524,53 @@ public class ContextNode {
         }
 
         return node;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(final String value) {
+        this.value = value;
+    }
+
+    public ArrayList<ContextNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(final ArrayList<ContextNode> children) {
+        this.children = children;
+    }
+
+    public ContextNode getParent() {
+        return parent;
+    }
+
+    public void setParent(final ContextNode parent) {
+        this.parent = parent;
+    }
+
+    public Map<String, String> getNamespaces() {
+        return namespaces;
+    }
+
+    public void setNamespaces(final Map<String, String> namespaces) {
+        this.namespaces = namespaces;
+    }
+
+    public Collection<String> getFieldsToExclude() {
+        return fieldsToExclude;
+    }
+
+    public void setFieldsToExclude(final Collection<String> fieldsToExclude) {
+        this.fieldsToExclude = fieldsToExclude;
     }
 }

@@ -27,15 +27,18 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import java.util.logging.Logger;
 
 @QuarkusTest
-@Slf4j
 public abstract class AbstractEventHashGeneratorTest {
+
+  private static final Logger log =
+      Logger.getLogger(AbstractEventHashGeneratorTest.class.getName());
+
 
   static final List<String> INVALID_HASH_DOCS =
       List.of(
@@ -88,9 +91,10 @@ public abstract class AbstractEventHashGeneratorTest {
                 final String jsonString = jsonResponse.body().asString();
                 final URL xmlUrl = ResourceFinder.matching(url, xmlCaptureFiles);
                 if (xmlUrl != null) {
-                  log.debug(
-                      "testing XML "
-                          + xmlUrl.getFile().substring(xmlUrl.getFile().lastIndexOf("/")));
+                  log.fine(
+                      () ->
+                          "testing XML "
+                              + xmlUrl.getFile().substring(xmlUrl.getFile().lastIndexOf("/")));
                   final Response xmlResponse =
                       RestAssured.given()
                           .contentType(MediaType.APPLICATION_XML)
@@ -131,9 +135,10 @@ public abstract class AbstractEventHashGeneratorTest {
                 final String jsonString = jsonResponse.body().asString();
                 final URL xmlUrl = ResourceFinder.matching(url, xmlCaptureFiles);
                 if (xmlUrl != null) {
-                  log.debug(
-                      "testing XML "
-                          + xmlUrl.getFile().substring(xmlUrl.getFile().lastIndexOf("/")));
+                  log.fine(
+                      () ->
+                          "testing XML "
+                              + xmlUrl.getFile().substring(xmlUrl.getFile().lastIndexOf("/")));
                   final Response xmlResponse =
                       RestAssured.given()
                           .contentType(MediaType.APPLICATION_XML)

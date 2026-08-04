@@ -28,16 +28,20 @@ import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 @Singleton
-@RequiredArgsConstructor
 public class DocumentWrapperSupport {
 
   private final JsonFactory jsonFactory;
 
   private final ManagedExecutor managedExecutor;
+
+  public DocumentWrapperSupport(
+      final JsonFactory jsonFactory, final ManagedExecutor managedExecutor) {
+    this.jsonFactory = jsonFactory;
+    this.managedExecutor = managedExecutor;
+  }
 
   public final InputStream generateJsonDocumentWrapper(final InputStream inputEventList)
       throws IOException {

@@ -16,8 +16,6 @@
 package io.openepcis.eventhash.constant;
 
 import io.openepcis.constants.EPCIS;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -35,8 +33,11 @@ import static java.util.Map.entry;
  * Shared constants used by the XML/JSON parsers and the {@link io.openepcis.eventhash.ContextNode} canonicalization step.
  * Includes EPCIS field lists, URN prefixes, and the immutable exclusion list.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConstantEventHashInfo {
+
+    private ConstantEventHashInfo() {
+    }
+
     // Constant information required for reading, sorting, modification and conversion of the JSON/XML
     // EPCIS event field information.
     public static final List<String> EPC_LISTS = List.of(EPCIS.EPC_LIST, EPCIS.CHILD_EPCS, EPCIS.INPUT_EPC_LIST, EPCIS.OUTPUT_EPC_LIST);

@@ -2,16 +2,17 @@ package io.openepcis.eventhash.util;
 
 import io.openepcis.constants.EPCIS;
 import io.openepcis.identifiers.converter.util.ConverterUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 
 import static io.openepcis.eventhash.constant.ConstantEventHashInfo.DATE_FORMATTER;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PreHashStringGeneratorUtil {
+
+    private PreHashStringGeneratorUtil() {
+    }
+
 
     /**
      * Timestamp at millisecond precision. Sub-millisecond digits are rounded half-up (CBV rule 9); values with 3 or fewer decimals are returned unchanged.

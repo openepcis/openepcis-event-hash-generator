@@ -25,7 +25,6 @@ import io.openepcis.reactive.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.subscription.MultiEmitter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
@@ -41,6 +40,8 @@ import java.util.Set;
 import java.util.concurrent.Flow.Publisher;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Generates canonical EPCIS 2.0 event hash IDs from XML or JSON/JSON-LD via reactive {@link Multi}.
@@ -52,8 +53,10 @@ import java.util.regex.Pattern;
  * and do not mutate it concurrently with, or share it across, in-flight hash operations.
  */
 
-@Slf4j
 public class EventHashGenerator {
+
+    private static final Logger log = Logger.getLogger(EventHashGenerator.class.getName());
+
     private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
     private String prehashJoin = "";
     private final CBVVersion cbvVersion;
@@ -73,7 +76,7 @@ public class EventHashGenerator {
         try {
             SAX_PARSER_FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

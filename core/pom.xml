@@ -140,7 +140,6 @@
         <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>mutiny-zero-flow-adapters</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

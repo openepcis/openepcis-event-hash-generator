@@ -27,15 +27,17 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-@Slf4j
 public abstract class AbstractEventHashGeneratorTest {
+
+  private static final org.slf4j.Logger log =
+      org.slf4j.LoggerFactory.getLogger(AbstractEventHashGeneratorTest.class);
+
 
   static final List<String> INVALID_HASH_DOCS =
       List.of(

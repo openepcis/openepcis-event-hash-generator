@@ -16,10 +16,10 @@ jobs:
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
-      - name: Set up GraalVM 21
+      - name: Set up GraalVM 25
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'graalvm-community'
           cache: maven
       - name: Install gpg secret key
@@ -139,10 +139,10 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Set up GraalVM 21
+      - name: Set up GraalVM 25
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'graalvm-community'
           cache: maven
 
@@ -232,10 +232,10 @@ jobs:
         id: builder
         uses: docker/setup-buildx-action@v1
 
-      - name: Set up GraalVM 21
+      - name: Set up GraalVM 25
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'graalvm-community'
           cache: maven
 
@@ -251,7 +251,7 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
+            -Dquarkus.jib.base-jvm-image=eclipse-temurin:25-jre-alpine \
             -Dquarkus.container-image.additional-tags=latest-amd64,${GIT_TAG_NAME}-amd64 \
             -Dquarkus.jib.platforms=linux/amd64 
 
@@ -263,7 +263,7 @@ jobs:
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.registry=ghcr.io \
             -Dquarkus.container-image.group=openepcis \
-            -Dquarkus.jib.base-jvm-image=eclipse-temurin:21-jre-alpine \
+            -Dquarkus.jib.base-jvm-image=eclipse-temurin:25-jre-alpine \
             -Dquarkus.container-image.additional-tags=latest-arm64,${GIT_TAG_NAME}-arm64 \
             -Dquarkus.jib.platforms=linux/arm64/v8
 
@@ -327,10 +327,10 @@ jobs:
         run: |
           echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
-      - name: Set up GraalVM 21
+      - name: Set up GraalVM 25
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'graalvm-community'
           native-image-job-reports: 'true'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -376,10 +376,10 @@ jobs:
       - name: checkout from git
         uses: actions/checkout@v3
 
-      - name: Set up GraalVM 21
+      - name: Set up GraalVM 25
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'graalvm-community'
 
       - name: 'Get Version Number'

@@ -25,7 +25,6 @@ import io.openepcis.resources.oas.EPCISExampleOASFilter;
 import io.smallrye.mutiny.Multi;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -48,12 +47,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Path("/api")
 @Tag(name = "Event Hash Generator", description = "Generate event hash for EPCIS XML or JSON/JSON-LD document or event list.")
-@RequiredArgsConstructor
 public class EventHashGeneratorResource {
 
     private static final String SHA_256 = "sha-256";
     private final ManagedExecutor managedExecutor;
     private final DocumentWrapperSupport documentWrapperSupport;
+
+    public EventHashGeneratorResource(final ManagedExecutor managedExecutor,
+            final DocumentWrapperSupport documentWrapperSupport) {
+        this.managedExecutor = managedExecutor;
+        this.documentWrapperSupport = documentWrapperSupport;
+    }
 
     // Method to convert the input XML/JSON EPCIS Document into Hash Ids based on the event information present in them.
     @Path("/generate/event-hash/document")

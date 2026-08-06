@@ -25,7 +25,6 @@ import io.openepcis.reactive.publisher.ObjectNodePublisher;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.subscription.MultiEmitter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
@@ -52,8 +51,11 @@ import java.util.regex.Pattern;
  * and do not mutate it concurrently with, or share it across, in-flight hash operations.
  */
 
-@Slf4j
 public class EventHashGenerator {
+
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(EventHashGenerator.class);
+
     private static final SAXParserFactory SAX_PARSER_FACTORY = SAXParserFactory.newInstance();
     private String prehashJoin = "";
     private final CBVVersion cbvVersion;

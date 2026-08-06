@@ -18,7 +18,6 @@ package io.openepcis.eventhash;
 import io.openepcis.constants.EPCIS;
 import io.openepcis.eventhash.constant.ConstantEventHashInfo;
 import io.smallrye.mutiny.subscription.MultiEmitter;
-import lombok.Setter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
@@ -41,8 +40,11 @@ public class SaxHandler extends DefaultHandler {
     private final HashMap<String, String> contextHeader = new HashMap<>();          // xmlns:* bindings seen so far
     private final Collection<String> fieldsToExclude;                               // default + per-run fields omitted from the pre-hash
 
-    @Setter
     private MultiEmitter<? super ContextNode> emitter;
+
+    public void setEmitter(final MultiEmitter<? super ContextNode> emitter) {
+        this.emitter = emitter;
+    }
 
     // Default handler: excludes the always-on default fields only.
     public SaxHandler() {

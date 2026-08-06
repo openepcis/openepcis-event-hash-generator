@@ -16,8 +16,6 @@
 package io.openepcis.eventhash;
 
 import io.openepcis.constants.CBVVersion;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -31,8 +29,11 @@ import java.util.Map;
  * Algorithm registry is data-driven ({@code ALGORITHMS} map); unknown names fall back to sha-256.
  * Per-thread {@link MessageDigest} cache keeps repeated calls allocation-free.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HashIdGenerator {
+
+    private HashIdGenerator() {
+    }
+
 
     /**
      * Pairs a user-facing algorithm name with its EPCIS URI prefix and JCA digest name.

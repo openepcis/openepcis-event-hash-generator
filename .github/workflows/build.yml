@@ -31,8 +31,11 @@ jobs:
           cache: maven
 
       - name: Build and run tests
+        env:
+          GITLAB_MAVEN_USERNAME: ${{ secrets.GITLAB_DEPLOY_USER }}
+          GITLAB_MAVEN_TOKEN: ${{ secrets.GITLAB_DEPLOY_TOKEN }}
         run: >
-          mvn --batch-mode --no-transfer-progress --update-snapshots
+          mvn -s .mvn/settings.xml --batch-mode --no-transfer-progress --update-snapshots
           -Pci-build
           clean verify
 

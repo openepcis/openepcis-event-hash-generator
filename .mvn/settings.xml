@@ -23,5 +23,12 @@
             <username>${env.OPENEPCIS_OSSRH_USERNAME}</username>
             <password>${env.OPENEPCIS_OSSRH_PASSWORD}</password>
         </server>
+
+        <!-- Credentials for the GitLab package registry the parent BOM injects. -->
+        <server>
+            <id>gitlab-maven</id>
+            <username>${env.GITLAB_MAVEN_USERNAME}</username>
+            <password>${env.GITLAB_MAVEN_TOKEN}</password>
+        </server>
     </servers>
 </settings>

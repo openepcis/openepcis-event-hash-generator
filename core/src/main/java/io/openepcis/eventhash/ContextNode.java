@@ -39,6 +39,10 @@ public class ContextNode {
     protected ArrayList<ContextNode> children = new ArrayList<>();
     protected ContextNode parent;
     protected Map<String, String> namespaces;
+
+    // True when node built from JSON array, recorded by parser itself (not inferred from children).
+    protected boolean jsonArrayWrapper = false;
+
     // Fields omitted from the pre-hash string: the always-on defaults, optionally augmented per hash run.
     // Propagated unchanged to every child node so the whole event tree shares one exclusion view.
     protected Collection<String> fieldsToExclude = ConstantEventHashInfo.DEFAULT_FIELDS_TO_EXCLUDE_IN_PREHASH;
@@ -73,6 +77,7 @@ public class ContextNode {
     public ContextNode(final ContextNode parent, final String name, final ArrayNode node) {
         this.parent = parent;
         this.name = name;
+        this.jsonArrayWrapper = true; // Indicate this as JSON array so record it as true
         this.namespaces = parent.namespaces;
         this.fieldsToExclude = parent.fieldsToExclude;
         final Iterator<JsonNode> iterator = node.elements();
@@ -374,16 +379,9 @@ public class ContextNode {
     }
 
     // Check if the parent is array if not do not add the user extension namespace twice
+    // Also ensure array holding single element not mistaken for the same-name object
     private boolean isArrayNode(final ContextNode node) {
-        if (node.getName() == null || node.getChildren().isEmpty()) return false;
-
-        long sameName = node.getChildren().stream().filter(c -> node.getName().equals(c.getName())).count();
-        if (sameName >= 2) return true; // 2+ same-name children => JSON array wrapper (scalars or objects)
-        if (sameName == 0) return false; // not a wrapper
-
-        // exactly one same-name child: array-of-one-scalar has a value; a nested same-name object does not
-        final ContextNode only = node.getChildren().stream().filter(c -> node.getName().equals(c.getName())).findFirst().get();
-        return only.getValue() != null;
+        return node.jsonArrayWrapper;
     }
 
     // Get the parent and their subsequent children (test purpose only)

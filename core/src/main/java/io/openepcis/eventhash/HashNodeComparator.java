@@ -100,27 +100,25 @@ public class HashNodeComparator implements Comparator<ContextNode> {
     return 0;
   }
 
+  // As per CBV 2.0 Rule 19/CBV 2.1 rule 20: siblings are ordered by the substring
+  // A prefixed extension contributes "{namespace}localName",
+  // while a bare GS1 Web Vocabulary property contributes its own name, so both have to be compared in the shape they are written out.
   private int sortUserExtensions(final ContextNode o1, final ContextNode o2) {
-    // Ensure only user extensions are sorted
-    if (o1.getName().contains(":") && o2.getName().contains(":")) {
-      final String o1Namespace = StringUtils.isNotBlank(o1.getName())
-              ? o1.getNamespaces().get(o1.getName().substring(0, o1.getName().indexOf(":")))
-              : null;
-      final String o2Namespace = StringUtils.isNotBlank(o2.getName())
-              ? o2.getNamespaces().get(o2.getName().substring(0, o2.getName().indexOf(":")))
-              : null;
+    return preHashSortKey(o1).compareTo(preHashSortKey(o2));
+  }
 
-      final String o1String = StringUtils.isNotBlank(o1Namespace)
-              ? o1Namespace + o1.getName().substring(o1.getName().indexOf(":") + 1) + extValueOrChildren(o1)
-              : o1.getName();
-      final String o2String = StringUtils.isNotBlank(o2Namespace)
-              ? o2Namespace + o2.getName().substring(o2.getName().indexOf(":") + 1) + extValueOrChildren(o2)
-              : o2.getName();
+  // The key is the node's own contribution to the pre-hash string, mirroring userExtensionsFormatter.
+  private String preHashSortKey(final ContextNode node){
+    final String nodeName = node.getName();
+    if(nodeName == null) return "";
 
-      return o1String.compareTo(o2String);
-    }
+    final int prefixEnd = nodeName.indexOf(":");
+    if (prefixEnd < 0) return nodeName + extValueOrChildren(node); // bare property, written under its own name
 
-    return o1.getName().compareTo(o2.getName());
+    final String namespace = node.getNamespaces() != null ? node.getNamespaces().get(nodeName.substring(0, prefixEnd)) : null;
+    return StringUtils.isNotBlank(namespace)
+            ? "{" + namespace + "}" + nodeName.substring(prefixEnd + 1) + extValueOrChildren(node)
+            : nodeName + extValueOrChildren(node);               // unknown prefix, same fallback as the formatter
   }
 
   // CBV 2.0 rule 19 / CBV 2.1 rule 20: sort by the substring as appended to the pre-hash string.

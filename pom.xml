@@ -207,6 +207,28 @@
                 <module>benchmarks</module>
             </modules>
         </profile>
+
+        <!-- The parent BOM's coverage profile attaches the JaCoCo agent. Turns the collected data into a readable report. -->
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
     <!-- deploy plugin skip removed from parent - specific submodules (cli, restassured, quarkus-app) configure skip individually -->
 </project>

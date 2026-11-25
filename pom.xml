@@ -71,9 +71,12 @@
         <module>core</module>
         <module>cli</module>
         <module>restassured</module>
+        <!-- before rest-api and servlet-api: nexus-staging uploads when the LAST project of the
+             reactor runs, and quarkus/quarkus-app (the image, not published) skips that step,
+             so as the last project it would make the release upload nothing -->
+        <module>quarkus</module>
         <module>rest-api</module>
         <module>servlet-api</module>
-        <module>quarkus</module>
         <!--
         <module>quarkus-app</module>
         -->
